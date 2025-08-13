@@ -1,0 +1,10 @@
+CREATE TABLE `precios` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `precio` FLOAT NOT NULL,
+    PRIMARY KEY(`id`)
+);
+
+CREATE TABLE `productos`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    
+)
