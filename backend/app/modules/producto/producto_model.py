@@ -1,10 +1,9 @@
 from ..database.conect_db import ConectDB
-from ..precio.precio_model import PrecioModel as Precio
 
 class ProductoModel:
-    def __init__(self, id:int=0, descripcion:str="", precio:Precio = none, stock:int=0, fechaVcto:str=""):
+    def __init__(self, id:int=0, tipo:str="", precio:float=0.0, stock:int=0, fechaVcto:str=""):
         self.id = id
-        self.descripcion = descripcion
+        self.tipo = tipo
         self.precio = precio
         self.stock = stock
         self.fechaVcto = fechaVcto
@@ -12,8 +11,8 @@ class ProductoModel:
     def serializar(self)->dict:
         return {
             "id": self.id,
-            "descripcion": self.descripcion,
-            "precio": self.precio.serializar(),
+            "tipo": self.tipo,
+            "precio": self.precio,
             "stock": self.stock,
             "fechaVcto": self.fechaVcto
         }
@@ -22,7 +21,7 @@ class ProductoModel:
     def deserializar(data:dict):
         return ProductoModel(
             id=data["id"],
-            descripcion=data["descripcion"],
+            tipo=data["tipo"],
             precio=data["precio"],
             stock=data["stock"],
             fechaVcto=data["fechaVcto"]
@@ -33,7 +32,7 @@ class ProductoModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("SELECT * FROM producto")
+                cursor.execute("SELECT * FROM productos")
                 row = cursor.fetchall()
                 productos=[]
                 for row in rows:
@@ -46,7 +45,7 @@ class ProductoModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("SELECT * FROM producto where id=%s", (self.id,))
+                cursor.execute("SELECT * FROM productos where id=%s", (self.id,))
                 row = cursor.fetchone()
                 if row:
                     return row
@@ -58,7 +57,7 @@ class ProductoModel:
         cnx = ConectDB.getconnect()
         with cnx.cursor(dictionary=True)  as cursor:
             try:
-                cursor.execute("INSERT INTO producto (descripcion, precio, stock, fechaVcto) VALUES (%s)", (self.descripcion, self.precio, self.stock, self.fechaVcto))
+                cursor.execute("INSERT INTO productos (tipo, precio, stock, fechaVcto) VALUES (%s)", (self.tipo, self.precio, self.stock, self.fechaVcto))
                 result = cursor.rowcount
                 cnx.commit()
                 if result > 0:
@@ -74,7 +73,7 @@ class ProductoModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("UPDATE producto SET descripcion = %s, precio = %s, stock = %s, fechaVcto = %s WHERE id = %s", (self.descripcion, self.precio, self.stock, self.fechaVcto, self.id))
+                cursor.execute("UPDATE productos SET tipo = %s, precio = %s, stock = %s, fechaVcto = %s WHERE id = %s", (self.tipo, self.precio, self.stock, self.fechaVcto, self.id))
                 result = cursor.rowcount
                 cnx.commit()
                 if result > 0:
@@ -90,7 +89,7 @@ class ProductoModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor() as cursor:
             try:
-                cursor.execute("DELETE FROM producto WHERE id=%s", (id,))
+                cursor.execute("DELETE FROM productos WHERE id=%s", (id,))
                 result = cursor.rowcount
                 cnx.commit()
                 if result > 0:

@@ -16,7 +16,8 @@ class ProductoController:
         producto = ProductoModel(
             descripcion=data["descripcion"],
             precio=data["precio"],
-            stock=data["stock"]
+            stock=data["stock"],
+            fechaVcto=data["fechaVcto"]
         )
         result = producto.create(data)
         return result
@@ -27,7 +28,8 @@ class ProductoController:
             id=data["id"],
             descripcion=data["descripcion"],
             precio=data["precio"],
-            stock=data["stock"]
+            stock=data["stock"],
+            fechaVcto=data["fechaVcto"]
         )
         result = producto.update(data)
         return result

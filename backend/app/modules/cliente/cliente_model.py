@@ -1,26 +1,30 @@
 from ..database.conect_db import ConectDB
-from ..categoria.categoria_model import CategoriaModel as Categoria
 
-class SaborModel:
-
-    def __init__(self, id:int=0, nombre:str="", Categoria:Categoria=None):
+class ClienteModel:
+    def __init__(self, id:int=0, nombre:str="", apellido:str="", edad:int=0, direccion:str=""):
         self.id = id
         self.nombre = nombre
-        self.Categoria = Categoria
+        self.apellido = apellido
+        self.edad = edad
+        self.direccion = direccion
 
     def serializar(self)->dict:
         return {
             "id": self.id,
             "nombre": self.nombre,
-            "Categoria": self.Categoria.serializar() if self.Categoria else None
+            "apellido": self.apellido,
+            "edad": self.edad,
+            "direccion": self.direccion
         }
 
     @staticmethod
     def deserializar(data:dict):
-        return SaborModel(
+        return ClienteModel(
             id=data["id"],
             nombre=data["nombre"],
-            Categoria=Categoria.deserializar(data["Categoria"]) if data["Categoria"] else None
+            apellido=data["apellido"],
+            edad=data["edad"],
+            direccion=data["direccion"]
         )
 
     @staticmethod
@@ -28,41 +32,32 @@ class SaborModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("SELECT * FROM sabor")
-                rows = cursor.fetchall()
-                sabores=[]
-                if rows:
-                    for row in rows:
-                        categoria = Categoria.get_by_id(row['id_categoria'])
-                        row["categoria"]=categoria
-                        sabores.append(row)
-                return sabores
+                cursor.execute("SELECT * FROM clientes")
+                row = cursor.fetchall()
+                clientes=[]
+                for row in rows:
+                    clientes.append(row)
+                return clientes
             except Exception as exc:
                 print(f"Error:{exc}")
-            finally:
-                cnx.close()
 
     def get_by_id(self):
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("SELECT * FROM sabores where id=%s", (self.id,))
+                cursor.execute("SELECT * FROM clientes where id=%s", (self.id,))
                 row = cursor.fetchone()
                 if row:
-                    categoria = Categoria.get_by_id(row['id_categoria'])
-                    row["categoria"]=categoria
                     return row
                 return False
             except Exception as exc:
                 print(f"Error:{exc}")
-            finally:
-                cnx.close()
 
     def create(self, data: dict) -> bool:
-        cnx = ConectDB.get_connect()
+        cnx = ConectDB.getconnect()
         with cnx.cursor(dictionary=True)  as cursor:
             try:
-                cursor.execute("INSERT INTO sabores (nombre, Categoria) VALUES (%s, %s)", (self.nombre, self.Categoria.id if self.Categoria else None))
+                cursor.execute("INSERT INTO clientes (nombre, apellido, edad, direccion) VALUES (%s)", (self.nombre, self.apellido, self.edad, self.direccion))
                 result = cursor.rowcount
                 cnx.commit()
                 if result > 0:
@@ -70,7 +65,7 @@ class SaborModel:
                 return False
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al crear el sabor: {exc}"}
+                return {"mensaje": f"Error al crear el Cliente: {exc}"}
             finally:
                 cnx.close()
 
@@ -78,7 +73,7 @@ class SaborModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("UPDATE sabores SET nombre = %s, Categoria = %s WHERE id = %s", (self.nombre, self.Categoria.id if self.Categoria else None, self.id,))
+                cursor.execute("UPDATE clientes SET nombre = %s, apellido = %s, edad = %s, direccion = %s WHERE id = %s", (self.nombre, self.apellido, self.edad, self.direccion, self.id))
                 result = cursor.rowcount
                 cnx.commit()
                 if result > 0:
@@ -86,7 +81,7 @@ class SaborModel:
                 return False
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al actualizar el sabores: {exc}"}
+                return {"mensaje": f"Error al actualizar el Cliente: {exc}"}
             finally:
                 cnx.close()
 
@@ -94,7 +89,7 @@ class SaborModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor() as cursor:
             try:
-                cursor.execute("DELETE FROM sabor WHERE id=%s", (id,))
+                cursor.execute("DELETE FROM clientes WHERE id=%s", (id,))
                 result = cursor.rowcount
                 cnx.commit()
                 if result > 0:
@@ -102,7 +97,7 @@ class SaborModel:
                 return False
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al borrar el sabor: {exc}"}
+                return {"mensaje": f"Error al borrar el clientes: {exc}"}
             finally:
                 cnx.close()
 
