@@ -1,9 +1,9 @@
 from ..database.conect_db import ConectDB
 
 class ProductoModel:
-    def __init__(self, id:int=0, tipo:str="", precio:float=0.0, stock:int=0, fechaVcto:str=""):
+    def __init__(self, id:int=0, nombre:str="", precio:float=0.0, stock:int=0, fechaVcto:str=""):
         self.id = id
-        self.tipo = tipo
+        self.nombre = nombre
         self.precio = precio
         self.stock = stock
         self.fechaVcto = fechaVcto
@@ -11,7 +11,7 @@ class ProductoModel:
     def serializar(self)->dict:
         return {
             "id": self.id,
-            "tipo": self.tipo,
+            "nombre": self.nombre,
             "precio": self.precio,
             "stock": self.stock,
             "fechaVcto": self.fechaVcto
@@ -21,7 +21,7 @@ class ProductoModel:
     def deserializar(data:dict):
         return ProductoModel(
             id=data["id"],
-            tipo=data["tipo"],
+            nombre=data["nombre"],
             precio=data["precio"],
             stock=data["stock"],
             fechaVcto=data["fechaVcto"]
@@ -57,7 +57,7 @@ class ProductoModel:
         cnx = ConectDB.getconnect()
         with cnx.cursor(dictionary=True)  as cursor:
             try:
-                cursor.execute("INSERT INTO productos (tipo, precio, stock, fechaVcto) VALUES (%s)", (self.tipo, self.precio, self.stock, self.fechaVcto))
+                cursor.execute("INSERT INTO productos (nombre, precio, stock, fechaVcto) VALUES (%s)", (self.nombre, self.precio, self.stock, self.fechaVcto))
                 result = cursor.rowcount
                 cnx.commit()
                 if result > 0:
@@ -73,7 +73,7 @@ class ProductoModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("UPDATE productos SET tipo = %s, precio = %s, stock = %s, fechaVcto = %s WHERE id = %s", (self.tipo, self.precio, self.stock, self.fechaVcto, self.id))
+                cursor.execute("UPDATE productos SET nombre = %s, precio = %s, stock = %s, fechaVcto = %s WHERE id = %s", (self.nombre, self.precio, self.stock, self.fechaVcto, self.id))
                 result = cursor.rowcount
                 cnx.commit()
                 if result > 0:

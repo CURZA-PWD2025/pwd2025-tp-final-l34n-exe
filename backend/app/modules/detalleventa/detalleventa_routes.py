@@ -1,23 +1,23 @@
-from .cliente_controller import ClienteController
+from .cliente_controller import DetalleVentaController
 from flask import jsonify, request, Blueprint
 
-cliente_bp = Blueprint('cliente', __name__)
+detalleventa_bp = Blueprint('detalleventa', __name__)
 
-@cliente_bp.route("/cliente", methods=['GET'])
+@detalleventa_bp.route("/detalleventa", methods=['GET'])
 def get_all():
     try:
-        clientes = ClienteController.get_all()
-        if clientes:
-            return jsonify(clientes), 200
+        detalles = DetalleVentaController.get_all()
+        if detalles:
+            return jsonify(detalles), 200
         else:
-            return jsonify({"mensaje": "No se encontraron clientes"}), 404
+            return jsonify({"mensaje": "No se encontraron detalles"}), 404
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@cliente_bp.route("/cliente/<int:id>", methods=['GET'])
+@cliente_bp.route("/detalleventa/<int:id>", methods=['GET'])
 def get_one(id):
     try:
-        cliente = ClienteController.get_one(id)
+        cliente = DetalleVentaController.get_one(id)
         if cliente:
             return jsonify(cliente), 200
         else:
@@ -25,11 +25,11 @@ def get_one(id):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@cliente_bp.route('/cliente', methods=['POST'])
+@cliente_bp.route('/detalleventa', methods=['POST'])
 def create():
     try:
         data = request.get_json()
-        cliente = ClienteController.create(data)
+        cliente = DetalleVentaController.create(data)
         if cliente:
             return jsonify({"mensaje": "Cliente creado exitosamente"}), 201
         else:
@@ -37,12 +37,12 @@ def create():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@cliente_bp.route('/cliente/<int:id>', methods=['PUT'])
+@cliente_bp.route('/detalleventa/<int:id>', methods=['PUT'])
 def update(id):
     try:
         data = request.get_json()
         data['id'] = id
-        cliente = ClienteController.update(data)
+        cliente = DetalleVentaController.update(data)
         if cliente:
             return jsonify({"mensaje": "Cliente actualizado exitosamente"}), 200
         else:
@@ -50,10 +50,10 @@ def update(id):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@cliente_bp.route('/cliente/<int:id>', methods=['DELETE'])
+@cliente_bp.route('/detalleventa/<int:id>', methods=['DELETE'])
 def delete(id):
     try:
-        cliente = ClienteController.delete(id)
+        cliente = DetalleVentaController.delete(id)
         if cliente:
             return jsonify({"mensaje": "Cliente eliminado exitosamente"}), 200
         else:

@@ -16,7 +16,6 @@ class VentaController:
         venta = VentaModel(
             total=data["total"],
             fecha=data["fecha"],
-            id_producto=data["id_producto"],
             id_cliente=data["id_cliente"],
             id_empleado=data["id_empleado"],
         )
@@ -29,7 +28,6 @@ class VentaController:
             id=data["id"],
             total=data["total"],
             fecha=data["fecha"],
-            id_producto=data["id_producto"],
             id_cliente=data["id_cliente"],
             id_empleado=data["id_empleado"],
         )

@@ -40,7 +40,8 @@ class ClienteModel:
                 return clientes
             except Exception as exc:
                 print(f"Error:{exc}")
-
+                
+    @staticmethod
     def get_by_id(self):
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:

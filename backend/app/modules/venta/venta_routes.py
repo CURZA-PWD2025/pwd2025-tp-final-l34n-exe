@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 
 venta_bp = Blueprint('venta', __name__)
 
-@venta_bp.route("/ventas", methods=['GET'])
+@venta_bp.route("/venta", methods=['GET'])
 def get_all():
     try:
         ventas = VentaController.get_all()
@@ -16,7 +16,7 @@ def get_all():
 
 
 
-@venta_bp.route("/ventas/<int:id>", methods=['GET'])
+@venta_bp.route("/venta/<int:id>", methods=['GET'])
 def get_one(id):
     try:
         venta = VentaController.get_one(id)
@@ -28,7 +28,7 @@ def get_one(id):
         return jsonify({"error": str(exc)}), 500
 
 
-@venta_bp.route('/ventas', methods=['POST'])
+@venta_bp.route('/venta', methods=['POST'])
 def create():
     try:
         data = request.get_json()
@@ -40,7 +40,7 @@ def create():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@venta_bp.route('/ventas/<int:id>', methods=['PUT'])
+@venta_bp.route('/venta/<int:id>', methods=['PUT'])
 def update(id):
     try:
         data = request.get_json()
@@ -54,7 +54,7 @@ def update(id):
         return jsonify({"error": str(exc)}), 500
 
 
-@venta_bp.route('/ventas/<int:id>', methods=['DELETE'])
+@venta_bp.route('/venta/<int:id>', methods=['DELETE'])
 def delete(id):
     try:
         venta = VentaController.delete(id)

@@ -1,6 +1,6 @@
 from .cliente_model import ClienteModel
 
-class clienteController:
+class ClienteController:
     @staticmethod
     def get_all():
         clientes = ClienteModel.get_all()
