@@ -6,11 +6,11 @@ categoria_bp = Blueprint('categoria', __name__)
 @categoria_bp.route("/categoria", methods=['GET'])
 def get_all():
     try:
-        categorias = CategoriaController.get_all()
-        if categorias:
-            return jsonify(categorias), 200
+        categoria = CategoriaController.get_all()
+        if categoria:
+            return jsonify(categoria), 200
         else:
-            return jsonify({"mensaje": "No se encontraron categorías"}), 404
+            return jsonify({"mensaje": "No se encontraron categorias"}), 404
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
@@ -21,7 +21,7 @@ def get_one(id):
         if categoria:
             return jsonify(categoria), 200
         else:
-            return jsonify({"mensaje": "Categoría no encontrada"}), 404
+            return jsonify({"mensaje": "categoria no encontrada"}), 404
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
@@ -31,9 +31,9 @@ def create():
         data = request.get_json()
         categoria = CategoriaController.create(data)
         if categoria:
-            return jsonify({"mensaje": "Categoría creada exitosamente"}), 201
+            return jsonify({"mensaje": "categoria creada exitosamente"}), 201
         else:
-            return jsonify({"mensaje": "No se pudo crear la categoría"}), 500
+            return jsonify({"mensaje": "No se pudo crear la categoria"}), 500
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
@@ -44,9 +44,9 @@ def update(id):
         data['id'] = id
         categoria = CategoriaController.update(data)
         if categoria:
-            return jsonify({"mensaje": "Categoría actualizada exitosamente"}), 200
+            return jsonify({"mensaje": "categoria actualizada exitosamente"}), 200
         else:
-            return jsonify({"mensaje": "No se pudo actualizar la categoría"}), 500
+            return jsonify({"mensaje": "No se pudo actualizar la categoria"}), 500
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
@@ -55,8 +55,8 @@ def delete(id):
     try:
         categoria = CategoriaController.delete(id)
         if categoria:
-            return jsonify({"mensaje": "Categoría eliminada exitosamente"}), 200
+            return jsonify({"mensaje": "categoria eliminada exitosamente"}), 200
         else:
-            return jsonify({"mensaje": "No se pudo eliminar la categoría"}), 500
+            return jsonify({"mensaje": "No se pudo eliminar la categoria"}), 500
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500

@@ -1,89 +1,110 @@
-from ..database.conect_db import ConectDB
-from ..producto.producto_model import ProductoModel as Producto
+from ...database.conect_db import ConectDB
 from ..cliente.cliente_model import ClienteModel as Cliente
+from ..empleado.empleado_model import EmpleadoModel as Empleado
+from ..producto.producto_model import ProductoModel as Producto
+
 
 class VentaModel:
-    def __init__(self, id:int=0,  total:float=0.0, fecha:str="", cliente:Cliente=None):
+    def __init__(self, id:int=0, fecha:str="", total:float=0.0, cliente:Cliente=None, empleado:Empleado=None):
         self.id = id
-        self.total = total
         self.fecha = fecha
+        self.total = total
         self.cliente = cliente
         self.empleado = empleado
 
     def serializar(self)->dict:
         return {
             "id": self.id,
-            "total": self.total,
             "fecha": self.fecha,
-            "cliente": self.cliente.serializar() if self.cliente else None
+            "total": self.total,
+            "cliente": self.cliente.serializar() if self.cliente else None,
+            "empleado": self.empleado.serializar() if self.empleado else None
         }
 
     @staticmethod
-    def deserializar(data:dict):
+    def deserializar(data:dict) -> 'VentaModel':
         return VentaModel(
             id=data["id"],
-            total=data["total"],
             fecha=data["fecha"],
-            cliente=Cliente.deserializar(data["cliente"]) if data.get("cliente") else None
+            total=data["total"],
+            cliente=Cliente.deserializar(data["cliente"]) if data["cliente"] else None,
+            empleado=Empleado.deserializar(data["empleado"]) if data["empleado"] else None
         )
 
     @staticmethod
-    def get_all():
+    def get_all() -> list[dict]:
+        from ..item_venta.itemventa_model import ItemVentaModel as ItemVenta
+        from ..itemventa_sabor.itemventasabor_model import ItemVentaSaborModel as ItemVentaSabor
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
                 cursor.execute("SELECT * FROM ventas")
-                rows = cursor.fetchall()
-                ventas=[]
-                if rows:
-                    for row in rows:
-                        cliente = Cliente.get_by_id(row['id_cliente'])
-                        row["cliente"]=cliente
-                        ventas.append(row)
+                ventas = cursor.fetchall()
+
+                for venta in ventas:
+                    venta["cliente"] = Cliente.get_by_id(venta["id_cliente"])
+                    venta["empleado"] = Empleado.get_by_id(venta["id_empleado"])
+                    del venta["id_cliente"]
+                    del venta["id_empleado"]
+                    cursor.execute("SELECT * FROM items_ventas WHERE id_venta = %s", (venta["id"],))
+                    items = cursor.fetchall()
+
+                    for item in items:
+                        item["producto"] = Producto.get_by_id(item["id_producto"])
+                        del item["id_producto"]
+                        item["sabores"] = ItemVentaSabor.get_by_item_id(item["id"])
+                    venta["items"] = items
                 return ventas
+
             except Exception as exc:
                 print(f"Error:{exc}")
+                return []
             finally:
                 cnx.close()
 
     @staticmethod
-    def get_by_id(self):
+    def get_by_id(id:int) -> dict:
+        from ..item_venta.itemventa_model import ItemVentaModel as ItemVenta
+        from ..itemventa_sabor.itemventasabor_model import ItemVentaSaborModel as ItemVentaSabor
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("SELECT * FROM ventas where id=%s", (self.id,))
-                row = cursor.fetchone()
-                if row:
-                    cliente = Cliente.get_by_id(row['id_cliente'])
-                    row["cliente"]=cliente
-                    return row
-                return False
+                cursor.execute("SELECT * FROM ventas where id=%s", (id,))
+                venta = cursor.fetchone()
+                if not venta:
+                    return None
+                venta["cliente"] = Cliente.get_by_id(venta["id_cliente"])
+                venta["empleado"] = Empleado.get_by_id(venta["id_empleado"])
+                del venta["id_cliente"]
+                del venta["id_empleado"]
+                venta["items"] = ItemVenta.get_by_venta_id(id)
+
+                return venta
+
             except Exception as exc:
-                print(f"Error:{exc}")
+                return (f"Error:{exc}")
             finally:
                 cnx.close()
 
-    def create(self, data: dict) -> bool:
+    def create(self) -> dict:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True)  as cursor:
             try:
-                cursor.execute("INSERT INTO ventas (total, fecha, id_cliente) VALUES (%s, %s, %s)", (self.total, self.fecha, self.id_cliente))
-                result = cursor.rowcount
+                cursor.execute("INSERT INTO ventas (fecha, total, id_cliente, id_empleado) VALUES (%s, %s, %s, %s)", (self.fecha, self.total, self.cliente.id, self.empleado.id))
+                self.id = cursor.lastrowid
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return True
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al crear la venta: {exc}"}
+                return ({"mensaje": f"Error al crear la venta: {exc}"})
             finally:
                 cnx.close()
 
-    def update(self, data: dict) -> bool:
+    def update(self) -> dict:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("UPDATE ventas SET total=%s, fecha=%s, id_cliente=%s WHERE id=%s", (self.total, self.fecha, self.id_cliente, self.id))
+                cursor.execute("UPDATE ventas SET fecha=%s, total=%s WHERE id=%s", (self.fecha, self.total, self.id))
                 result = cursor.rowcount
                 cnx.commit()
                 if result > 0:
@@ -95,11 +116,11 @@ class VentaModel:
             finally:
                 cnx.close()
 
-    def delete(self, id: int) -> bool:
+    def delete(self) -> dict:
         cnx = ConectDB.get_connect()
         with cnx.cursor() as cursor:
             try:
-                cursor.execute("DELETE FROM ventas WHERE id=%s", (id,))
+                cursor.execute("DELETE FROM ventas WHERE id=%s", (self.id,))
                 result = cursor.rowcount
                 cnx.commit()
                 if result > 0:

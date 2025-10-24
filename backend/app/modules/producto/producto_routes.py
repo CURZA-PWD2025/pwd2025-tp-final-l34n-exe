@@ -15,7 +15,7 @@ def get_all():
         return jsonify({"error": str(exc)}), 500
 
 @producto_bp.route("/producto/<int:id>", methods=['GET'])
-def get_one(id):
+def get_one(id:int):
     try:
         producto = ProductoController.get_one(id)
         if producto:
@@ -38,7 +38,7 @@ def create():
         return jsonify({"error": str(exc)}), 500
 
 @producto_bp.route('/producto/<int:id>', methods=['PUT'])
-def update(id):
+def update(id:int):
     try:
         data = request.get_json()
         data['id'] = id
@@ -51,7 +51,7 @@ def update(id):
         return jsonify({"error": str(exc)}), 500
 
 @producto_bp.route('/producto/<int:id>', methods=['DELETE'])
-def delete(id):
+def delete(id:int):
     try:
         producto = ProductoController.delete(id)
         if producto:

@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 
 sabor_bp = Blueprint('sabor', __name__)
 
-@sabor_bp.route("/sabores", methods=['GET'])
+@sabor_bp.route("/sabor", methods=['GET'])
 def get_all():
     try:
         sabores = SaborController.get_all()
@@ -14,8 +14,8 @@ def get_all():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@sabor_bp.route("/sabores/<int:id>", methods=['GET'])
-def get_one(id):
+@sabor_bp.route("/sabor/<int:id>", methods=['GET'])
+def get_one(id:int):
     try:
         sabor = SaborController.get_one(id)
         if sabor:
@@ -25,7 +25,7 @@ def get_one(id):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@sabor_bp.route('/sabores', methods=['POST'])
+@sabor_bp.route('/sabor', methods=['POST'])
 def create():
     try:
         data = request.get_json()
@@ -37,8 +37,8 @@ def create():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@sabor_bp.route('/sabores/<int:id>', methods=['PUT'])
-def update(id):
+@sabor_bp.route('/sabor/<int:id>', methods=['PUT'])
+def update(id:int):
     try:
         data = request.get_json()
         data['id'] = id
@@ -50,8 +50,8 @@ def update(id):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@sabor_bp.route('/sabores/<int:id>', methods=['DELETE'])
-def delete(id):
+@sabor_bp.route('/sabor/<int:id>', methods=['DELETE'])
+def delete(id:int):
     try:
         sabor = SaborController.delete(id)
         if sabor:

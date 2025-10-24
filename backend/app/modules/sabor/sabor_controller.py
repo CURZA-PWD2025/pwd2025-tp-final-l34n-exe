@@ -1,35 +1,52 @@
 from .sabor_model import SaborModel
+from ..categoria.categoria_model import CategoriaModel as Categoria
 
 class SaborController:
-    @staticmethod
-    def get_all():
-        sabores = SaborModel.get_all()
-        return sabores
 
     @staticmethod
-    def get_one(id):
-        sabor = SaborModel(id=id).get_by_id()
-        return sabor
+    def get_all() -> list[dict]:
+        return SaborModel.get_all()
 
     @staticmethod
-    def create(data: dict) -> bool:
+    def get_one(id: int) -> dict:
+        return SaborModel.get_by_id(id)
+
+    @staticmethod
+    def create(data: dict) -> dict:
+        categoria_id = data["id_categoria"]
+        categoria_data = Categoria.get_by_id(categoria_id)
+
+        if not categoria_data:
+            return {"mensaje": "La categoría no existe"}
+
+        categoria = Categoria.deserializar(categoria_data)
         sabor = SaborModel(
             nombre=data["nombre"],
+            stock=data["stock"],
+            disponible=data["disponible"],
+            categoria=categoria
         )
-        result = sabor.create(data)
-        return result
+        return sabor.create()
 
     @staticmethod
-    def update(data: dict) -> bool:
+    def update(data: dict) -> dict:
+        categoria_id = data["id_categoria"]
+        categoria_data = Categoria.get_by_id(categoria_id)
+
+        if not categoria_data:
+            return {"mensaje": "La categoría no existe"}
+
+        categoria = Categoria.deserializar(categoria_data)
         sabor = SaborModel(
             id=data["id"],
             nombre=data["nombre"],
+            stock=data["stock"],
+            disponible=data["disponible"],
+            categoria=categoria
         )
-        result = sabor.update(data)
-        return result
+        return sabor.update()
 
     @staticmethod
-    def delete(id: int) -> bool:
+    def delete(id: int) -> dict:
         sabor = SaborModel(id=id)
-        result = sabor.delete(id)
-        return result
+        return sabor.delete()

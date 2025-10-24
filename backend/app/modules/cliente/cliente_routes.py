@@ -6,9 +6,9 @@ cliente_bp = Blueprint('cliente', __name__)
 @cliente_bp.route("/cliente", methods=['GET'])
 def get_all():
     try:
-        clientes = ClienteController.get_all()
-        if clientes:
-            return jsonify(clientes), 200
+        cliente = ClienteController.get_all()
+        if cliente:
+            return jsonify(cliente), 200
         else:
             return jsonify({"mensaje": "No se encontraron clientes"}), 404
     except Exception as exc:
@@ -21,7 +21,7 @@ def get_one(id):
         if cliente:
             return jsonify(cliente), 200
         else:
-            return jsonify({"mensaje": "Cliente no encontrado"}), 404
+            return jsonify({"mensaje": "cliente no encontrada"}), 404
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
@@ -31,7 +31,7 @@ def create():
         data = request.get_json()
         cliente = ClienteController.create(data)
         if cliente:
-            return jsonify({"mensaje": "Cliente creado exitosamente"}), 201
+            return jsonify({"mensaje": "cliente creado exitosamente"}), 201
         else:
             return jsonify({"mensaje": "No se pudo crear el cliente"}), 500
     except Exception as exc:
@@ -44,7 +44,7 @@ def update(id):
         data['id'] = id
         cliente = ClienteController.update(data)
         if cliente:
-            return jsonify({"mensaje": "Cliente actualizado exitosamente"}), 200
+            return jsonify({"mensaje": "cliente actualizado exitosamente"}), 200
         else:
             return jsonify({"mensaje": "No se pudo actualizar el cliente"}), 500
     except Exception as exc:
@@ -55,7 +55,7 @@ def delete(id):
     try:
         cliente = ClienteController.delete(id)
         if cliente:
-            return jsonify({"mensaje": "Cliente eliminado exitosamente"}), 200
+            return jsonify({"mensaje": "cliente eliminada exitosamente"}), 200
         else:
             return jsonify({"mensaje": "No se pudo eliminar el cliente"}), 500
     except Exception as exc:

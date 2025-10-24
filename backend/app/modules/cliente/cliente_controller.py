@@ -1,41 +1,42 @@
 from .cliente_model import ClienteModel
 
 class ClienteController:
-    @staticmethod
-    def get_all():
-        clientes = ClienteModel.get_all()
-        return clientes
 
     @staticmethod
-    def get_one(id):
-        cliente = ClienteModel(id=id).get_by_id()
+    def get_all() -> list[dict]:
+        cliente = ClienteModel.get_all()
         return cliente
 
     @staticmethod
-    def create(data: dict) -> bool:
+    def get_one(id) -> dict:
+        cliente = ClienteModel().get_by_id(id)
+        return cliente
+
+    @staticmethod
+    def create(data: dict) -> dict:
         cliente = ClienteModel(
             nombre=data["nombre"],
             apellido=data["apellido"],
-            edad=data["edad"],
+            telefono=data["telefono"],
             direccion=data["direccion"]
         )
         result = cliente.create(data)
         return result
 
     @staticmethod
-    def update(data: dict) -> bool:
+    def update(data: dict) -> dict:
         cliente = ClienteModel(
-            id=data["id"],
+            id= data["id"],
             nombre=data["nombre"],
             apellido=data["apellido"],
-            edad=data["edad"],
+            telefono=data["telefono"],
             direccion=data["direccion"]
         )
-        result = cliente.update(data)
+        result = cliente.update()
         return result
 
     @staticmethod
-    def delete(id: int) -> bool:
+    def delete(id: int) -> dict:
         cliente = ClienteModel(id=id)
-        result = cliente.delete(id)
+        result = cliente.delete()
         return result
