@@ -44,6 +44,7 @@ class EmpleadoModel:
                 return empleados
             except Exception as exc:
                 print(f"Error:{exc}")
+                return []
             finally:
                 cnx.close()
 
@@ -59,6 +60,7 @@ class EmpleadoModel:
                 return False
             except Exception as exc:
                 print(f"Error:{exc}")
+                return []
             finally:
                 cnx.close()
 

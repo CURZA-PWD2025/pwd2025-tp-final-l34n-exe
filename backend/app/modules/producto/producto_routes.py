@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 
 producto_bp = Blueprint('producto', __name__)
 
-@producto_bp.route("/producto", methods=['GET'])
+@producto_bp.route("/productos", methods=['GET'])
 def get_all():
     try:
         productos = ProductoController.get_all()
@@ -14,7 +14,7 @@ def get_all():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@producto_bp.route("/producto/<int:id>", methods=['GET'])
+@producto_bp.route("/productos/<int:id>", methods=['GET'])
 def get_one(id:int):
     try:
         producto = ProductoController.get_one(id)
@@ -25,7 +25,7 @@ def get_one(id:int):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@producto_bp.route('/producto', methods=['POST'])
+@producto_bp.route('/productos', methods=['POST'])
 def create():
     try:
         data = request.get_json()
@@ -37,7 +37,7 @@ def create():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@producto_bp.route('/producto/<int:id>', methods=['PUT'])
+@producto_bp.route('/productos/<int:id>', methods=['PUT'])
 def update(id:int):
     try:
         data = request.get_json()
@@ -50,7 +50,7 @@ def update(id:int):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@producto_bp.route('/producto/<int:id>', methods=['DELETE'])
+@producto_bp.route('/productos/<int:id>', methods=['DELETE'])
 def delete(id:int):
     try:
         producto = ProductoController.delete(id)

@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 
 categoria_bp = Blueprint('categoria', __name__)
 
-@categoria_bp.route("/categoria", methods=['GET'])
+@categoria_bp.route("/categorias", methods=['GET'])
 def get_all():
     try:
         categoria = CategoriaController.get_all()
@@ -14,7 +14,7 @@ def get_all():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@categoria_bp.route("/categoria/<int:id>", methods=['GET'])
+@categoria_bp.route("/categorias/<int:id>", methods=['GET'])
 def get_one(id):
     try:
         categoria = CategoriaController.get_one(id)
@@ -25,7 +25,7 @@ def get_one(id):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@categoria_bp.route('/categoria', methods=['POST'])
+@categoria_bp.route('/categorias', methods=['POST'])
 def create():
     try:
         data = request.get_json()
@@ -37,7 +37,7 @@ def create():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@categoria_bp.route('/categoria/<int:id>', methods=['PUT'])
+@categoria_bp.route('/categorias/<int:id>', methods=['PUT'])
 def update(id):
     try:
         data = request.get_json()
@@ -50,7 +50,7 @@ def update(id):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@categoria_bp.route('/categoria/<int:id>', methods=['DELETE'])
+@categoria_bp.route('/categorias/<int:id>', methods=['DELETE'])
 def delete(id):
     try:
         categoria = CategoriaController.delete(id)

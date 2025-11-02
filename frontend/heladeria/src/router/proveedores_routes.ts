@@ -1,9 +1,14 @@
 const proveedores_routes = [
   {
     path: '/proveedores',
-    name: 'proveedores_list',
+    name: 'proveedores',
     component: () => import('../views/ProveedoresView.vue'),
     children: [
+      {
+        path: '',
+        name: 'proveedores_list',
+        component: () => import('../components/proveedores/ProveedoresList.vue')
+      },
       {
         path: ':id/show',
         name: 'proveedores_show',
@@ -21,7 +26,6 @@ const proveedores_routes = [
       }
     ]
   }
-
 ]
 
 export default proveedores_routes

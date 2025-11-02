@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 
 proveedor_bp = Blueprint('proveedor', __name__)
 
-@proveedor_bp.route("/proveedor", methods=['GET'])
+@proveedor_bp.route("/proveedores", methods=['GET'])
 def get_all():
     try:
         proveedores = ProveedorController.get_all()
@@ -14,7 +14,7 @@ def get_all():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@proveedor_bp.route("/proveedor/<int:id>", methods=['GET'])
+@proveedor_bp.route("/proveedores/<int:id>", methods=['GET'])
 def get_one(id:int):
     try:
         proveedor = ProveedorController.get_one(id)
@@ -25,7 +25,7 @@ def get_one(id:int):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@proveedor_bp.route('/proveedor', methods=['POST'])
+@proveedor_bp.route('/proveedores', methods=['POST'])
 def create():
     try:
         data = request.get_json()
@@ -37,7 +37,7 @@ def create():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@proveedor_bp.route('/proveedor/<int:id>', methods=['PUT'])
+@proveedor_bp.route('/proveedores/<int:id>', methods=['PUT'])
 def update(id:int):
     try:
         data = request.get_json()
@@ -50,7 +50,7 @@ def update(id:int):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@proveedor_bp.route('/proveedor/<int:id>', methods=['DELETE'])
+@proveedor_bp.route('/proveedores/<int:id>', methods=['DELETE'])
 def delete(id:int):
     try:
         proveedor = ProveedorController.delete(id)

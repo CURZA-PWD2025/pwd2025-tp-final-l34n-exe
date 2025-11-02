@@ -42,6 +42,7 @@ class ClienteModel:
                 return clientes
             except Exception as exc:
                 print(f"Error:{exc}")
+                return []
             finally:
                 cnx.close()
 
@@ -57,6 +58,7 @@ class ClienteModel:
                 return False
             except Exception as exc:
                 print(f"Error:{exc}")
+                return []
             finally:
                 cnx.close()
 

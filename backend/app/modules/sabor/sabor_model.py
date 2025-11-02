@@ -46,6 +46,7 @@ class SaborModel:
                 return sabores
             except Exception as exc:
                 print(f"Error:{exc}")
+                return []
             finally:
                 cnx.close()
 

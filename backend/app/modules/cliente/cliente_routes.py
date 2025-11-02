@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 
 cliente_bp = Blueprint('cliente', __name__)
 
-@cliente_bp.route("/cliente", methods=['GET'])
+@cliente_bp.route("/clientes", methods=['GET'])
 def get_all():
     try:
         cliente = ClienteController.get_all()
@@ -14,7 +14,7 @@ def get_all():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@cliente_bp.route("/cliente/<int:id>", methods=['GET'])
+@cliente_bp.route("/clientes/<int:id>", methods=['GET'])
 def get_one(id):
     try:
         cliente = ClienteController.get_one(id)
@@ -25,7 +25,7 @@ def get_one(id):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@cliente_bp.route('/cliente', methods=['POST'])
+@cliente_bp.route('/clientes', methods=['POST'])
 def create():
     try:
         data = request.get_json()
@@ -37,7 +37,7 @@ def create():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@cliente_bp.route('/cliente/<int:id>', methods=['PUT'])
+@cliente_bp.route('/clientes/<int:id>', methods=['PUT'])
 def update(id):
     try:
         data = request.get_json()
@@ -50,7 +50,7 @@ def update(id):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@cliente_bp.route('/cliente/<int:id>', methods=['DELETE'])
+@cliente_bp.route('/clientes/<int:id>', methods=['DELETE'])
 def delete(id):
     try:
         cliente = ClienteController.delete(id)

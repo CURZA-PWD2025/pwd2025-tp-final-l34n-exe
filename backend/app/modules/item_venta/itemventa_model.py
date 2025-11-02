@@ -42,6 +42,10 @@ class ItemVentaModel:
                 items_venta = []
                 for row in rows:
                     item = dict(row)
+                    item["producto"] = Producto.get_by_id(row["id_producto"])
+                    del item["id_producto"]
+                    item["venta"] = Venta.get_by_id(row["id_venta"])
+                    del item["id_venta"]
                     item["sabores"] = ItemVentaSabor.get_by_item_id(row["id"])
                     items_venta.append(item)
                 return items_venta
@@ -66,7 +70,7 @@ class ItemVentaModel:
                 return item_venta
             except Exception as exc:
                 print(f"Error:{exc}")
-                return None
+                return []
             finally:
                 cnx.close()
 

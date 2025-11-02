@@ -11,7 +11,7 @@ const useProveedoresStore = defineStore('proveedores',() => {
     email: '',
     telefono: ''
   })
-  const url = 'proveedores/'
+  const url = 'proveedores'
   async function getAll(){
     const data = await ApiService.getAll(url)
     if(data){
@@ -21,27 +21,27 @@ const useProveedoresStore = defineStore('proveedores',() => {
   async function getOne(id: number){
     const data = await ApiService.getOne(url, id)
     if(data){
-      proveedores.value = data
+      proveedor.value = data
     }
   }
-  async function create(proveedor: Proveedor){
-    const data = await ApiService.create(url, proveedor)
+  async function create(nuevoProveedor: Proveedor){
+    const data = await ApiService.create(url, nuevoProveedor)
     if(data){
-      proveedores.value = data
+      proveedor.value = data
     }
   }
-  async function update(proveedor: Proveedor){
-    if(proveedor.id){
-      const data = await ApiService.update(url, proveedor.id, proveedor)
+  async function update(actProveedor: Proveedor){
+    if(actProveedor.id){
+      const data = await ApiService.update(url, actProveedor.id, actProveedor)
       if(data){
-        proveedores.value = data
+        proveedor.value = data
     }
   }
 }
   async function destroy(id: number){
     const data = await ApiService.destroy(url, id)
     if(data){
-      proveedores.value = data
+      proveedor.value = data
     }
   }
   return {proveedores, proveedor, getAll, getOne, create, update, destroy}

@@ -44,10 +44,18 @@ class ProductoModel:
                 rows = cursor.fetchall()
                 productos = []
                 for row in rows:
+                    categoria = Categoria.get_by_id(row["id_categoria"])
+                    proveedor = Proveedor.get_by_id(row["id_proveedor"])
+                    row["categoria"] = categoria
+                    row["proveedor"] = proveedor
+                    del row["id_categoria"]
+                    del row["id_proveedor"]
                     productos.append(row)
                 return productos
             except Exception as exc:
                 print(f"Error:{exc}")
+            finally:
+                cnx.close()
 
     @staticmethod
     def get_by_id(id: int) -> dict:
@@ -64,7 +72,7 @@ class ProductoModel:
                 return row
             except Exception as exc:
                 print(f"Error: {exc}")
-                return None
+                return []
             finally:
                 cnx.close()
 

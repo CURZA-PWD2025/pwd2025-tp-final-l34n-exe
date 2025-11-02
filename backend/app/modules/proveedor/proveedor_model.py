@@ -37,6 +37,7 @@ class ProveedorModel:
                 return proveedores
             except Exception as exc:
                 print(f"Error:{exc}")
+                return []
             finally:
                 cnx.close()
 
@@ -52,6 +53,7 @@ class ProveedorModel:
                 return False
             except Exception as exc:
                 print(f"Error:{exc}")
+                return []
             finally:
                 cnx.close()
 
