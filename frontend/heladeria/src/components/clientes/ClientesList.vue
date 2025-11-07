@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Los clientes</h2>
-    <router-link :to="{name: 'clientes_create'}">Crear cliente </router-link>
+    <router-link :to="{ name: 'clientes_create' }">Crear cliente </router-link>
     <table>
       <thead>
         <tr>
@@ -17,36 +17,40 @@
           <td>{{ cliente.id }}</td>
           <td>{{ cliente.nombre }}</td>
           <td>{{ cliente.apellido }}</td>
-          <td>{{ cliente.direccion }}</td>
           <td>{{ cliente.telefono }}</td>
+          <td>{{ cliente.direccion }}</td>
           <td>
-            <router-link :to="{ name: 'clientes_edit', params: { id: cliente.id}}">Editar</router-link>
-            <router-link :to="{ name: 'clientes_show', params: { id: cliente.id}}">Mostrar</router-link>
-            <button @click="destroy(cliente.id as number)">Eliminar</button>
-
+            <router-link :to="{ name: 'clientes_edit', params: { id: cliente.id ?? 0 } }"
+              >Editar</router-link
+            >
+            <router-link :to="{ name: 'clientes_show', params: { id: cliente.id ?? 0 } }"
+              >Mostrar</router-link
+            >
+            <button @click="deleteCliente(cliente.id ? cliente.id : 0)" class="btn-delete">Eliminar</button>
           </td>
         </tr>
-
       </tbody>
     </table>
-
-
-
   </div>
 </template>
 
 <script setup lang="ts">
-import useClientesStore from '@/stores/clientes';
-import { toRefs, onMounted } from 'vue';
+import useClientesStore from '@/stores/clientes'
+import { toRefs, onMounted } from 'vue'
 
 const { clientes } = toRefs(useClientesStore())
-const { getAll, destroy} = useClientesStore()
+const { getAll, destroy } = useClientesStore()
 
-onMounted(async()=>{
+const deleteCliente = async (id: number) => {
+  if (confirm('¿Está seguro que desea eliminar este cliente?')) {
+    await destroy(id)
+    await getAll()
+  }
+}
+
+onMounted(async () => {
   await getAll()
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -32,7 +32,12 @@ class ItemVentaSaborModel:
                 rows = cursor.fetchall()
                 items_venta_sabores = []
                 for row in rows:
-                    items_venta_sabores.append(row)
+                    item = dict(row)
+                    item["itemventa"] = ItemVenta.get_by_id(row["id_item"])
+                    del item["id_item"]
+                    item["sabor"] = Sabor.get_by_id(row["id_sabor"])
+                    del item["id_sabor"]
+                    items_venta_sabores.append(item)
                 return items_venta_sabores
             except Exception as exc:
                 print(f"Error:{exc}")
@@ -40,19 +45,26 @@ class ItemVentaSaborModel:
                 cnx.close()
 
     @staticmethod
-    def get_by_id(id:int) -> dict:
+    def get_by_id(id: int) -> dict:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("SELECT * FROM items_venta_sabores where id=%s", (id,))
-                row = cursor.fetchone()
-                if row:
-                    return row
-                return False
+              cursor.execute("SELECT * FROM items_venta_sabores WHERE id = %s", (id,))
+              row = cursor.fetchone()
+              if row:
+                  item = dict(row)
+                  item["item_venta"] = ItemVenta.get_by_id(row["id_item"])
+                  del item["id_item"]
+                  item["sabor"] = Sabor.get_by_id(row["id_sabor"])
+                  del item["id_sabor"]
+                  return item
+              return None
             except Exception as exc:
-                print(f"Error:{exc}")
+              print(f"Error en get_by_id (ItemVentaSaborModel): {exc}")
+              return None
             finally:
-                cnx.close()
+              cnx.close()
+
 
     @staticmethod
     def get_by_item_id(id_item_venta: int) -> list[dict]:

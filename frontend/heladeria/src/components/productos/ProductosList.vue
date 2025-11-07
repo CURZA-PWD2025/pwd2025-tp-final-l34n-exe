@@ -26,7 +26,7 @@
           <td>
             <router-link :to="{ name: 'productos_edit', params: { id: producto.id}}">Editar</router-link>
             <router-link :to="{ name: 'productos_show', params: { id: producto.id}}">Mostrar</router-link>
-            <button @click="destroy(producto.id as number)">Eliminar</button>
+            <button @click="deleteProducto(producto.id as number)">Eliminar</button>
 
           </td>
         </tr>
@@ -40,15 +40,23 @@
 </template>
 
 <script setup lang="ts">
-import useProductosStore from '@/stores/productos';
-import { toRefs, onMounted } from 'vue';
+import useProductosStore from '@/stores/productos'
+import { toRefs, onMounted } from 'vue'
 
 const { productos } = toRefs(useProductosStore())
-const { getAll, destroy} = useProductosStore()
+const { getAll, destroy } = useProductosStore()
 
-onMounted(async()=>{
+const deleteProducto = async (id: number) => {
+  if (confirm('¿Está seguro que desea eliminar este producto?')) {
+    await destroy(id)
+    await getAll()
+  }
+}
+
+onMounted(async () => {
   await getAll()
 })
+
 </script>
 
 <style scoped>

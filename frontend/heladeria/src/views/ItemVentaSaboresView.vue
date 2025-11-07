@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Categorias</h1>
+    <h1>Sabores vendidos en cada item</h1>
     <button @click="volverAlInicio">VOLVER AL INICIO</button>
     <RouterView></RouterView>
 

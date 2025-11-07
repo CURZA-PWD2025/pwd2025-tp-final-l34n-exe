@@ -22,27 +22,27 @@ const useClientesStore = defineStore('clientes',() => {
   async function getOne(id: number){
     const data = await ApiService.getOne(url, id)
     if(data){
-      clientes.value = data
+      cliente.value = data
     }
   }
-  async function create(cliente: Cliente){
-    const data = await ApiService.create(url, cliente)
+  async function create(nuevoCliente: Cliente){
+    const data = await ApiService.create(url, nuevoCliente)
     if(data){
-      clientes.value = data
+      cliente.value = data
     }
   }
-  async function update(cliente: Cliente){
-    if(cliente.id){
-      const data = await ApiService.update(url, cliente.id, cliente)
+  async function update(actCliente: Cliente){
+    if(actCliente.id){
+      const data = await ApiService.update(url, actCliente.id, actCliente)
       if(data){
-        clientes.value = data
+        cliente.value = data
     }
   }
 }
   async function destroy(id: number){
     const data = await ApiService.destroy(url, id)
     if(data){
-      clientes.value = data
+      cliente.value = data
     }
   }
   return {clientes, cliente, getAll, getOne, create, update, destroy}

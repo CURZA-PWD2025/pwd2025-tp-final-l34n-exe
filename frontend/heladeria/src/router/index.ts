@@ -7,7 +7,8 @@ import clientes_routes from './clientes_routes'
 import sabores_routes from './sabores_routes'
 import productos_routes from './productos_routes'
 import ventas_routes from './ventas_routes'
-import itemventas_routes from './items_routes'
+import itemventas_routes from './item_ventas_routes'
+import itemventasabores_routes from './item_ventas_sabores_routes'
 const routes = [
   {
     path: '/',
@@ -21,7 +22,8 @@ const routes = [
   ...sabores_routes,
   ...productos_routes,
   ...ventas_routes,
-  ...itemventas_routes
+  ...itemventas_routes,
+  ...itemventasabores_routes
 
 ]
 

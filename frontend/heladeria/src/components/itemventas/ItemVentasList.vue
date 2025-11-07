@@ -21,7 +21,7 @@
           <td>
             <router-link :to="{ name: 'itemventas_edit', params: { id: itemventa.id}}">Editar</router-link>
             <router-link :to="{ name: 'itemventas_show', params: { id: itemventa.id}}">Mostrar</router-link>
-            <button @click="destroy(itemventa.id as number)">Eliminar</button>
+            <button @click="deleteItemVenta(itemventa.id as number)">Eliminar</button>
           </td>
         </tr>
 
@@ -39,6 +39,13 @@ import { toRefs, onMounted } from 'vue';
 
 const { itemventas } = toRefs(useItemVentasStore())
 const { getAll, destroy} = useItemVentasStore()
+
+const deleteItemVenta = async (id: number) => {
+  if (confirm('¿Está seguro que desea eliminar esta venta?')) {
+    await destroy(id)
+    await getAll()
+  }
+}
 
 onMounted(async()=>{
   await getAll()

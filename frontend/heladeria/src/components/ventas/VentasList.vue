@@ -21,13 +21,12 @@
           <td>{{ venta.total }}</td>
           <td>{{ venta.cliente?.nombre }}</td>
           <td>{{ venta.cliente?.apellido }}</td>
-
           <td>{{ venta.empleado?.nombre }}</td>
           <td>{{ venta.empleado?.apellido }}</td>
           <td>
             <router-link :to="{ name: 'ventas_edit', params: { id: venta.id}}">Editar</router-link>
             <router-link :to="{ name: 'ventas_show', params: { id: venta.id}}">Mostrar</router-link>
-            <button @click="destroy(venta.id as number)">Eliminar</button>
+            <button @click="deleteVenta(venta.id as number)">Eliminar</button>
 
           </td>
         </tr>
@@ -47,7 +46,14 @@ import { toRefs, onMounted } from 'vue';
 const { ventas } = toRefs(useVentasStore())
 const { getAll, destroy} = useVentasStore()
 
-onMounted(async()=>{
+const deleteVenta = async (id: number) => {
+  if (confirm('¿Está seguro que desea eliminar esta venta?')) {
+    await destroy(id)
+    await getAll()
+  }
+}
+
+onMounted(async () => {
   await getAll()
 })
 </script>

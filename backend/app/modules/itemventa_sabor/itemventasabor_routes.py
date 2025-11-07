@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 
 itemventasabor_bp = Blueprint('itemventasabor', __name__)
 
-@itemventasabor_bp.route("/itemventasabor", methods=['GET'])
+@itemventasabor_bp.route("/itemventasabores", methods=['GET'])
 def get_all():
     try:
         items = ItemVentaSaborController.get_all()
@@ -14,7 +14,7 @@ def get_all():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@itemventasabor_bp.route("/itemventasabor/<int:id>", methods=['GET'])
+@itemventasabor_bp.route("/itemventasabores/<int:id>", methods=['GET'])
 def get_one(id:int):
     try:
         item = ItemVentaSaborController.get_one(id)
@@ -25,7 +25,7 @@ def get_one(id:int):
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@itemventasabor_bp.route('/itemventasabor', methods=['POST'])
+@itemventasabor_bp.route('/itemventasabores', methods=['POST'])
 def create():
     try:
         data = request.get_json()
@@ -37,7 +37,7 @@ def create():
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
-@itemventasabor_bp.route('/itemventasabor/<int:id>', methods=['PUT'])
+@itemventasabor_bp.route('/itemventasabores/<int:id>', methods=['PUT'])
 def update(id:int):
     try:
         data = request.get_json()
@@ -51,7 +51,7 @@ def update(id:int):
         return jsonify({"error": str(exc)}), 500
 
 
-@itemventasabor_bp.route('/itemventasabor/<int:id>', methods=['DELETE'])
+@itemventasabor_bp.route('/itemventasabores/<int:id>', methods=['DELETE'])
 def delete(id:int):
     try:
         result = ItemVentaSaborController.delete(id)

@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>Productos</h1>
+    <button @click="volverAlInicio">VOLVER AL INICIO</button>
     <RouterView></RouterView>
 
   </div>
@@ -8,12 +9,12 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { onMounted } from 'vue';
-const route = useRouter()
+const router = useRouter()
 
-onMounted(()=>{
-  route.push({name:'productos_list'})
-})
+const volverAlInicio = () => {
+  router.push({name:'HomeView'})
+}
+
 </script>
 
 <style scoped>

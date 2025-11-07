@@ -21,27 +21,27 @@ const useCategoriasStore = defineStore('categorias',() => {
   async function getOne(id: number){
     const data = await ApiService.getOne(url, id)
     if(data){
-      categorias.value = data
+      categoria.value = data
     }
   }
-  async function create(categoria: Categoria){
-    const data = await ApiService.create(url, categoria)
+  async function create(nuevaCategoria: Categoria){
+    const data = await ApiService.create(url, nuevaCategoria)
     if(data){
-      categorias.value = data
+      categoria.value = data
     }
   }
-  async function update(categoria: Categoria){
-    if(categoria.id){
-      const data = await ApiService.update(url, categoria.id, categoria)
+  async function update(actCategoria: Categoria){
+    if(actCategoria.id){
+      const data = await ApiService.update(url, actCategoria.id, actCategoria)
       if(data){
-        categorias.value = data
+        categoria.value = data
     }
   }
 }
   async function destroy(id: number){
     const data = await ApiService.destroy(url, id)
     if(data){
-      categorias.value = data
+      categoria.value = data
     }
   }
   return {categorias, categoria, getAll, getOne, create, update, destroy}
