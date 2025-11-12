@@ -43,7 +43,12 @@ onMounted(async () => {
 })
 
 const actualizar = async () => {
-  if (!cliente.value.nombre || !cliente.value.apellido || !cliente.value.telefono || !cliente.value.direccion) {
+  if (
+    !cliente.value.nombre ||
+    !cliente.value.apellido ||
+    !cliente.value.telefono ||
+    !cliente.value.direccion
+  ) {
     alert('Por favor, complete los campos.')
     return
   }

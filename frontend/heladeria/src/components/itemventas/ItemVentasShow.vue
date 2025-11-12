@@ -6,7 +6,9 @@
     <div>
       <p>ID: {{ itemventa.id }}</p>
       <p>VENTA ID: {{ itemventa.venta?.id }}</p>
+      <p>FECHA VENTA: {{ itemventa.venta?.fecha }}</p>
       <p>PRODUCTO: {{ itemventa.producto?.nombre }}</p>
+      <p>PRECIO: {{ itemventa.producto?.precio }}</p>
       <p>CANTIDAD: {{ itemventa.cantidad }}</p>
       <router-link :to="{ name: 'itemventas_list' }">VOLVER</router-link>
     </div>

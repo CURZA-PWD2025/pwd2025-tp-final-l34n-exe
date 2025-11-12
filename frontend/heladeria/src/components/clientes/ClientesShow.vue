@@ -1,8 +1,6 @@
 <template>
   <div>
-    <h1>
-      ClientesShow
-    </h1>
+    <h1>ClientesShow</h1>
     <div>
       <h3>ID: {{ cliente.id }}</h3>
       <h3>NOMBRE: {{ cliente.nombre }}</h3>
@@ -10,10 +8,7 @@
       <h3>TELEFONO: {{ cliente.telefono }}</h3>
       <h3>EMAIL: {{ cliente.direccion }}</h3>
       <RouterLink :to="{ name: 'clientes_list' }">VOLVER</RouterLink>
-
-
     </div>
-
   </div>
 </template>
 
@@ -35,6 +30,4 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

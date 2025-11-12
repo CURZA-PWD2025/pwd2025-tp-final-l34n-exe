@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Los sabores</h2>
-    <router-link :to="{name: 'sabores_create'}">Crear sabor </router-link>
+    <router-link :to="{ name: 'sabores_create' }">Crear sabor </router-link>
     <table>
       <thead>
         <tr>
@@ -20,18 +20,17 @@
           <td>{{ sabor.disponible ? 'Sí' : 'No' }}</td>
           <td>{{ sabor.categoria?.nombre }}</td>
           <td>
-            <router-link :to="{ name: 'sabores_edit', params: { id: sabor.id}}">Editar</router-link>
-            <router-link :to="{ name: 'sabores_show', params: { id: sabor.id}}">Mostrar</router-link>
+            <router-link :to="{ name: 'sabores_edit', params: { id: sabor.id } }"
+              >Editar</router-link
+            >
+            <router-link :to="{ name: 'sabores_show', params: { id: sabor.id } }"
+              >Mostrar</router-link
+            >
             <button @click="deleteSabor(sabor.id as number)">Eliminar</button>
-
           </td>
         </tr>
-
       </tbody>
     </table>
-
-
-
   </div>
 </template>
 
@@ -54,6 +53,4 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

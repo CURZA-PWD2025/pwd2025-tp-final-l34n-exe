@@ -6,6 +6,6 @@ export interface Producto{
   precio: number,
   stock: number,
   max_sabores: number,
-  proveedor: Proveedor,
-  categoria: Categoria
+  proveedor?: Proveedor,
+  categoria?: Categoria
 }

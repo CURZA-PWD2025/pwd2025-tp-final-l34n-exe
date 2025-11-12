@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Los productos</h2>
-    <router-link :to="{name: 'productos_create'}">Crear producto </router-link>
+    <router-link :to="{ name: 'productos_create' }">Crear producto </router-link>
     <table>
       <thead>
         <tr>
@@ -24,18 +24,17 @@
           <td>{{ producto.proveedor?.nombre }}</td>
           <td>{{ producto.categoria?.nombre }}</td>
           <td>
-            <router-link :to="{ name: 'productos_edit', params: { id: producto.id}}">Editar</router-link>
-            <router-link :to="{ name: 'productos_show', params: { id: producto.id}}">Mostrar</router-link>
+            <router-link :to="{ name: 'productos_edit', params: { id: producto.id } }"
+              >Editar</router-link
+            >
+            <router-link :to="{ name: 'productos_show', params: { id: producto.id } }"
+              >Mostrar</router-link
+            >
             <button @click="deleteProducto(producto.id as number)">Eliminar</button>
-
           </td>
         </tr>
-
       </tbody>
     </table>
-
-
-
   </div>
 </template>
 
@@ -56,9 +55,6 @@ const deleteProducto = async (id: number) => {
 onMounted(async () => {
   await getAll()
 })
-
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

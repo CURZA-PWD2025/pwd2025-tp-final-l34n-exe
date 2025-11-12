@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Las categorias</h2>
-    <router-link :to="{name: 'categorias_create'}">Crear categoria </router-link>
+    <router-link :to="{ name: 'categorias_create' }">Crear categoria </router-link>
     <table>
       <thead>
         <tr>
@@ -18,29 +18,28 @@
           <td>{{ categoria.tipo }}</td>
           <td>{{ categoria.descripcion }}</td>
           <td>
-            <router-link :to="{ name: 'categorias_edit', params: { id: categoria.id}}">Editar</router-link>
-            <router-link :to="{ name: 'categorias_show', params: { id: categoria.id}}">Mostrar</router-link>
+            <router-link :to="{ name: 'categorias_edit', params: { id: categoria.id } }"
+              >Editar</router-link
+            >
+            <router-link :to="{ name: 'categorias_show', params: { id: categoria.id } }"
+              >Mostrar</router-link
+            >
             <button @click="deleteCategoria(categoria.id as number)">Eliminar</button>
-
           </td>
         </tr>
-
       </tbody>
     </table>
-
-
-
   </div>
 </template>
 
 <script setup lang="ts">
-import useCategoriasStore from '@/stores/categorias';
-import { toRefs, onMounted } from 'vue';
+import useCategoriasStore from '@/stores/categorias'
+import { toRefs, onMounted } from 'vue'
 
 const { categorias } = toRefs(useCategoriasStore())
-const { getAll, destroy} = useCategoriasStore()
+const { getAll, destroy } = useCategoriasStore()
 
-onMounted(async()=>{
+onMounted(async () => {
   await getAll()
 })
 
@@ -52,6 +51,4 @@ const deleteCategoria = async (id: number) => {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -2,22 +2,19 @@ from ...database.conect_db import ConectDB
 from ..venta.venta_model import VentaModel as Venta
 from ..producto.producto_model import ProductoModel as Producto
 
-
 class ItemVentaModel:
-    def __init__(self, id:int=0, cantidad:int=0, venta:Venta=None, producto:Producto=None, sabores:list=None):
+    def __init__(self, id:int=0, cantidad:int=0, venta:Venta=None, producto:Producto=None):
         self.id = id
         self.cantidad = cantidad
         self.venta = venta
         self.producto = producto
-        self.sabores = []
 
     def serializar(self)->dict:
         return {
             "id": self.id,
             "cantidad": self.cantidad,
             "venta": self.venta.serializar() if self.venta else None,
-            "producto": self.producto.serializar() if self.producto else None,
-            "sabores": self.sabores
+            "producto": self.producto.serializar() if self.producto else None
         }
 
     @staticmethod
@@ -27,13 +24,10 @@ class ItemVentaModel:
             cantidad=data["cantidad"],
             venta=Venta.deserializar(data["venta"]) if "venta" in data and data["venta"] else None,
             producto=Producto.deserializar(data["producto"]) if data["producto"] else None,
-            sabores=data["sabores"]
         )
-
 
     @staticmethod
     def get_all() -> list[dict]:
-        from ..itemventa_sabor.itemventasabor_model import ItemVentaSaborModel as ItemVentaSabor
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
@@ -41,13 +35,11 @@ class ItemVentaModel:
                 rows = cursor.fetchall()
                 items_venta = []
                 for row in rows:
-                    item = dict(row)
-                    item["producto"] = Producto.get_by_id(row["id_producto"])
-                    del item["id_producto"]
-                    item["venta"] = Venta.get_by_id(row["id_venta"])
-                    del item["id_venta"]
-                    item["sabores"] = ItemVentaSabor.get_by_item_id(row["id"])
-                    items_venta.append(item)
+                    row["producto"] = Producto.get_by_id(row["id_producto"])
+                    del row["id_producto"]
+                    row["venta"] = Venta.get_by_id(row["id_venta"])
+                    del row["id_venta"]
+                    items_venta.append(row)
                 return items_venta
             except Exception as exc:
                 print(f"Error:{exc}")
@@ -57,40 +49,19 @@ class ItemVentaModel:
 
     @staticmethod
     def get_by_id(id:int) -> dict:
-        from ..itemventa_sabor.itemventasabor_model import ItemVentaSaborModel as ItemVentaSabor
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
                 cursor.execute("SELECT * FROM items_ventas WHERE id=%s", (id,))
-                item_venta = cursor.fetchone()
-                if item_venta:
-                    item_venta["producto"] = Producto.get_by_id(item_venta["id_producto"])
-                    del item_venta["id_producto"]
-                    item_venta["sabores"] = ItemVentaSabor.get_by_item_id(item_venta["id"])
-                return item_venta
+                row = cursor.fetchone()
+                if row:
+                    row["producto"] = Producto.get_by_id(row["id_producto"])
+                    del row["id_producto"]
+                    row["venta"] = Venta.get_by_id(row["id_venta"])
+                    del row["id_venta"]
+                return row
             except Exception as exc:
                 print(f"Error:{exc}")
-                return []
-            finally:
-                cnx.close()
-
-    @staticmethod
-    def get_by_venta_id(id_venta:int) -> dict:
-        from ..itemventa_sabor.itemventasabor_model import ItemVentaSaborModel as ItemVentaSabor
-        cnx = ConectDB.get_connect()
-        with cnx.cursor(dictionary=True) as cursor:
-            try:
-                cursor.execute("SELECT * FROM items_ventas WHERE id_venta = %s", (id_venta,))
-                items = cursor.fetchall()
-
-                for item in items:
-                    item["producto"] = Producto.get_by_id(item["id_producto"])
-                    del item["id_producto"]
-                    item["sabores"] = ItemVentaSabor.get_by_item_id(item["id"])
-                return items
-
-            except Exception as exc:
-                print(f"Error en get_by_venta_id: {exc}")
                 return []
             finally:
                 cnx.close()

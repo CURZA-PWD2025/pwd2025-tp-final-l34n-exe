@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>Las ventas</h2>
-    <router-link :to="{name: 'ventas_create'}">Crear venta </router-link>
+    <router-link :to="{ name: 'ventas_create' }">Crear venta </router-link>
     <table>
       <thead>
         <tr>
@@ -24,27 +24,26 @@
           <td>{{ venta.empleado?.nombre }}</td>
           <td>{{ venta.empleado?.apellido }}</td>
           <td>
-            <router-link :to="{ name: 'ventas_edit', params: { id: venta.id}}">Editar</router-link>
-            <router-link :to="{ name: 'ventas_show', params: { id: venta.id}}">Mostrar</router-link>
+            <router-link :to="{ name: 'ventas_edit', params: { id: venta.id } }"
+              >Editar</router-link
+            >
+            <router-link :to="{ name: 'ventas_show', params: { id: venta.id } }"
+              >Mostrar</router-link
+            >
             <button @click="deleteVenta(venta.id as number)">Eliminar</button>
-
           </td>
         </tr>
-
       </tbody>
     </table>
-
-
-
   </div>
 </template>
 
 <script setup lang="ts">
-import useVentasStore from '@/stores/ventas';
-import { toRefs, onMounted } from 'vue';
+import useVentasStore from '@/stores/ventas'
+import { toRefs, onMounted } from 'vue'
 
 const { ventas } = toRefs(useVentasStore())
-const { getAll, destroy} = useVentasStore()
+const { getAll, destroy } = useVentasStore()
 
 const deleteVenta = async (id: number) => {
   if (confirm('¿Está seguro que desea eliminar esta venta?')) {
@@ -58,6 +57,4 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

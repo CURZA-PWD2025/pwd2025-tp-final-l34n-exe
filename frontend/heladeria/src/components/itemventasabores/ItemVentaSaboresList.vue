@@ -6,14 +6,14 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>VENTA</th>
+          <th>ID ITEM</th>
           <th>SABOR</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="itemventasabor in itemventasabores" :key="itemventasabor.id">
           <td>{{ itemventasabor.id }}</td>
-          <td>{{ itemventasabor.itemventa.id }}</td>
+          <td>{{ itemventasabor.itemventa?.id }}</td>
           <td>{{ itemventasabor.sabor?.nombre }}</td>
           <td>
             <router-link :to="{ name: 'itemventasabores_edit', params: { id: itemventasabor.id } }"

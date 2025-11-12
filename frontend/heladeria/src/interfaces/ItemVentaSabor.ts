@@ -3,7 +3,7 @@ import type { Sabor } from "./Sabor";
 
 export interface ItemVentaSabor{
   id?: number,
-  itemventa: ItemVenta,
-  sabor: Sabor
+  itemventa?: ItemVenta,
+  sabor?: Sabor
 }
 

@@ -38,11 +38,12 @@ class SaborModel:
                 cursor.execute("SELECT * FROM sabores")
                 rows = cursor.fetchall()
                 sabores = []
-                for row in rows:
-                    categoria = Categoria.get_by_id(row["id_categoria"])
-                    del row["id_categoria"]
-                    row["categoria"] = categoria
-                    sabores.append(row)
+                if rows:
+                    for row in rows:
+                        categoria = Categoria.get_by_id(row["id_categoria"])
+                        del row["id_categoria"]
+                        row["categoria"] = categoria
+                        sabores.append(row)
                 return sabores
             except Exception as exc:
                 print(f"Error:{exc}")

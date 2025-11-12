@@ -1,17 +1,12 @@
 <template>
   <div>
-    <h2>
-      ItemVentaSaboresShow
-    </h2>
+    <h2>ItemVentaSaboresShow</h2>
     <div>
       <p>ID: {{ itemventasabor.id }}</p>
-      <p>ITEM VENTA ID: {{ itemventasabor.itemventa?.id }}</p>
+      <p>ITEM ID: {{ itemventasabor.itemventa?.id }}</p>
       <p>SABOR: {{ itemventasabor.sabor?.nombre }}</p>
       <router-link :to="{ name: 'itemventasabores_list' }">VOLVER</router-link>
-
-
     </div>
-
   </div>
 </template>
 
@@ -33,6 +28,4 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

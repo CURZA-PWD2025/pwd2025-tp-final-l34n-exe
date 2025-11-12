@@ -31,14 +31,14 @@ class ItemVentaSaborModel:
                 cursor.execute("SELECT * FROM items_venta_sabores")
                 rows = cursor.fetchall()
                 items_venta_sabores = []
-                for row in rows:
-                    item = dict(row)
-                    item["itemventa"] = ItemVenta.get_by_id(row["id_item"])
-                    del item["id_item"]
-                    item["sabor"] = Sabor.get_by_id(row["id_sabor"])
-                    del item["id_sabor"]
-                    items_venta_sabores.append(item)
-                return items_venta_sabores
+                if rows:
+                    for row in rows:
+                        row["itemventa"] = ItemVenta.get_by_id(row["id_item"])
+                        del row["id_item"]
+                        row["sabor"] = Sabor.get_by_id(row["id_sabor"])
+                        del row["id_sabor"]
+                        items_venta_sabores.append(row)
+                    return items_venta_sabores
             except Exception as exc:
                 print(f"Error:{exc}")
             finally:
@@ -52,33 +52,16 @@ class ItemVentaSaborModel:
               cursor.execute("SELECT * FROM items_venta_sabores WHERE id = %s", (id,))
               row = cursor.fetchone()
               if row:
-                  item = dict(row)
-                  item["item_venta"] = ItemVenta.get_by_id(row["id_item"])
-                  del item["id_item"]
-                  item["sabor"] = Sabor.get_by_id(row["id_sabor"])
-                  del item["id_sabor"]
-                  return item
-              return None
+                  row["itemventa"] = ItemVenta.get_by_id(row["id_item"])
+                  del row["id_item"]
+                  row["sabor"] = Sabor.get_by_id(row["id_sabor"])
+                  del row["id_sabor"]
+              return row
             except Exception as exc:
               print(f"Error en get_by_id (ItemVentaSaborModel): {exc}")
               return None
             finally:
               cnx.close()
-
-
-    @staticmethod
-    def get_by_item_id(id_item_venta: int) -> list[dict]:
-        cnx = ConectDB.get_connect()
-        with cnx.cursor(dictionary=True) as cursor:
-            try:
-                cursor.execute("SELECT s.id, s.nombre FROM items_venta_sabores ivs JOIN sabores s ON ivs.id_sabor = s.id WHERE ivs.id_item = %s", (id_item_venta,))
-                return cursor.fetchall()
-            except Exception as exc:
-                print(f"Error: {exc}")
-                return []
-            finally:
-                cnx.close()
-
 
     def create(self) -> dict:
         cnx = ConectDB.get_connect()

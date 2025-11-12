@@ -26,7 +26,9 @@
             <router-link :to="{ name: 'clientes_show', params: { id: cliente.id ?? 0 } }"
               >Mostrar</router-link
             >
-            <button @click="deleteCliente(cliente.id ? cliente.id : 0)" class="btn-delete">Eliminar</button>
+            <button @click="deleteCliente(cliente.id ? cliente.id : 0)" class="btn-delete">
+              Eliminar
+            </button>
           </td>
         </tr>
       </tbody>

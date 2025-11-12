@@ -1,8 +1,6 @@
 <template>
   <div>
-    <h1>
-      SaboresShow
-    </h1>
+    <h1>SaboresShow</h1>
     <div>
       <h3>ID: {{ sabor.id }}</h3>
       <h3>NOMBRE: {{ sabor.nombre }}</h3>
@@ -10,10 +8,7 @@
       <h3>CATEGORIA: {{ sabor.categoria?.nombre }}</h3>
       <h3>DISPONIBLE: {{ sabor.disponible ? 'Sí' : 'No' }}</h3>
       <RouterLink :to="{ name: 'sabores_list' }">VOLVER</RouterLink>
-
-
     </div>
-
   </div>
 </template>
 
@@ -35,6 +30,4 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

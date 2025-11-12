@@ -13,7 +13,7 @@ const routes = [
   {
     path: '/',
     name: 'HomeView',
-    component: HomeView
+    component: HomeView,
   },
   ...proveedores_routes,
   ...empleados_routes,
@@ -23,14 +23,12 @@ const routes = [
   ...productos_routes,
   ...ventas_routes,
   ...itemventas_routes,
-  ...itemventasabores_routes
-
+  ...itemventasabores_routes,
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
-
+  routes,
 })
 
 export default router

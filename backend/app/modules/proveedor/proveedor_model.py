@@ -32,8 +32,9 @@ class ProveedorModel:
                 cursor.execute("SELECT * FROM proveedores")
                 rows = cursor.fetchall()
                 proveedores = []
-                for row in rows:
-                    proveedores.append(row)
+                if rows:
+                    for row in rows:
+                        proveedores.append(row)
                 return proveedores
             except Exception as exc:
                 print(f"Error:{exc}")

@@ -3,8 +3,8 @@ import type { Cliente } from "./Cliente";
 
 export interface Venta{
   id?: number,
-  fecha: string,
+  fecha: string | Date,
   total: number,
-  cliente: Cliente,
-  empleado: Empleado
+  cliente?: Cliente,
+  empleado?: Empleado
 }

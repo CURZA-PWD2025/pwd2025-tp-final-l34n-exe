@@ -33,29 +33,19 @@ class VentaModel:
 
     @staticmethod
     def get_all() -> list[dict]:
-        from ..item_venta.itemventa_model import ItemVentaModel as ItemVenta
-        from ..itemventa_sabor.itemventasabor_model import ItemVentaSaborModel as ItemVentaSabor
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
                 cursor.execute("SELECT * FROM ventas")
-                ventas = cursor.fetchall()
-
-                for venta in ventas:
-                    venta["cliente"] = Cliente.get_by_id(venta["id_cliente"])
-                    venta["empleado"] = Empleado.get_by_id(venta["id_empleado"])
-                    del venta["id_cliente"]
-                    del venta["id_empleado"]
-                    cursor.execute("SELECT * FROM items_ventas WHERE id_venta = %s", (venta["id"],))
-                    items = cursor.fetchall()
-
-                    for item in items:
-                        item["producto"] = Producto.get_by_id(item["id_producto"])
-                        del item["id_producto"]
-                        item["sabores"] = ItemVentaSabor.get_by_item_id(item["id"])
-                    venta["items"] = items
+                rows = cursor.fetchall()
+                ventas = []
+                for row in rows:
+                    row["cliente"] = Cliente.get_by_id(row["id_cliente"])
+                    row["empleado"] = Empleado.get_by_id(row["id_empleado"])
+                    del row["id_cliente"]
+                    del row["id_empleado"]
+                    ventas.append(row)
                 return ventas
-
             except Exception as exc:
                 print(f"Error:{exc}")
                 return []
@@ -64,8 +54,6 @@ class VentaModel:
 
     @staticmethod
     def get_by_id(id:int) -> dict:
-        from ..item_venta.itemventa_model import ItemVentaModel as ItemVenta
-        from ..itemventa_sabor.itemventasabor_model import ItemVentaSaborModel as ItemVentaSabor
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
@@ -77,10 +65,7 @@ class VentaModel:
                 venta["empleado"] = Empleado.get_by_id(venta["id_empleado"])
                 del venta["id_cliente"]
                 del venta["id_empleado"]
-                venta["items"] = ItemVenta.get_by_venta_id(id)
-
                 return venta
-
             except Exception as exc:
                 return (f"Error:{exc}")
             finally:
