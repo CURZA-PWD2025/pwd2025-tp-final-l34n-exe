@@ -47,8 +47,7 @@ class VentaModel:
                     ventas.append(row)
                 return ventas
             except Exception as exc:
-                print(f"Error:{exc}")
-                return []
+                return {"mensaje":f"Error al obtener las ventas:{exc}"}
             finally:
                 cnx.close()
 
@@ -67,52 +66,49 @@ class VentaModel:
                 del venta["id_empleado"]
                 return venta
             except Exception as exc:
-                return (f"Error:{exc}")
+                return {"mensaje":f"Error al obtener la venta:{exc}"}
             finally:
                 cnx.close()
 
-    def create(self) -> dict:
+    def create(self) -> bool:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True)  as cursor:
             try:
                 cursor.execute("INSERT INTO ventas (fecha, total, id_cliente, id_empleado) VALUES (%s, %s, %s, %s)", (self.fecha, self.total, self.cliente.id, self.empleado.id))
                 self.id = cursor.lastrowid
                 cnx.commit()
-                return True
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return ({"mensaje": f"Error al crear la venta: {exc}"})
+                print ({"mensaje": f"Error al crear la venta: {exc}"})
+                return False
             finally:
                 cnx.close()
 
-    def update(self) -> dict:
+    def update(self) -> bool:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("UPDATE ventas SET fecha=%s, total=%s WHERE id=%s", (self.fecha, self.total, self.id))
-                result = cursor.rowcount
+                cursor.execute("UPDATE ventas SET fecha=%s, total=%s, id_cliente=%s, id_empleado=%s WHERE id=%s", (self.fecha, self.total, self.cliente.id, self.empleado.id, self.id))
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al actualizar la venta: {exc}"}
+                print({"mensaje": f"Error al actualizar la venta: {exc}"})
+                return False
             finally:
                 cnx.close()
 
-    def delete(self) -> dict:
+    def delete(self) -> bool:
         cnx = ConectDB.get_connect()
         with cnx.cursor() as cursor:
             try:
                 cursor.execute("DELETE FROM ventas WHERE id=%s", (self.id,))
-                result = cursor.rowcount
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al eliminar la venta: {exc}"}
+                print({"mensaje": f"Error al eliminar la venta: {exc}"})
+                return False
             finally:
                 cnx.close()

@@ -22,6 +22,7 @@
       </div>
       <button type="submit">Crear Item de Venta Sabor</button>
     </form>
+    <RouterLink :to="{ name: 'itemventasabores_list' }">VOLVER</RouterLink>
   </div>
 </template>
 

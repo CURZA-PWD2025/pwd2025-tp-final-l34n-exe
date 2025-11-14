@@ -8,7 +8,7 @@ class EmpleadoController:
 
     @staticmethod
     def get_one(id) -> dict:
-        empleado = EmpleadoModel().get_by_id(id)
+        empleado = EmpleadoModel.get_by_id(id)
         return empleado
 
     @staticmethod
@@ -20,8 +20,8 @@ class EmpleadoController:
             email=data.get("email"),
             puesto=data["puesto"]
         )
-        result = empleado.create(data)
-        return result
+        result = empleado.create()
+        return {"Creado": result}
 
     @staticmethod
     def update(data: dict) -> dict:
@@ -34,10 +34,10 @@ class EmpleadoController:
             puesto=data["puesto"]
         )
         result = empleado.update()
-        return result
+        return {"Actualizado": result}
 
     @staticmethod
     def delete(id: int) -> dict:
         empleado = EmpleadoModel(id=id)
         result = empleado.delete()
-        return result
+        return {"Eliminado": result}

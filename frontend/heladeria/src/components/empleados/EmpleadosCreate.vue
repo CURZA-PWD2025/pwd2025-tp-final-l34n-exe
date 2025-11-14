@@ -20,7 +20,12 @@
       </div>
       <div>
         <label for="puesto">Puesto:</label>
-        <input type="text" name="puesto" v-model="empleado.puesto" />
+        <select v-model="empleado.puesto" required>
+          <option disabled value="">Seleccione un puesto</option>
+          <option value="Cajero">Cajero</option>
+          <option value="Limpieza">Limpieza</option>
+          <option value="Gerente">Gerente</option>
+        </select>
       </div>
       <button type="submit">Crear Empleado</button>
     </form>

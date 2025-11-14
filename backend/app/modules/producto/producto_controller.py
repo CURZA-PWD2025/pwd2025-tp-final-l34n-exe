@@ -10,7 +10,7 @@ class ProductoController:
 
     @staticmethod
     def get_one(id) -> dict:
-        producto = ProductoModel().get_by_id(id)
+        producto = ProductoModel.get_by_id(id)
         return producto
 
     @staticmethod
@@ -37,7 +37,7 @@ class ProductoController:
             categoria=categoria
         )
         result = producto.create()
-        return result
+        return {"resultado": result}
 
 
     @staticmethod
@@ -65,10 +65,10 @@ class ProductoController:
             categoria=categoria
         )
         result = producto.update()
-        return result
+        return {"resultado": result}
 
     @staticmethod
     def delete(id: int) -> dict:
         producto = ProductoModel(id=id)
         result = producto.delete()
-        return result
+        return {"resultado": result}

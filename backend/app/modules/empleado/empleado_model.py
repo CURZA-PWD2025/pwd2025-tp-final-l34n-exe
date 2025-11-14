@@ -43,8 +43,7 @@ class EmpleadoModel:
                         empleados.append(row)
                 return empleados
             except Exception as exc:
-                print(f"Error:{exc}")
-                return []
+                return {"mensaje": f"Error al obtener los empleados: {exc}"}
             finally:
                 cnx.close()
 
@@ -57,26 +56,24 @@ class EmpleadoModel:
                 row = cursor.fetchone()
                 if row:
                     return row
-                return False
+                return None
             except Exception as exc:
-                print(f"Error:{exc}")
-                return []
+                return {"mensaje": f"Error al obtener el cliente: {exc}"}
             finally:
                 cnx.close()
 
-    def create(self, data: dict) -> bool:
+    def create(self) -> bool:
         cnx = ConectDB.get_connect()
         with cnx.cursor() as cursor:
             try:
                 cursor.execute("INSERT INTO empleados (nombre, apellido, telefono, email, puesto) VALUES (%s, %s, %s, %s, %s)", (self.nombre, self.apellido, self.telefono, self.email, self.puesto))
-                result = cursor.rowcount
+                self.id = cursor.lastrowid
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al crear el empleado: {exc}"}
+                print({"mensaje": f"Error al crear el empleado: {exc}"})
+                return False
             finally:
                 cnx.close()
 
@@ -85,14 +82,12 @@ class EmpleadoModel:
         with cnx.cursor() as cursor:
             try:
                 cursor.execute("UPDATE empleados SET nombre=%s, apellido=%s, telefono=%s, email=%s, puesto=%s WHERE id=%s", (self.nombre, self.apellido, self.telefono, self.email, self.puesto, self.id))
-                result = cursor.rowcount
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al actualizar el empleado: {exc}"}
+                print({"mensaje": f"Error al actualizar el empleado: {exc}"})
+                return False
             finally:
                 cnx.close()
 
@@ -101,13 +96,11 @@ class EmpleadoModel:
         with cnx.cursor() as cursor:
             try:
                 cursor.execute("DELETE FROM empleados WHERE id=%s", (self.id,))
-                result = cursor.rowcount
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al eliminar el empleado: {exc}"}
+                print({"mensaje": f"Error al eliminar el empleado: {exc}"})
+                return False
             finally:
                 cnx.close()

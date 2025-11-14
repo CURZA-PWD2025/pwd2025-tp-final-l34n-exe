@@ -37,7 +37,7 @@ class VentaController:
             empleado=empleado
         )
         result = venta.create()
-        return result
+        return {"Creado": result}
 
 
     @staticmethod
@@ -50,7 +50,7 @@ class VentaController:
 
         if not cliente_data:
             return {"mensaje": "El cliente no existe"}
-        
+
         if not empleado_data:
             return {"mensaje": "El empleado no existe"}
 
@@ -65,11 +65,11 @@ class VentaController:
             empleado=empleado
         )
         result = venta.update()
-        return result
+        return {"Actualizado": result}
 
 
     @staticmethod
     def delete(id: int) -> dict:
         venta = VentaModel(id=id)
         result = venta.delete()
-        return result
+        return {"Eliminado": result}

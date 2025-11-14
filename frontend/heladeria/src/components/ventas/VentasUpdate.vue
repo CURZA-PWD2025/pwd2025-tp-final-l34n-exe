@@ -35,7 +35,7 @@
       </div>
       <button type="submit">Actualizar Venta</button>
     </form>
-
+    <RouterLink :to="{ name: 'ventas_list' }">VOLVER</RouterLink>
   </div>
 </template>
 

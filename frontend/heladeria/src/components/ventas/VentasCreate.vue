@@ -79,14 +79,6 @@ const crear = async () => {
     id_cliente: venta.value.cliente?.id,
   }
   await create(data)
-  /*/
-  venta.value = {
-    total: 0,
-    fecha: '',
-    cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion: '' },
-    empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
-  }
-  /*/
 
   alert('Venta creada con éxito.')
 }

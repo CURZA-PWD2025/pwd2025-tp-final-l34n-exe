@@ -37,8 +37,8 @@ class ProveedorModel:
                         proveedores.append(row)
                 return proveedores
             except Exception as exc:
-                print(f"Error:{exc}")
-                return []
+                return {"error": f"Error al obtener los proveedores: {exc}"}
+
             finally:
                 cnx.close()
 
@@ -51,10 +51,9 @@ class ProveedorModel:
                 row = cursor.fetchone()
                 if row:
                     return row
-                return False
+                return None
             except Exception as exc:
-                print(f"Error:{exc}")
-                return []
+                return {"error": f"Error al obtener los proveedores: {exc}"}
             finally:
                 cnx.close()
 
@@ -66,11 +65,13 @@ class ProveedorModel:
                     "INSERT INTO proveedores (nombre, telefono, email) VALUES (%s, %s, %s)",
                     (self.nombre, self.telefono, self.email)
                 )
+                self.id = cursor.lastrowid
                 cnx.commit()
                 return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al agregar el proveedor: {exc}"}
+                print({"mensaje": f"Error al crear el proveedor: {exc}"})
+                return False
             finally:
                 cnx.close()
 
@@ -87,7 +88,8 @@ class ProveedorModel:
                 return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al quitar el proveedor: {exc}"}
+                print({"mensaje": f"Error al eliminar el proveedor: {exc}"})
+                return False
             finally:
                 cnx.close()
 
@@ -96,13 +98,11 @@ class ProveedorModel:
         with cnx.cursor(dictionary=True) as cursor:
             try:
                 cursor.execute("UPDATE proveedores SET nombre=%s, telefono=%s, email=%s WHERE id=%s", (self.nombre, self.telefono, self.email, self.id))
-                result = cursor.rowcount
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al actualizar el proveedor: {exc}"}
+                print({"mensaje": f"Error al actualizar el proveedor: {exc}"})
+                return False
             finally:
                 cnx.close()

@@ -6,7 +6,7 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>ID ITEM</th>
+          <th>ITEM</th>
           <th>SABOR</th>
         </tr>
       </thead>

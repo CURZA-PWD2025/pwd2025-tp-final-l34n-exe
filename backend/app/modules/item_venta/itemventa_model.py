@@ -42,8 +42,7 @@ class ItemVentaModel:
                     items_venta.append(row)
                 return items_venta
             except Exception as exc:
-                print(f"Error:{exc}")
-                return []
+                return {"mensaje": f"Error al obtener los obtener el item_venta: {exc}"}
             finally:
                 cnx.close()
 
@@ -61,8 +60,7 @@ class ItemVentaModel:
                     del row["id_venta"]
                 return row
             except Exception as exc:
-                print(f"Error:{exc}")
-                return []
+                return {"mensaje": f"Error al obtener el item_venta: {exc}"}
             finally:
                 cnx.close()
 
@@ -76,11 +74,12 @@ class ItemVentaModel:
                      self.venta.id if self.venta else None,
                      self.producto.id if self.producto else None)
                 )
-                cnx.commit()
                 self.id = cursor.lastrowid
-                return True
+                cnx.commit()
+                return cursor.rowcount > 0
             except Exception as exc:
-                print(f"Error:{exc}")
+                cnx.rollback()
+                print(f"Error al crear item de venta: {exc}")
                 return False
             finally:
                 cnx.close()
@@ -97,9 +96,10 @@ class ItemVentaModel:
                      self.id)
                 )
                 cnx.commit()
-                return True
+                return cursor.rowcount > 0
             except Exception as exc:
-                print(f"Error:{exc}")
+                cnx.rollback()
+                print(f"Error al actualizar item de venta: {exc}")
                 return False
             finally:
                 cnx.close()
@@ -110,9 +110,10 @@ class ItemVentaModel:
             try:
                 cursor.execute("DELETE FROM items_ventas WHERE id=%s", (self.id,))
                 cnx.commit()
-                return True
+                return cursor.rowcount > 0
             except Exception as exc:
-                print(f"Error:{exc}")
+                cnx.rollback()
+                print(f"Error al eliminar item de venta: {exc}")
                 return False
             finally:
                 cnx.close()

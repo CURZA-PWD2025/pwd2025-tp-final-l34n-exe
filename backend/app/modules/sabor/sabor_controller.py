@@ -26,7 +26,8 @@ class SaborController:
             disponible=data["disponible"],
             categoria=categoria
         )
-        return sabor.create()
+        result = sabor.create()
+        return {"Creado": result}
 
     @staticmethod
     def update(data: dict) -> dict:
@@ -44,9 +45,11 @@ class SaborController:
             disponible=data["disponible"],
             categoria=categoria
         )
-        return sabor.update()
+        result = sabor.update()
+        return {"Actualizado": result}
 
     @staticmethod
     def delete(id: int) -> dict:
         sabor = SaborModel(id=id)
-        return sabor.delete()
+        result = sabor.delete()
+        return {"Eliminado": result}

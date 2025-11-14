@@ -48,11 +48,11 @@ TABLES['productos'] = (
     "  `precio` DECIMAL(10,2) NOT NULL,"
     "  `stock` INT NOT NULL CHECK (stock >= 0),"
     "  `max_sabores` INT NOT NULL DEFAULT 1,"
-    "  `id_proveedor` INT,"
-    "  `id_categoria` INT,"
+    "  `id_proveedor` INT NOT NULL,"
+    "  `id_categoria` INT NOT NULL,"
     "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores`(`id`) ON DELETE SET NULL,"
-    "  FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE"
+    "  FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores`(`id`),"
+    "  FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`)"
     ")"
 )
 
@@ -61,11 +61,11 @@ TABLES['sabores'] = (
     "CREATE TABLE `sabores` ("
     "  `id` INT NOT NULL AUTO_INCREMENT,"
     "  `nombre` VARCHAR(100) NOT NULL,"
-    "  `stock` DECIMAL(10,2) NOT NULL CHECK (stock >= 0.0),"
+    "  `stock` INT NOT NULL CHECK (stock >= 0),"
     "  `disponible` BOOLEAN NOT NULL DEFAULT TRUE,"
-    "  `id_categoria` INT NULL,"
+    "  `id_categoria` INT NOT NULL,"
     "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE"
+    "  FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`)"
     ")"
 )
 
@@ -101,13 +101,11 @@ TABLES['ventas'] = (
     "  `id` INT NOT NULL AUTO_INCREMENT,"
     "  `fecha` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
     "  `total` DECIMAL(10,2) NOT NULL,"
-    "  `id_cliente` INT NULL,"
-    "  `id_empleado` INT NULL,"
+    "  `id_cliente` INT NOT NULL,"
+    "  `id_empleado` INT NOT NULL,"
     "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`id_cliente`) REFERENCES `clientes`(`id`) "
-    "     ON DELETE SET NULL ON UPDATE CASCADE,"
+    "  FOREIGN KEY (`id_cliente`) REFERENCES `clientes`(`id`), "
     "  FOREIGN KEY (`id_empleado`) REFERENCES `empleados`(`id`) "
-    "     ON DELETE SET NULL ON UPDATE CASCADE"
     ")"
 )
 
@@ -119,8 +117,8 @@ TABLES['items_ventas'] = (
     "  `id_producto` INT NOT NULL,"
     "  `cantidad` INT NOT NULL CHECK (cantidad > 0),"
     "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`id_venta`) REFERENCES `ventas`(`id`) ON DELETE CASCADE,"
-    "  FOREIGN KEY (`id_producto`) REFERENCES `productos`(`id`) ON DELETE CASCADE"
+    "  FOREIGN KEY (`id_venta`) REFERENCES `ventas`(`id`),"
+    "  FOREIGN KEY (`id_producto`) REFERENCES `productos`(`id`)"
     ")"
 )
 
@@ -131,8 +129,9 @@ TABLES['items_venta_sabores'] = (
     "  `id_item` INT NOT NULL,"
     "  `id_sabor` INT NOT NULL,"
     "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`id_item`) REFERENCES `items_ventas`(`id`) ON DELETE CASCADE,"
-    "  FOREIGN KEY (`id_sabor`) REFERENCES `sabores`(`id`) ON DELETE CASCADE"
+    "  UNIQUE KEY `ux_item_sabor` (`id_item`, `id_sabor`),"
+    "  FOREIGN KEY (`id_item`) REFERENCES `items_ventas`(`id`),"
+    "  FOREIGN KEY (`id_sabor`) REFERENCES `sabores`(`id`)"
     ")"
 )
 
@@ -183,11 +182,8 @@ SEEDS['productos'] = (
     "('Torta helada vainilla y frutilla', 2800.00, 30, 2, 3, 1),"
     "('Torta helada chocolate y dulce de leche', 3000.00, 25, 2, 3, 1),"
     "('Torta helada americana y chocolate', 3200.00, 20, 3, 3, 1),"
-    # Batidos
-    "('Batido de frutilla', 1800.00, 40, 1, 4, 7),"
-    "('Batido de vainilla', 1800.00, 40, 1, 4, 7),"
-    "('Batido de chocolate', 1900.00, 40, 1, 4, 7),"
     # Bebidas
+    "('Batido', 1800.00, 40, 1, 1, 7),"
     "('Café', 1500.00, 50, 1, 4, 2),"
     "('Té', 1600.00, 50, 2, 4, 2),"
     "('Yogur', 1700.00, 50, 2, 4, 2);"
@@ -250,7 +246,7 @@ SEEDS['items_ventas'] = (
     "(1, 2, 1),"   # 1 pote 1/2 kg
     "(1, 5, 2),"   # 2 cucuruchos dobles
     "(2, 6, 1),"   # 1 vaso chico
-    "(2, 13, 1),"  # 1 batido de frutilla
+    "(2, 13, 1),"  # 1 batido
     "(3, 3, 1),"   # 1 pote 1 kg
     "(3, 17, 2),"  # 2 licuados mixtos
     "(4, 8, 2);"   # 2 paletas de agua

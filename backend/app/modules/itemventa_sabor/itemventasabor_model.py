@@ -40,7 +40,7 @@ class ItemVentaSaborModel:
                         items_venta_sabores.append(row)
                     return items_venta_sabores
             except Exception as exc:
-                print(f"Error:{exc}")
+                return {"mensaje": f"Error al obtener los items_venta_sabores: {exc}"}
             finally:
                 cnx.close()
 
@@ -58,38 +58,45 @@ class ItemVentaSaborModel:
                   del row["id_sabor"]
               return row
             except Exception as exc:
-              print(f"Error en get_by_id (ItemVentaSaborModel): {exc}")
-              return None
+              return {"mensaje": f"Error al obtener el item_venta_sabor: {exc}"}
             finally:
               cnx.close()
 
-    def create(self) -> dict:
+    def create(self) -> bool:
         cnx = ConectDB.get_connect()
         with cnx.cursor() as cursor:
             try:
-                sql = "INSERT INTO items_venta_sabores (id_item, id_sabor) VALUES (%s, %s)"
-                values = (self.item_venta.id, self.sabor.id)
-                cursor.execute(sql, values)
+                cursor.execute(
+                    "INSERT INTO items_venta_sabores (id_item, id_sabor) VALUES (%s, %s)",
+                    (self.item_venta.id if self.item_venta else None,
+                     self.sabor.id if self.sabor else None)
+                )
+                self.id = cursor.lastrowid
                 cnx.commit()
-                return {"mensaje": "ItemVentaSabor creado exitosamente", "id": cursor.lastrowid}
+                return cursor.rowcount > 0
             except Exception as exc:
-                print(f"Error: {exc}")
-                return {"mensaje": "Error al crear ItemVentaSabor"}
+                cnx.rollback()
+                print({"mensaje": f"Error al crear el item-venta_sabor:{exc}"})
+                return False
             finally:
                 cnx.close()
 
-    def update(self) -> dict:
+    def update(self) -> bool:
         cnx = ConectDB.get_connect()
         with cnx.cursor() as cursor:
             try:
-                sql = "UPDATE items_venta_sabores SET id_item=%s, id_sabor=%s WHERE id=%s"
-                values = (self.item_venta.id, self.sabor.id, self.id)
-                cursor.execute(sql, values)
+                cursor.execute(
+                    "UPDATE items_venta_sabores SET id_item=%s, id_sabor=%s WHERE id=%s",
+                    (self.item_venta.id if self.item_venta else None,
+                     self.sabor.id if self.sabor else None,
+                     self.id)
+                )
                 cnx.commit()
-                return {"mensaje": "ItemVentaSabor actualizado exitosamente"}
+                return cursor.rowcount > 0
             except Exception as exc:
-                print(f"Error:{exc}")
-                return {"mensaje": "Error al actualizar ItemVentaSabor"}
+                cnx.rollback()
+                print({"mensaje": f"Error al actualizar el item-venta_sabor:{exc}"})
+                return False
             finally:
                 cnx.close()
 
@@ -101,7 +108,8 @@ class ItemVentaSaborModel:
                 cnx.commit()
                 return True
             except Exception as exc:
-                print(f"Error:{exc}")
+                cnx.rollback()
+                print({"mensaje": f"Error al eliminar el item-venta_sabor:{exc}"})
                 return False
             finally:
                 cnx.close()

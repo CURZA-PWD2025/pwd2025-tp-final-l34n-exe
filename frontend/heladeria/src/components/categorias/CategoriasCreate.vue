@@ -7,12 +7,12 @@
         <input type="text" name="nombre" v-model="categoria.nombre" />
       </div>
       <div>
-        <label for="apellido">Apellido:</label>
-        <input type="text" name="apellido" v-model="categoria.tipo" />
+        <label for="tipo">Tipo:</label>
+        <input type="text" name="tipo" v-model="categoria.tipo" />
       </div>
       <div>
-        <label for="telefono">Teléfono:</label>
-        <input type="text" name="telefono" v-model="categoria.descripcion" />
+        <label for="descripcion">Descripción:</label>
+        <input type="text" name="descripcion" v-model="categoria.descripcion" />
       </div>
       <button type="submit">Crear categoria</button>
     </form>

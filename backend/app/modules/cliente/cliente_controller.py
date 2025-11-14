@@ -9,7 +9,7 @@ class ClienteController:
 
     @staticmethod
     def get_one(id) -> dict:
-        cliente = ClienteModel().get_by_id(id)
+        cliente = ClienteModel.get_by_id(id)
         return cliente
 
     @staticmethod
@@ -20,8 +20,8 @@ class ClienteController:
             telefono=data["telefono"],
             direccion=data["direccion"]
         )
-        result = cliente.create(data)
-        return result
+        result = cliente.create()
+        return {"Creado": result}
 
     @staticmethod
     def update(data: dict) -> dict:
@@ -33,10 +33,10 @@ class ClienteController:
             direccion=data["direccion"]
         )
         result = cliente.update()
-        return result
+        return {"Actualizado": result}
 
     @staticmethod
     def delete(id: int) -> dict:
         cliente = ClienteModel(id=id)
         result = cliente.delete()
-        return result
+        return {"Eliminado": result}

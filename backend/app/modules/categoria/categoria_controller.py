@@ -19,8 +19,8 @@ class CategoriaController:
             tipo=data["tipo"],
             descripcion=data["descripcion"]
         )
-        result = categoria.create(data)
-        return result
+        result = categoria.create()
+        return {"Creado": result}
 
     @staticmethod
     def update(data: dict) -> dict:
@@ -31,10 +31,10 @@ class CategoriaController:
             descripcion=data["descripcion"]
         )
         result = categoria.update()
-        return result
+        return {"Actualizado": result}
 
     @staticmethod
     def delete(id: int) -> dict:
         categoria = CategoriaModel(id=id)
         result = categoria.delete()
-        return result
+        return {"Eliminado": result}

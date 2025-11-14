@@ -35,7 +35,7 @@ class ItemVentaSaborController:
             sabor=sabor
         )
         result = item_venta_sabor.create()
-        return result
+        return {"Creado": result}
 
     @staticmethod
     def update(data: dict) -> dict:
@@ -60,7 +60,7 @@ class ItemVentaSaborController:
             sabor=sabor
         )
         result = item_venta_sabor.update()
-        return result
+        return {"Actualizado": result}
 
 
     @staticmethod
@@ -69,4 +69,4 @@ class ItemVentaSaborController:
             id=id
         )
         result = item_venta_sabor.delete()
-        return result
+        return {"Eliminado": result}

@@ -3,7 +3,7 @@ from ..categoria.categoria_model import CategoriaModel as Categoria
 
 class SaborModel:
 
-    def __init__(self, id:int=0, nombre:str="", stock:float=0.0, disponible:bool=True, categoria:Categoria=None):
+    def __init__(self, id:int=0, nombre:str="", stock:int=0, disponible:bool=True, categoria:Categoria=None):
         self.id = id
         self.nombre = nombre
         self.stock = stock
@@ -46,8 +46,7 @@ class SaborModel:
                         sabores.append(row)
                 return sabores
             except Exception as exc:
-                print(f"Error:{exc}")
-                return []
+                return {"mensaje":f"Error al obtener los sabores:{exc}"}
             finally:
                 cnx.close()
 
@@ -63,7 +62,7 @@ class SaborModel:
                     del row["id_categoria"]
                 return row
             except Exception as exc:
-                return (f"Error:{exc}")
+                return {"mensaje":f"Error al obtener el sabor:{exc}"}
             finally:
                 cnx.close()
 
@@ -73,14 +72,13 @@ class SaborModel:
         with cnx.cursor(dictionary=True)  as cursor:
             try:
                 cursor.execute("INSERT INTO sabores (nombre, stock, disponible, id_categoria) VALUES (%s, %s, %s, %s)", (self.nombre, self.stock, self.disponible, self.categoria.id))
-                result = cursor.rowcount
+                self.id = cursor.lastrowid
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al crear el sabor: {exc}"}
+                print({"mensaje": f"Error al crear el sabor: {exc}"})
+                return False
             finally:
                 cnx.close()
 
@@ -89,14 +87,12 @@ class SaborModel:
         with cnx.cursor(dictionary=True) as cursor:
             try:
                 cursor.execute("UPDATE sabores SET nombre = %s, stock = %s, disponible = %s, id_categoria = %s WHERE id = %s", (self.nombre, self.stock, self.disponible, self.categoria.id, self.id))
-                result = cursor.rowcount
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al actualizar los sabores: {exc}"}
+                print({"mensaje": f"Error al actualizar los sabores: {exc}"})
+                return False
             finally:
                 cnx.close()
 
@@ -105,14 +101,12 @@ class SaborModel:
         with cnx.cursor() as cursor:
             try:
                 cursor.execute("DELETE FROM sabores WHERE id=%s", (self.id,))
-                result = cursor.rowcount
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al borrar el sabor: {exc}"}
+                print({"mensaje": f"Error al borrar el sabor: {exc}"})
+                return False
             finally:
                 cnx.close()
 

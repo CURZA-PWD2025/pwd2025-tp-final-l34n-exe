@@ -53,9 +53,10 @@ class ProductoModel:
                     productos.append(row)
                 return productos
             except Exception as exc:
-                print(f"Error:{exc}")
+                return {"mensaje": f"Error al obtener los productos: {exc}"}
             finally:
                 cnx.close()
+
 
     @staticmethod
     def get_by_id(id: int) -> dict:
@@ -71,8 +72,7 @@ class ProductoModel:
                     del row["id_proveedor"]
                 return row
             except Exception as exc:
-                print(f"Error: {exc}")
-                return []
+                return {"mensaje":f"Error al obtener el producto: {exc}"}
             finally:
                 cnx.close()
 
@@ -81,14 +81,13 @@ class ProductoModel:
         with cnx.cursor(dictionary=True)  as cursor:
             try:
                 cursor.execute("INSERT INTO productos (nombre, precio, stock, max_sabores, id_proveedor, id_categoria) VALUES (%s, %s, %s, %s, %s, %s)", (self.nombre, self.precio, self.stock, self.max_sabores, self.proveedor.id, self.categoria.id))
-                result = cursor.rowcount
+                self.id = cursor.lastrowid
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al crear el producto: {exc}"}
+                print({"mensaje": f"Error al crear el producto: {exc}"})
+                return False
             finally:
                 cnx.close()
 
@@ -100,14 +99,12 @@ class ProductoModel:
                     "UPDATE productos SET nombre=%s, precio=%s, stock=%s, max_sabores=%s, id_proveedor=%s, id_categoria=%s WHERE id=%s",
                     (self.nombre, self.precio, self.stock, self.max_sabores, self.proveedor.id, self.categoria.id, self.id)
                 )
-                result = cursor.rowcount
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al actualizar el producto: {exc}"}
+                print({"mensaje": f"Error al actualizar el producto: {exc}"})
+                return False
             finally:
                 cnx.close()
 
@@ -116,14 +113,12 @@ class ProductoModel:
         with cnx.cursor() as cursor:
             try:
                 cursor.execute("DELETE FROM productos WHERE id=%s", (self.id,))
-                result = cursor.rowcount
                 cnx.commit()
-                if result > 0:
-                    return True
-                return False
+                return cursor.rowcount > 0
             except Exception as exc:
                 cnx.rollback()
-                return {"mensaje": f"Error al borrar el producto: {exc}"}
+                print({"mensaje": f"Error al borrar el producto: {exc}"})
+                return False
             finally:
                 cnx.close()
 

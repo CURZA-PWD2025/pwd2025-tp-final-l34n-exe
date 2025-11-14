@@ -19,7 +19,7 @@ class ProveedorController:
             email=data["email"]
         )
         result = proveedores.create()
-        return result
+        return {"Creado": result}
 
     @staticmethod
     def update(data: dict) -> dict:
@@ -30,10 +30,10 @@ class ProveedorController:
             email=data["email"]
         )
         result = proveedores.update()
-        return result
+        return {"Actualizado": result}
 
     @staticmethod
     def delete(id: int) -> dict:
         proveedores = ProveedorModel(id=id)
         result = proveedores.delete()
-        return result
+        return {"Eliminado": result}

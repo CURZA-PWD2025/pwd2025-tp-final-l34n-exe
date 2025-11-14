@@ -21,7 +21,7 @@ def get_one(id):
         if categoria:
             return jsonify(categoria), 200
         else:
-            return jsonify({"mensaje": "categoria no encontrada"}), 404
+            return jsonify({"mensaje": "Categoria no encontrada"}), 404
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
@@ -31,7 +31,7 @@ def create():
         data = request.get_json()
         categoria = CategoriaController.create(data)
         if categoria:
-            return jsonify({"mensaje": "categoria creada exitosamente"}), 201
+            return jsonify({"mensaje": "Categoria creada exitosamente"}), 201
         else:
             return jsonify({"mensaje": "No se pudo crear la categoria"}), 500
     except Exception as exc:
@@ -44,7 +44,7 @@ def update(id):
         data['id'] = id
         categoria = CategoriaController.update(data)
         if categoria:
-            return jsonify({"mensaje": "categoria actualizada exitosamente"}), 200
+            return jsonify({"mensaje": "Categoria actualizada exitosamente"}), 200
         else:
             return jsonify({"mensaje": "No se pudo actualizar la categoria"}), 500
     except Exception as exc:
@@ -55,7 +55,7 @@ def delete(id):
     try:
         categoria = CategoriaController.delete(id)
         if categoria:
-            return jsonify({"mensaje": "categoria eliminada exitosamente"}), 200
+            return jsonify({"mensaje": "Categoria eliminada exitosamente"}), 200
         else:
             return jsonify({"mensaje": "No se pudo eliminar la categoria"}), 500
     except Exception as exc:

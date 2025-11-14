@@ -52,6 +52,7 @@
 
 <script setup lang="ts">
 import { ref, toRefs, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import useProductosStore from '@/stores/productos'
 import useProveedoresStore from '@/stores/proveedores'
 import useCategoriasStore from '@/stores/categorias'
@@ -62,18 +63,22 @@ const productosStore = useProductosStore()
 const proveedoresStore = useProveedoresStore()
 const categoriasStore = useCategoriasStore()
 const { producto } = toRefs(productosStore)
-const { update } = productosStore
+const { getOne, update } = productosStore
+const route = useRoute()
 const categorias = ref(<Categoria[]>[])
 const proveedores = ref(<Proveedor[]>[])
 
 onMounted(async () => {
+  const id = Number(route.params.id)
+  if (id) await getOne(id)
+
   await categoriasStore.getAll()
   categorias.value = categoriasStore.categorias
 
   await proveedoresStore.getAll()
   proveedores.value = proveedoresStore.proveedores
 })
-//*ARREGLAR *//
+
 const actualizar = async () => {
   if (
     !producto.value.nombre ||
@@ -89,6 +94,7 @@ const actualizar = async () => {
   }
 
   const data = {
+    id: producto.value.id,
     nombre: producto.value.nombre,
     precio: producto.value.precio,
     stock: producto.value.stock,

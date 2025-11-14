@@ -36,7 +36,7 @@ class ItemVentaController:
             producto=producto
         )
         result = item_venta.create()
-        return result
+        return {"Creado": result}
 
 
     @staticmethod
@@ -63,7 +63,7 @@ class ItemVentaController:
             producto=producto
         )
         result = item_venta.update()
-        return result
+        return {"Actualizado": result}
 
     @staticmethod
     def delete(id:int) -> dict:
@@ -71,4 +71,4 @@ class ItemVentaController:
             id=id
         )
         result = item_venta.delete()
-        return result
+        return {"Eliminado": result}
