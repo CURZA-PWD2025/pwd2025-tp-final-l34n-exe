@@ -1,8 +1,17 @@
 <template>
   <div>
     <h2>Los clientes</h2>
-    <router-link :to="{ name: 'clientes_create' }">Crear cliente </router-link>
-    <table>
+    <ButtonComponent :to="{ name: 'clientes_create' }"
+      ><template #pre-icon>
+        <Icon
+          icon="oui:ml-create-single-metric-job"
+          width="28"
+          height="28"
+          style="color: green"
+        /> </template
+      >CREAR CLIENTE</ButtonComponent
+    >
+    <v-table density="comfortable">
       <thead>
         <tr>
           <th>ID</th>
@@ -10,6 +19,7 @@
           <th>APELLIDO</th>
           <th>TELEFONO</th>
           <th>DIRECCION</th>
+          <th>ACCIONES</th>
         </tr>
       </thead>
       <tbody>
@@ -19,27 +29,44 @@
           <td>{{ cliente.apellido }}</td>
           <td>{{ cliente.telefono }}</td>
           <td>{{ cliente.direccion }}</td>
-          <td>
-            <router-link :to="{ name: 'clientes_edit', params: { id: cliente.id ?? 0 } }"
-              >Editar</router-link
+          <td class="acciones">
+            <ButtonComponent
+              :to="{ name: 'clientes_edit', params: { id: cliente.id } }"
+              style="color: #1976d2"
             >
-            <router-link :to="{ name: 'clientes_show', params: { id: cliente.id ?? 0 } }"
-              >Mostrar</router-link
-            >
-            <button @click="deleteCliente(cliente.id ? cliente.id : 0)" class="btn-delete">
+              <template #pre-icon
+                ><Icon
+                  icon="material-symbols:edit-outline"
+                  width="28"
+                  height="28"
+                  style="color: #1976d2"
+              /></template>
+              EDITAR
+            </ButtonComponent>
+            <ButtonComponent :to="{ name: 'clientes_show', params: { id: cliente.id } }">
+              <template #post-icon
+                ><Icon icon="iconoir:eye" width="28" height="28"></Icon
+              ></template>
+              MOSTRAR
+            </ButtonComponent>
+            <ButtonComponent @click="deleteCliente(cliente.id as number)" style="color: red">
+              <template #pre-icon
+                ><Icon icon="typcn:delete-outline" width="28" height="28" style="color: red"></Icon
+              ></template>
               Eliminar
-            </button>
+            </ButtonComponent>
           </td>
         </tr>
       </tbody>
-    </table>
+    </v-table>
   </div>
 </template>
 
 <script setup lang="ts">
 import useClientesStore from '@/stores/clientes'
 import { toRefs, onMounted } from 'vue'
-
+import ButtonComponent from '../ButtonComponent.vue'
+import { Icon } from '@iconify/vue'
 const { clientes } = toRefs(useClientesStore())
 const { getAll, destroy } = useClientesStore()
 
@@ -55,4 +82,18 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+h2 {
+  margin-bottom: 15px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+</style>

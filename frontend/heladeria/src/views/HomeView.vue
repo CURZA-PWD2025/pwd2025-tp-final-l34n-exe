@@ -1,21 +1,17 @@
 <template>
-  <div>
-    <h1>TEST</h1>
-    <div>
-      <button><RouterLink :to="{ name: 'proveedores_list' }">Click para ver los proveedores</RouterLink></button>
-      <button><RouterLink :to="{ name: 'empleados_list' }">Click para ver los empleados</RouterLink></button>
-      <button><RouterLink :to="{ name: 'categorias_list' }">Click para ver las categorias</RouterLink></button>
-      <button><RouterLink :to="{ name: 'clientes_list' }">Click para ver los clientes</RouterLink></button>
-      <button><RouterLink :to="{ name: 'sabores_list' }">Click para ver los sabores</RouterLink></button>
-      <button><RouterLink :to="{ name: 'productos_list' }">Click para ver los productos</RouterLink></button>
-      <button><RouterLink :to="{ name: 'ventas_list' }">Click para ver las ventas</RouterLink></button>
-      <button><RouterLink :to="{ name: 'itemventas_list' }">Click para ver los item ventas</RouterLink></button>
-      <button><RouterLink :to="{ name: 'itemventasabores_list' }">Click para ver los item venta sabores</RouterLink></button>
+  <v-parallax src="/src/imgs/helados.png" height="600">
+    <div
+      class="d-flex flex-column fill-height justify-center align-center text-white"
+    >
+      <h1 class="text-h2 font-weight-semibold bg-yellow"  >SISTEMA DE GESTIÓN Y CONTROL DE ICE</h1>
+      <h3 class="text-h4 font-weight-light text-decoration-underline bg-blue">Bienvenido/a admin</h3>
     </div>
-  </div>
+  </v-parallax>
+
 </template>
 
 <script setup lang="ts">
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

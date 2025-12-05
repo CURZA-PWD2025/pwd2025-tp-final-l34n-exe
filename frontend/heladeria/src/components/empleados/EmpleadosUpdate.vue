@@ -1,43 +1,73 @@
 <template>
   <div>
-    <h3>Editar Empleado</h3>
-    <form @submit.prevent="actualizar">
-      <div>
-        <label for="nombre">Nombre:</label>
-        <input type="text" name="nombre" v-model="empleado.nombre" />
-      </div>
-      <div>
-        <label for="apellido">Apellido:</label>
-        <input type="text" name="apellido" v-model="empleado.apellido" />
-      </div>
-      <div>
-        <label for="telefono">Teléfono:</label>
-        <input type="text" name="telefono" v-model="empleado.telefono" />
-      </div>
-      <div>
-        <label for="direccion">Dirección:</label>
-        <input type="text" name="direccion" v-model="empleado.email" />
-      </div>
-      <div>
-        <label for="puesto">Puesto:</label>
-        <input type="text" name="puesto" v-model="empleado.puesto" />
-      </div>
-      <button type="submit">Actualizar Empleado</button>
-    </form>
-
-    <RouterLink :to="{ name: 'empleados_list' }">VOLVER</RouterLink>
+    <v-card class="mx-auto pa-6" max-width="500" variant="outlined">
+      <v-card-title class="text-h6 text-center">Actualizar Empleado</v-card-title>
+      <v-form @submit.prevent="actualizar" ref="form">
+        <v-text-field
+          v-model="empleado.nombre"
+          label="Nombre del empleado"
+          variant="outlined"
+          :rules="[(v) => !!v || 'El nombre es obligatorio']"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="empleado.apellido"
+          label="Apellido del empleado"
+          variant="outlined"
+          :rules="[(v) => !!v || 'El apellido es obligatorio']"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="empleado.telefono"
+          label="Telefono del empleado"
+          variant="outlined"
+          :rules="[(v) => !!v || 'El telefono es obligatorio']"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="empleado.email"
+          label="Email del empleado"
+          variant="outlined"
+          :rules="[(v) => !!v || 'El email es obligatorio']"
+          required
+        ></v-text-field>
+        <v-select
+          v-model="empleado.puesto"
+          :items="puestos"
+          item-title="nombre"
+          item-value="id"
+          label="Categoría"
+          variant="outlined"
+          :rules="[(v) => !!v || 'Seleccione una categoría']"
+          required
+        />
+        <ButtonComponent type="submit" class="act">
+          <template #pre-icon>
+            <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
+          </template>
+          Actualizar Empleado
+        </ButtonComponent>
+      </v-form>
+    </v-card>
+    <ButtonComponent :to="{ name: 'empleados_list' }">
+      <template #pre-icon><Icon icon="ic:twotone-list" width="28" height="28"  style="color: black" /></template>
+      VOLVER A LA LISTA
+    </ButtonComponent>
   </div>
 </template>
 
 <script setup lang="ts">
-import { toRefs, onMounted } from 'vue'
+import { ref, toRefs, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import useEmpleadosStore from '@/stores/empleados'
-
+import ButtonComponent from '../ButtonComponent.vue'
+import { Icon } from '@iconify/vue'
 const store = useEmpleadosStore()
 const { empleado } = toRefs(store)
 const { getOne, update } = store
 const route = useRoute()
+const puestos = ['Limpieza', 'Cajero', 'Gerente']
+const form = ref()
 
 onMounted(async () => {
   const id = Number(route.params.id)
@@ -47,6 +77,8 @@ onMounted(async () => {
 })
 
 const actualizar = async () => {
+  const valid = await form.value?.validate()
+  if (!valid) return
   if (
     !empleado.value.nombre ||
     !empleado.value.apellido ||
@@ -56,10 +88,25 @@ const actualizar = async () => {
   ) {
     alert('Por favor, complete los campos.')
     return
+  }else {
+    const data = {
+      id: empleado.value.id,
+      nombre: empleado.value.nombre,
+      apellido: empleado.value.apellido,
+      telefono: empleado.value.telefono,
+      email: empleado.value.email,
+      puesto: empleado.value.puesto,
+    }
+    await update(data)
+    empleado.value = { nombre: '', apellido: '', telefono: '', email: '', puesto: '' }
+    alert('Empleado creado con éxito.')
+    form.value.reset()
   }
-  await update(empleado.value)
-  alert('Empleado actualizado con éxito.')
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.act{
+  text-align: center;
+}
+</style>

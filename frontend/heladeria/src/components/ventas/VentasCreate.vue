@@ -1,40 +1,79 @@
 <template>
   <div>
-    <h3>VentasCreate</h3>
-    <form @submit.prevent="crear">
-      <div>
-        <label for="total">Total:</label>
-        <input type="number" name="total" v-model.number="venta.total" />
-      </div>
-
-      <div>
-        <label for="fecha">Fecha:</label>
-        <input type="date" name="fecha" v-model="venta.fecha" />
-      </div>
-
-      <div>
-        <label for="empleado">Empleado:</label>
-        <select v-model="venta.empleado" required>
-          <option disabled value="">Seleccione un empleado</option>
-          <option v-for="empleado in empleados" :key="empleado.id" :value="empleado">
-            {{ empleado.nombre }} {{ empleado.apellido }}
-          </option>
-        </select>
-      </div>
-
-      <div>
-        <label for="cliente">Cliente:</label>
-        <select v-model="venta.cliente" required>
-          <option disabled value="">Seleccione un cliente</option>
-          <option v-for="cliente in clientes" :key="cliente.id" :value="cliente">
-            {{ cliente.nombre }} {{ cliente.apellido }}
-          </option>
-        </select>
-      </div>
-
-      <button type="submit">Crear Venta</button>
-    </form>
-    <RouterLink :to="{ name: 'ventas_list' }">VOLVER</RouterLink>
+    <v-card class="mx-auto pa-6" max-width="500" elevation="16">
+      <v-card-title class="text-h6 text-center">INSERTE DATOS</v-card-title>
+      <v-form @submit.prevent="crear" ref="form">
+        <v-text-field
+          v-model="venta.total"
+          label="Total de la venta"
+          type="number"
+          variant="outlined"
+          :rules="[(v) => !!v || 'El dato es obligatorio']"
+          required
+        />
+        <v-text-field
+          v-model="venta.fecha"
+          label="Fecha y Hora"
+          type="datetime-local"
+          variant="outlined"
+          :rules="[(v) => !!v || 'El dato es obligatorio']"
+          required
+        />
+        <v-select
+          v-model="venta.empleado"
+          :items="empleados"
+          label="Empleado"
+          variant="outlined"
+          return-object
+          :rules="[
+            (v) => !!v || 'Debe elegir un empleado',
+            (v) => v.puesto !== 'Limpieza' || 'El personal de limpieza no puede realizar ventas',
+          ]"
+        >
+          <template #item="{ props, item }">
+            <v-list-item
+              v-bind="props"
+              :title="`${item.raw.nombre} ${item.raw.apellido}`"
+              :subtitle="`Puesto: ${item.raw.puesto}`"
+            />
+          </template>
+          <template #selection="{ item }">
+            {{ item.raw.nombre }} {{ item.raw.apellido }} ({{ item.raw.puesto }})
+          </template>
+        </v-select>
+        <v-select
+          v-model="venta.cliente"
+          :items="clientes"
+          label="Cliente"
+          variant="outlined"
+          return-object
+          :rules="[(v) => !!v || 'Debe elegir un cliente']"
+        >
+          <template #item="{ props, item }">
+            <v-list-item
+              v-bind="props"
+              :title="`${item.raw.nombre} ${item.raw.apellido}`"
+              :subtitle="`ID: ${item.raw.id}`"
+            />
+          </template>
+          <template #selection="{ item }">
+            {{ item.raw.nombre }} {{ item.raw.apellido }} (ID: {{ item.raw.id }})
+          </template>
+        </v-select>
+        <ButtonComponent type="submit" class="crear">
+          <template #pre-icon>
+            <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
+          </template>
+          Crear Venta
+        </ButtonComponent>
+      </v-form>
+    </v-card>
+    <ButtonComponent class="volver" :to="{ name: 'ventas_list' }">
+      <template #pre-icon>
+        <Icon icon="ic:twotone-list" width="28" height="28" style="color: black" />
+      </template>
+      VOLVER A LA LISTA
+    </ButtonComponent>
   </div>
 </template>
 
@@ -45,7 +84,8 @@ import useClientesStore from '@/stores/clientes'
 import useEmpleadosStore from '@/stores/empleados'
 import type { Cliente } from '@/interfaces/Cliente'
 import type { Empleado } from '@/interfaces/Empleado'
-
+import ButtonComponent from '../ButtonComponent.vue'
+import { Icon } from '@iconify/vue'
 const clientesStore = useClientesStore()
 const empleadosStore = useEmpleadosStore()
 const ventasStore = useVentasStore()
@@ -53,6 +93,7 @@ const { venta } = toRefs(ventasStore)
 const { create } = ventasStore
 const clientes = ref(<Cliente[]>[])
 const empleados = ref(<Empleado[]>[])
+const form = ref()
 
 onMounted(async () => {
   await clientesStore.getAll()
@@ -63,6 +104,8 @@ onMounted(async () => {
 })
 
 const crear = async () => {
+  const valid = await form.value?.validate()
+  if (!valid) return
   if (
     !venta.value.total ||
     !venta.value.fecha ||
@@ -70,6 +113,10 @@ const crear = async () => {
     !venta.value.cliente?.id
   ) {
     alert('Por favor, complete todos los campos correctamente.')
+    return
+  }
+  if (venta.value.empleado.puesto === 'Limpieza') {
+    alert('Un empleado de limpieza no puede realizar ventas.')
     return
   }
   const data = {
@@ -80,8 +127,21 @@ const crear = async () => {
   }
   await create(data)
 
+  venta.value = {
+    total: 0,
+    fecha: '',
+    empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
+    cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion: '' },
+  }
+
   alert('Venta creada con éxito.')
+
+  form.value.reset()
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.crear {
+  text-align: center;
+}
+</style>

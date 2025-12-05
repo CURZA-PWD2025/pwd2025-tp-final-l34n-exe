@@ -1,53 +1,76 @@
 <template>
-  <div>
-    <h3>ProductosUpdate</h3>
-    <div>
-      <form @submit.prevent="actualizar">
-        <div>
-          <label for="nombre">Nombre:</label>
-          <input type="text" name="nombre" v-model="producto.nombre" />
-        </div>
+  <v-card class="mx-auto pa-6" max-width="500" variant="outlined">
+    <v-card-title class="text-h6 text-center">Actualizar Producto</v-card-title>
+    <v-form @submit.prevent="actualizar" ref="form">
+      <v-text-field
+        v-model="producto.nombre"
+        label="Nombre del producto"
+        variant="outlined"
+        :rules="[(v) => !!v || 'El nombre es obligatorio']"
+        required
+      ></v-text-field>
+      <v-text-field
+        v-model="producto.precio"
+        label="Precio del producto"
+        variant="outlined"
+        :rules="[(v) => !!v || 'El precio es obligatorio']"
+        required
+      ></v-text-field>
+      <v-text-field
+        v-model="producto.stock"
+        label="Stock del producto"
+        variant="outlined"
+        :rules="[(v) => !!v || 'El stock es obligatorio']"
+        required
+      ></v-text-field>
+      <v-text-field
+        v-model="producto.max_sabores"
+        label="Maximo de sabores del producto"
+        variant="outlined"
+        :rules="[(v) => !!v || 'El maximo de sabores es obligatorio']"
+        required
+      ></v-text-field>
+      <v-select
+        v-model="producto.categoria"
+        :items="categorias"
+        item-title="nombre"
+        item-value="id"
+        label="Categoría"
+        variant="outlined"
+        :rules="[
+          (v) => !!v || 'Seleccione una categoría',
+          (v) =>
+            !['Vainilla', 'Chocolates', 'Menta', 'Frutales', 'Dulce de Leche', 'Agua'].includes(
+              v?.nombre,
+            ) || 'Esta categoría no está permitida',
+        ]"
+        return-object
+      />
+      <v-select
+        v-model="producto.proveedor"
+        :items="proveedores"
+        item-title="nombre"
+        item-value="id"
+        label="Proveedor"
+        variant="outlined"
+        :rules="[(v) => !!v || 'Seleccione un proveedor']"
+        return-object
+      />
+      <ButtonComponent type="submit" class="act">
+        <template #pre-icon>
+          <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
+        </template>
+        Actualizar Producto
+      </ButtonComponent>
+    </v-form>
+  </v-card>
 
-        <div>
-          <label for="precio">Precio:</label>
-          <input type="number" name="precio" v-model.number="producto.precio" />
-        </div>
-
-        <div>
-          <label for="stock">Stock:</label>
-          <input type="number" name="stock" v-model.number="producto.stock" />
-        </div>
-
-        <div>
-          <label for="max_sabores">Max Sabores:</label>
-          <input type="number" name="max_sabores" v-model.number="producto.max_sabores" />
-        </div>
-
-        <div>
-          <label for="categoria">Categoría:</label>
-          <select v-model="producto.categoria" required>
-            <option disabled value="">Seleccione una categoría</option>
-            <option v-for="categoria in categorias" :key="categoria.id" :value="categoria">
-              {{ categoria.nombre }}
-            </option>
-          </select>
-        </div>
-
-        <div>
-          <label for="proveedor">Proveedor:</label>
-          <select v-model="producto.proveedor" required>
-            <option disabled value="">Seleccione un proveedor</option>
-            <option v-for="proveedor in proveedores" :key="proveedor.id" :value="proveedor">
-              {{ proveedor.nombre }}
-            </option>
-          </select>
-        </div>
-
-        <button type="submit">Actualizar Producto</button>
-      </form>
-    </div>
-    <RouterLink :to="{ name: 'productos_list' }">VOLVER</RouterLink>
-  </div>
+  <ButtonComponent class="volver" :to="{ name: 'productos_list' }">
+    <template #pre-icon
+      ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
+    /></template>
+    VOLVER A LA LISTA
+  </ButtonComponent>
 </template>
 
 <script setup lang="ts">
@@ -58,7 +81,8 @@ import useProveedoresStore from '@/stores/proveedores'
 import useCategoriasStore from '@/stores/categorias'
 import type { Proveedor } from '@/interfaces/Proveedor'
 import type { Categoria } from '@/interfaces/Categoria'
-
+import ButtonComponent from '../ButtonComponent.vue'
+import { Icon } from '@iconify/vue'
 const productosStore = useProductosStore()
 const proveedoresStore = useProveedoresStore()
 const categoriasStore = useCategoriasStore()
@@ -67,7 +91,7 @@ const { getOne, update } = productosStore
 const route = useRoute()
 const categorias = ref(<Categoria[]>[])
 const proveedores = ref(<Proveedor[]>[])
-
+const form = ref()
 onMounted(async () => {
   const id = Number(route.params.id)
   if (id) await getOne(id)
@@ -80,6 +104,8 @@ onMounted(async () => {
 })
 
 const actualizar = async () => {
+  const valid = await form.value?.validate()
+  if (!valid) return
   if (
     !producto.value.nombre ||
     !producto.value.precio ||
@@ -90,6 +116,17 @@ const actualizar = async () => {
     !producto.value.proveedor?.id
   ) {
     alert('Por favor, complete todos los campos correctamente.')
+    return
+  }
+  if (
+    producto.value.categoria?.nombre === 'Vainilla' ||
+    producto.value.categoria?.nombre === 'Chocolates' ||
+    producto.value.categoria?.nombre === 'Menta' ||
+    producto.value.categoria?.nombre === 'Frutales' ||
+    producto.value.categoria?.nombre === 'Agua' ||
+    producto.value.categoria?.nombre === 'Dulce de Leche'
+  ) {
+    alert('No se puede asignar esta categoria al producto.')
     return
   }
 
@@ -105,8 +142,23 @@ const actualizar = async () => {
 
   await update(data)
 
+  producto.value = {
+    nombre: '',
+    precio: 0,
+    stock: 0,
+    max_sabores: 0,
+    categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
+    proveedor: { id: 0, nombre: '', email: '', telefono: '' },
+  }
+
   alert('Producto actualizado con éxito.')
+
+  form.value.reset()
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.act {
+  text-align: center;
+}
+</style>

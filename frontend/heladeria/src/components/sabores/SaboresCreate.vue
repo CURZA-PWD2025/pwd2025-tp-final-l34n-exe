@@ -1,36 +1,59 @@
 <template>
   <div>
-    <h3>Crear Sabor</h3>
-    <form @submit.prevent="crear">
-      <div>
-        <label for="nombre">Nombre:</label>
-        <input type="text" name="nombre" v-model="sabor.nombre" />
-      </div>
-
-      <div>
-        <label for="stock">Stock:</label>
-        <input type="number" name="stock" v-model.number="sabor.stock" />
-      </div>
-
-      <div>
-        <label for="categoria">Categoría:</label>
-        <select v-model="sabor.categoria" required>
-          <option disabled value="">Seleccione una categoría</option>
-          <option v-for="categoria in categorias" :key="categoria.id" :value="categoria">
-            {{ categoria.nombre }}
-          </option>
-        </select>
-      </div>
-
-      <div>
-        <label for="disponible">Disponible:</label>
-        <input type="checkbox" name="disponible" v-model="sabor.disponible" />
-      </div>
-
-      <button type="submit">Crear Sabor</button>
-    </form>
-
-    <RouterLink :to="{ name: 'sabores_list' }">VOLVER</RouterLink>
+    <v-card class="mx-auto pa-6" max-width="500" elevation="16">
+      <v-card-title class="text-h6 text-center">INSERTE DATOS</v-card-title>
+      <v-form @submit.prevent="crear" ref="form">
+        <v-text-field
+          v-model="sabor.nombre"
+          label="Nombre del sabor"
+          variant="outlined"
+          :rules="[(v) => !!v || 'El nombre es obligatorio']"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model.number="sabor.stock"
+          label="Stock"
+          type="number"
+          variant="outlined"
+          :rules="[(v) => v >= 0 || 'Stock inválido']"
+          required
+        ></v-text-field>
+        <v-select
+          v-model="sabor.categoria"
+          :items="categorias"
+          item-title="nombre"
+          item-value="id"
+          label="Categoría"
+          variant="outlined"
+          :rules="[
+            (v) => !!v || 'Seleccione una categoría',
+            (v) =>
+              !['Vasos', 'Potes', 'Cucuruchos', 'Paletas', 'Tortas', 'Batidos', 'Yogures Helados'].includes(
+                v?.nombre,
+              ) || 'Esta categoría no está permitida',
+          ]"
+          return-object
+        ></v-select>
+        <label class="chk">
+          <input type="checkbox" v-model="sabor.disponible" />
+          Disponible?
+        </label>
+        <div>
+          <ButtonComponent type="submit">
+            <template #pre-icon>
+              <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
+            </template>
+            Crear Sabor
+          </ButtonComponent>
+        </div>
+      </v-form>
+    </v-card>
+    <ButtonComponent class="volver" :to="{ name: 'sabores_list' }">
+      <template #pre-icon
+        ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
+      /></template>
+      VOLVER A LA LISTA
+    </ButtonComponent>
   </div>
 </template>
 
@@ -39,13 +62,17 @@ import { ref, toRefs, onMounted } from 'vue'
 import useSaboresStore from '@/stores/sabores'
 import useCategoriasStore from '@/stores/categorias'
 import type { Categoria } from '@/interfaces/Categoria'
+import ButtonComponent from '../ButtonComponent.vue'
+import { Icon } from '@iconify/vue'
 
 const saboresStore = useSaboresStore()
 const categoriasStore = useCategoriasStore()
 
 const { sabor } = toRefs(saboresStore)
 const { create } = saboresStore
-const categorias = ref(<Categoria[]>[])
+
+const categorias = ref<Categoria[]>([])
+const form = ref()
 
 onMounted(async () => {
   await categoriasStore.getAll()
@@ -53,25 +80,46 @@ onMounted(async () => {
 })
 
 const crear = async () => {
-  if (!sabor.value.nombre || !sabor.value.stock || sabor.value.disponible || !sabor.value.categoria?.id) {
+  const valid = await form.value?.validate()
+  if (!valid) return
+
+  if (!sabor.value.categoria) {
     alert('Por favor, complete todos los campos correctamente.')
     return
   }
+
+  if (
+    sabor.value.categoria?.nombre === 'Vasos' ||
+    sabor.value.categoria?.nombre === 'Potes' ||
+    sabor.value.categoria?.nombre === 'Tortas' ||
+    sabor.value.categoria?.nombre === 'Batidos' ||
+    sabor.value.categoria?.nombre === 'Yogures Helados' ||
+    sabor.value.categoria?.nombre === 'Paletas' ||
+    sabor.value.categoria?.nombre === 'Cucuruchos'
+  ) {
+    alert('No se puede asignar esta categoria al sabor.')
+    return
+  }
+
   const data = {
     nombre: sabor.value.nombre,
     stock: sabor.value.stock,
-    disponible: sabor.value.disponible,
-    id_categoria: sabor.value.categoria?.id,
+    disponible: sabor.value.disponible ? 1 : 0,
+    id_categoria: sabor.value.categoria.id,
   }
 
   await create(data)
+
   sabor.value = {
     nombre: '',
     stock: 0,
-    disponible: true,
+    disponible: 1,
     categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
   }
+
   alert('Sabor creado con éxito.')
+
+  form.value.reset()
 }
 </script>
 

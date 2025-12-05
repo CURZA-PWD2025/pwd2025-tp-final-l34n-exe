@@ -29,12 +29,12 @@ TABLES['proveedores'] = (
     ")"
 )
 
-# Categorias de sabores y productos #
+# Categorias para sabores y productos #
 TABLES['categoria'] = (
     "CREATE TABLE `categoria` ("
     "  `id` INT NOT NULL AUTO_INCREMENT,"
     "  `nombre` VARCHAR(100) NOT NULL,"
-    "  `tipo` VARCHAR(50) NOT NULL,"
+    "  `tipo` ENUM('Sabor', 'Producto') NOT NULL,"
     "  `descripcion` VARCHAR(255) DEFAULT NULL,"
     "  PRIMARY KEY (`id`)"
     ")"
@@ -62,7 +62,7 @@ TABLES['sabores'] = (
     "  `id` INT NOT NULL AUTO_INCREMENT,"
     "  `nombre` VARCHAR(100) NOT NULL,"
     "  `stock` INT NOT NULL CHECK (stock >= 0),"
-    "  `disponible` BOOLEAN NOT NULL DEFAULT TRUE,"
+    "  `disponible` TINYINT NOT NULL DEFAULT 1,"
     "  `id_categoria` INT NOT NULL,"
     "  PRIMARY KEY (`id`),"
     "  FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`)"
@@ -90,7 +90,7 @@ TABLES['clientes'] = (
     "  `nombre` VARCHAR(100) NOT NULL,"
     "  `apellido` VARCHAR(100) NOT NULL,"
     "  `telefono` VARCHAR(15) NOT NULL,"
-    "  `direccion` VARCHAR(100) NOT NULL,"
+    "  `direccion` VARCHAR(255) NOT NULL,"
     "  PRIMARY KEY (`id`)"
     ")"
 )
@@ -117,7 +117,7 @@ TABLES['items_ventas'] = (
     "  `id_producto` INT NOT NULL,"
     "  `cantidad` INT NOT NULL CHECK (cantidad > 0),"
     "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`id_venta`) REFERENCES `ventas`(`id`),"
+    "  FOREIGN KEY (`id_venta`) REFERENCES `ventas`(`id`) ON DELETE CASCADE,"
     "  FOREIGN KEY (`id_producto`) REFERENCES `productos`(`id`)"
     ")"
 )
@@ -130,8 +130,8 @@ TABLES['items_venta_sabores'] = (
     "  `id_sabor` INT NOT NULL,"
     "  PRIMARY KEY (`id`),"
     "  UNIQUE KEY `ux_item_sabor` (`id_item`, `id_sabor`),"
-    "  FOREIGN KEY (`id_item`) REFERENCES `items_ventas`(`id`),"
-    "  FOREIGN KEY (`id_sabor`) REFERENCES `sabores`(`id`)"
+    "  FOREIGN KEY (`id_item`) REFERENCES `items_ventas`(`id`) ON DELETE CASCADE,"
+    "  FOREIGN KEY (`id_sabor`) REFERENCES `sabores`(`id`) ON DELETE CASCADE"
     ")"
 )
 
@@ -147,13 +147,15 @@ SEEDS['proveedores'] = (
 
 SEEDS['categoria'] = (
     "INSERT INTO `categoria` (nombre, tipo, descripcion) VALUES "
+    # CATEGORIAS DE PRODUCTOS
     "('Tortas', 'Producto', 'Tortas heladas de x sabor/es')," #1
-    "('Bebidas', 'Producto', 'Licuados, cafés y otras bebidas frías')," #2
+    "('Yogures Helados', 'Producto', 'Yogures helados con toppings o sabores')," #2
     "('Cucuruchos', 'Producto', 'Helados servidos en cono')," #3
     "('Potes', 'Producto', 'Envases de 1/4, 1/2 o 1 kg')," #4
     "('Paletas', 'Producto', 'Helados de palito de crema o agua')," #5
     "('Vasos', 'Producto', 'Helado servido en vaso descartable')," #6
     "('Batidos', 'Producto', 'Helados licuados con leche o fruta')," #7
+    # CATEGORIAS DE SABORES
     "('Chocolates', 'Sabor', 'Sabores basados en cacao'),"      #8
     "('Vainilla', 'Sabor', 'Sabores basados en vainilla'),"     #9
     "('Frutales', 'Sabor', 'Sabores de frutas naturales o artificiales')," #10
@@ -175,45 +177,43 @@ SEEDS['productos'] = (
     "('Vaso chico', 850.00, 140, 1, 1, 6),"
     "('Vaso grande', 1200.00, 120, 2, 2, 6),"
     # Paletas
-    "('Paleta de agua', 600.00, 90, 1, 5, 5),"
-    "('Paleta de crema', 750.00, 80, 1, 5, 5),"
-    "('Paleta rellena', 900.00, 70, 1, 5, 5),"
+    "('Paleta de agua', 600.00, 90, 2, 5, 5),"
+    "('Paleta de crema', 750.00, 80, 2, 5, 5),"
+    "('Paleta rellena', 900.00, 70, 2, 5, 5),"
     # Tortas
     "('Torta helada vainilla y frutilla', 2800.00, 30, 2, 3, 1),"
     "('Torta helada chocolate y dulce de leche', 3000.00, 25, 2, 3, 1),"
     "('Torta helada americana y chocolate', 3200.00, 20, 3, 3, 1),"
     # Bebidas
     "('Batido', 1800.00, 40, 1, 1, 7),"
-    "('Café', 1500.00, 50, 1, 4, 2),"
-    "('Té', 1600.00, 50, 2, 4, 2),"
-    "('Yogur', 1700.00, 50, 2, 4, 2);"
+    "('Yogur helado', 1700.00, 50, 2, 4, 2);"
 )
 
 
 SEEDS['sabores'] = (
     "INSERT INTO `sabores` (nombre, stock, disponible, id_categoria) VALUES "
-    "('Vainilla', 50.0, TRUE, 9),"
-    "('Chocolate', 40.0, TRUE, 8),"
-    "('Chocolate Blanco', 30.0, TRUE, 8),"
-    "('Chocolate Amargo', 20.0, TRUE, 8),"
-    "('Dulce de Leche', 60.0, TRUE, 13),"
-    "('Dulce de Leche Granizado', 30.0, TRUE, 13),"
-    "('Dulce de Leche con Nuez', 25.0, TRUE, 13),"
-    "('Menta Granizada', 30.0, TRUE, 14),"
-    "('Peperina', 20.0, TRUE, 14),"
-    "('Café', 25.0, TRUE, 11),"
-    "('Pistacho', 20.0, TRUE, 10),"
-    "('Granizado', 50.0, TRUE, 11),"
-    "('Banana Split', 40.0, TRUE, 11),"
-    "('Crema Americana', 55.0, TRUE, 11),"
-    "('Crema Rusa', 45.0, TRUE, 11),"
-    "('Crema del Cielo', 35.0, TRUE, 11),"
-    "('Frutilla', 45.0, TRUE, 10),"
-    "('Limón', 35.0, TRUE, 10),"
-    "('Coco', 35.0, TRUE, 10),"
-    "('Maracuya', 25.0, TRUE, 10),"
-    "('Naranja', 30.0, TRUE, 10),"
-    "('Anana', 20.0, TRUE, 10);"
+    "('Vainilla', 50, 1, 9),"
+    "('Chocolate', 40, 1, 8),"
+    "('Chocolate Blanco', 30, 1, 8),"
+    "('Chocolate Amargo', 20, 1, 8),"
+    "('Dulce de Leche', 60, 1, 13),"
+    "('Dulce de Leche Granizado', 30, 1, 13),"
+    "('Dulce de Leche con Nuez', 25, 1, 13),"
+    "('Menta Granizada', 30, 1, 14),"
+    "('Peperina', 20, 1, 14),"
+    "('Café', 25, 1, 11),"
+    "('Pistacho', 20, 1, 10),"
+    "('Granizado', 50, 1, 11),"
+    "('Banana Split', 40, 1, 11),"
+    "('Crema Americana', 55, 1, 11),"
+    "('Crema Rusa', 45, 1, 11),"
+    "('Crema del Cielo', 35, 1, 11),"
+    "('Frutilla', 45, 1, 10),"
+    "('Limón', 35, 1, 10),"
+    "('Coco', 35, 1, 10),"
+    "('Maracuya', 25, 1, 10),"
+    "('Naranja', 30, 1, 10),"
+    "('Anana', 20, 1, 10);"
 )
 
 SEEDS['empleados'] = (
@@ -248,7 +248,7 @@ SEEDS['items_ventas'] = (
     "(2, 6, 1),"   # 1 vaso chico
     "(2, 13, 1),"  # 1 batido
     "(3, 3, 1),"   # 1 pote 1 kg
-    "(3, 17, 2),"  # 2 licuados mixtos
+    "(3, 15, 2),"  # 2 yogures
     "(4, 8, 2);"   # 2 paletas de agua
 )
 
@@ -269,7 +269,6 @@ SEEDS['items_venta_sabores'] = (
     "(7, 6),"   # Limón
     "(7, 9);"   # Naranja
 )
-
 
 def create_database(cursor):
     try:

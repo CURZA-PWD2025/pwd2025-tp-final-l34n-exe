@@ -1,14 +1,24 @@
 <template>
   <div>
     <h2>Los proveedores</h2>
-    <router-link :to="{ name: 'proveedores_create' }">Crear proveedor </router-link>
-    <table>
+    <ButtonComponent :to="{ name: 'proveedores_create' }"
+      ><template #pre-icon>
+        <Icon
+          icon="oui:ml-create-single-metric-job"
+          width="28"
+          height="28"
+          style="color: green"
+        /> </template
+      >CREAR PROVEEDOR</ButtonComponent
+    >
+    <v-table density="comfortable">
       <thead>
         <tr>
           <th>ID</th>
           <th>NOMBRE</th>
           <th>EMAIL</th>
           <th>TELEFONO</th>
+          <th>ACCIONES</th>
         </tr>
       </thead>
       <tbody>
@@ -17,27 +27,44 @@
           <td>{{ proveedor.nombre }}</td>
           <td>{{ proveedor.email }}</td>
           <td>{{ proveedor.telefono }}</td>
-          <td>
-            <router-link :to="{ name: 'proveedores_edit', params: { id: proveedor.id } }"
-              >Editar</router-link
+          <td class="acciones">
+            <ButtonComponent
+              :to="{ name: 'proveedores_edit', params: { id: proveedor.id } }"
+              style="color: #1976d2"
             >
-            <router-link :to="{ name: 'proveedores_show', params: { id: proveedor.id } }"
-              >Mostrar</router-link
-            >
-            <button @click="deleteProveedor(proveedor.id ? proveedor.id : 0)" class="btn-delete">
+              <template #pre-icon
+                ><Icon
+                  icon="material-symbols:edit-outline"
+                  width="28"
+                  height="28"
+                  style="color: #1976d2"
+              /></template>
+              EDITAR
+            </ButtonComponent>
+            <ButtonComponent :to="{ name: 'proveedores_show', params: { id: proveedor.id } }">
+              <template #post-icon
+                ><Icon icon="iconoir:eye" width="28" height="28"></Icon
+              ></template>
+              MOSTRAR
+            </ButtonComponent>
+            <ButtonComponent @click="deleteProveedor(proveedor.id as number)" style="color: red">
+              <template #pre-icon
+                ><Icon icon="typcn:delete-outline" width="28" height="28" style="color: red"></Icon
+              ></template>
               Eliminar
-            </button>
+            </ButtonComponent>
           </td>
         </tr>
       </tbody>
-    </table>
+    </v-table>
   </div>
 </template>
 
 <script setup lang="ts">
 import useProveedoresStore from '@/stores/proveedores'
 import { toRefs, onMounted } from 'vue'
-
+import ButtonComponent from '../ButtonComponent.vue'
+import { Icon } from '@iconify/vue'
 const { proveedores } = toRefs(useProveedoresStore())
 const { getAll, destroy } = useProveedoresStore()
 
@@ -53,4 +80,18 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+h2 {
+  margin-bottom: 15px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+</style>
