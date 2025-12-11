@@ -3,9 +3,15 @@
     <v-card class="mx-auto my-8" variant="outlined" elevation="16" max-width="300">
       <v-card-title class="text-h6 text-center">Detalle del item</v-card-title>
       <v-card-text>
-        <p><strong>ID: {{ itemventasabor.id }}</strong></p>
-        <p><strong>ITEM ID: {{ itemventasabor.itemventa?.id }}</strong></p>
-        <p><strong>SABOR: {{ itemventasabor.sabor?.nombre }}</strong></p>
+        <p>
+          <strong>ID: {{ itemventasabor.id }}</strong>
+        </p>
+        <p>
+          <strong>ITEM ID: {{ itemventasabor.itemventa?.id }}</strong>
+        </p>
+        <p>
+          <strong>SABOR: {{ itemventasabor.sabor?.nombre }}</strong>
+        </p>
         <div class="acciones">
           <ButtonComponent
             :to="{ name: 'itemventasabores_edit', params: { id: itemventasabor.id } }"
@@ -20,7 +26,10 @@
             /></template>
             EDITAR
           </ButtonComponent>
-          <ButtonComponent @click="deleteItemVentaSabor(itemventasabor.id as number)" style="color: red">
+          <ButtonComponent
+            @click="deleteItemVentaSabor(itemventasabor.id as number)"
+            style="color: red"
+          >
             <template #pre-icon
               ><Icon icon="typcn:delete-outline" width="28" height="28" style="color: red"></Icon
             ></template>
@@ -30,7 +39,12 @@
       </v-card-text>
     </v-card>
   </div>
-  <router-link :to="{ name: 'itemventasabores_list' }">VOLVER</router-link>
+  <ButtonComponent class="volver" :to="{ name: 'itemventasabores_list' }">
+    <template #pre-icon
+      ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
+    /></template>
+    VOLVER A LA LISTA
+  </ButtonComponent>
 </template>
 
 <script setup lang="ts">
@@ -53,7 +67,6 @@ const deleteItemVentaSabor = async (id: number) => {
   }
 }
 
-
 onMounted(async () => {
   const id = Number(route.params.id)
   if (id) {
@@ -65,10 +78,5 @@ onMounted(async () => {
 <style scoped>
 .acciones {
   display: flex;
-}
-
-.volver {
-  color: #1976d2;
-  text-decoration: none;
 }
 </style>

@@ -9,6 +9,7 @@
         variant="outlined"
         return-object
         :rules="[(v) => !!v || 'Debe elegir un item']"
+        required
       >
         <template #item="{ props, item }">
           <v-list-item
@@ -27,7 +28,12 @@
         label="Sabor"
         variant="outlined"
         return-object
-        :rules="[(v) => !!v || 'Debe elegir un sabor']"
+        :rules="[
+          (v) => !!v || 'Debe elegir un sabor',
+          (v) => v?.stock > 0 || 'No hay stock disponible',
+          (v) => !!v?.disponible || 'El sabor no está disponible',
+        ]"
+        required
       >
         <template #item="{ props, item }">
           <v-list-item
@@ -85,15 +91,14 @@ onMounted(async () => {
 })
 
 const crear = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) return
-  if (!itemventasabor.value.itemventa?.id || !itemventasabor.value.sabor?.id) {
-    alert('Por favor, complete todos los campos.')
+  const result = await form.value?.validate()
+  if (!result.valid) {
+    alert('Por favor, complete todos los campos correctamente.')
     return
   } else {
     const data = {
-      id_item: itemventasabor.value.itemventa.id,
-      id_sabor: itemventasabor.value.sabor.id,
+      id_item: itemventasabor.value.itemventa?.id,
+      id_sabor: itemventasabor.value.sabor?.id,
     }
     await create(data as never)
 
@@ -115,8 +120,8 @@ const crear = async () => {
           id: 0,
           fecha: '',
           total: 0,
-          cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion:'' },
-          empleado: { id: 0, nombre: '', apellido: '', telefono: '', email:'', puesto:'' },
+          cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion: '' },
+          empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
         },
       },
       sabor: {
@@ -135,4 +140,8 @@ const crear = async () => {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.crear {
+  text-align: center;
+}
+</style>

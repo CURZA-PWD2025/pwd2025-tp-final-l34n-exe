@@ -1,33 +1,47 @@
 <template>
-  <v-card class="mx-auto pa-6" max-width="500" variant="outlined">
-    <v-card-title class="text-h6 text-center">Actualizar Cliente</v-card-title>
+  <v-card class="mx-auto pa-6" max-width="500" elevation="16">
+    <v-card-title class="text-h6 text-center">INSERTE DATOS</v-card-title>
+
     <v-form @submit.prevent="actualizar" ref="form">
       <v-text-field
         v-model="cliente.nombre"
         label="Nombre del cliente"
         variant="outlined"
-        :rules="[(v) => !!v || 'El nombre es obligatorio']"
+        :rules="[(v) => !!v || 'El nombre es obligatorio',
+          (v) => v.length >= 4 || 'Mínimo 4 caracteres',
+          (v) => v.length <= 30 || 'Máximo 30 caracteres',
+        ]"
         required
       ></v-text-field>
       <v-text-field
         v-model="cliente.apellido"
         label="Apellido del cliente"
         variant="outlined"
-        :rules="[(v) => !!v || 'El apellido es obligatorio']"
+        :rules="[(v) => !!v || 'El apellido es obligatorio',
+          (v) => v.length >= 4 || 'Mínimo 4 caracteres',
+          (v) => v.length <= 50 || 'Máximo 50 caracteres'
+        ]"
         required
       ></v-text-field>
       <v-text-field
         v-model="cliente.telefono"
-        label="Telefono del cliente"
+        label="Teléfono del cliente"
         variant="outlined"
-        :rules="[(v) => !!v || 'El telefono es obligatorio']"
+        :rules="[
+          (v) => !!v || 'Campo obligatorio',
+          (v) => /^[0-9]+$/.test(v) || 'Solo números',
+          (v) => v.length === 10 || 'Debe tener 10 dígitos',
+        ]"
         required
       ></v-text-field>
       <v-text-field
         v-model="cliente.direccion"
         label="Dirección del cliente"
         variant="outlined"
-        :rules="[(v) => !!v || 'La dirección es obligatorio']"
+        :rules="[(v) => !!v || 'La dirección es obligatorio',
+          (v) => v.length >= 10 || 'Mínimo 10 caracteres',
+          (v) => v.length <= 100 || 'Máximo 100 caracteres'
+        ]"
         required
       ></v-text-field>
       <ButtonComponent type="submit" class="act">
@@ -66,17 +80,9 @@ onMounted(async () => {
 })
 
 const actualizar = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) return
-  if (
-    !cliente.value.nombre ||
-    !cliente.value.apellido ||
-    !cliente.value.telefono ||
-    !cliente.value.direccion
-  ) {
-    alert('Por favor, complete los campos.')
-    return
-  } else {
+  const result = await form.value?.validate()
+  if (!result.valid) return
+  else {
     const data = {
       id: cliente.value.id,
       nombre: cliente.value.nombre,

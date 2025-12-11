@@ -27,7 +27,12 @@
         label="Sabor"
         variant="outlined"
         return-object
-        :rules="[(v) => !!v || 'Debe elegir un sabor']"
+        :rules="[
+          (v) => !!v || 'Debe elegir un sabor',
+          (v) => v?.stock > 0 || 'No hay stock disponible',
+          (v) => !!v?.disponible || 'El sabor no está disponible',
+        ]"
+        required
       >
         <template #item="{ props, item }">
           <v-list-item
@@ -41,7 +46,7 @@
         </template>
       </v-select>
 
-      <ButtonComponent type="submit" class="crear">
+      <ButtonComponent type="submit" class="act">
         <template #pre-icon>
           <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
         </template>
@@ -86,17 +91,17 @@ onMounted(async () => {
   await saborestore.getAll()
   sabores.value = saborestore.sabores
 })
+
 const actualizar = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) return
-  if (!itemventasabor.value.itemventa?.id || !itemventasabor.value.sabor?.id) {
-    alert('Por favor, complete todos los campos.')
+  const result = await form.value?.validate()
+  if (!result.valid) {
+    alert('Por favor, complete todos los campos correctamente.')
     return
   } else {
     const data = {
       id: itemventasabor.value.id,
-      id_item: itemventasabor.value.itemventa.id,
-      id_sabor: itemventasabor.value.sabor.id,
+      id_item: itemventasabor.value.itemventa?.id,
+      id_sabor: itemventasabor.value.sabor?.id,
     }
     await update(data)
 
@@ -118,8 +123,8 @@ const actualizar = async () => {
           id: 0,
           fecha: '',
           total: 0,
-          cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion:'' },
-          empleado: { id: 0, nombre: '', apellido: '', telefono: '', email:'', puesto:'' },
+          cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion: '' },
+          empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
         },
       },
       sabor: {

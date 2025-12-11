@@ -7,21 +7,32 @@
           v-model="proveedor.nombre"
           label="Nombre del proveedor"
           variant="outlined"
-          :rules="[(v) => !!v || 'El nombre es obligatorio']"
+          :rules="[
+            (v) => !!v || 'El nombre es obligatorio',
+            (v) => v.length >= 3 || 'Mínimo 3 caracteres',
+            (v) => v.length <= 20 || 'Máximo 20 caracteres',
+          ]"
           required
         ></v-text-field>
         <v-text-field
           v-model="proveedor.telefono"
           label="Teléfono del proveedor"
           variant="outlined"
-          :rules="[(v) => !!v || 'El teléfono es obligatorio']"
+          :rules="[
+            (v) => !!v || 'El teléfono es obligatorio',
+            (v) => /^[0-9]+$/.test(v) || 'Solo números',
+            (v) => v.length === 10 || 'Debe tener 10 dígitos',
+          ]"
           required
-        ></v-text-field>
+        />
         <v-text-field
           v-model="proveedor.email"
           label="Email del proveedor"
           variant="outlined"
-          :rules="[(v) => !!v || 'El email es obligatorio']"
+          :rules="[
+            (v) => !!v || 'El email es obligatorio',
+            (v) => /.+@.+\..+/.test(v) || 'Email inválido',
+          ]"
           required
         ></v-text-field>
         <ButtonComponent type="submit" class="act">
@@ -52,10 +63,9 @@ const { create } = store
 const form = ref()
 
 const crear = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) return
-  if (!proveedor.value.nombre || !proveedor.value.telefono || !proveedor.value.email) {
-    alert('Por favor, complete todos los campos.')
+  const result = await form.value?.validate()
+  if (!result.valid) {
+    alert('Por favor, complete todos los campos correctamente.')
     return
   }
   const data = {

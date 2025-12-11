@@ -7,7 +7,9 @@
         label="Cantidad"
         type="number"
         variant="outlined"
-        :rules="[(v) => !!v || 'La cantidad es obligatoria']"
+        :rules="[(v) => !!v || 'La cantidad es obligatoria',
+          (v) => v > 0 || 'La cantidad debe ser mayor a 0'
+        ]"
         required
       />
       <v-select
@@ -99,13 +101,9 @@ onMounted(async () => {
 })
 
 const actualizar = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) return
-
-  if (!itemventa.value.cantidad || !itemventa.value.producto?.id || !itemventa.value.venta?.id) {
-    alert('Por favor, complete todos los campos.')
-    return
-  } else {
+  const result = await form.value?.validate()
+  if (!result.valid) return
+  else {
     const data = {
       id: itemventa.value.id,
       cantidad: itemventa.value.cantidad,

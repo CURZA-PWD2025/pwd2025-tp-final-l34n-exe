@@ -19,16 +19,24 @@
         ></v-text-field>
         <v-text-field
           v-model="empleado.telefono"
-          label="Telefono del empleado"
+          label="Teléfono del empleado"
           variant="outlined"
-          :rules="[(v) => !!v || 'El telefono es obligatorio']"
+          :rules="[
+            (v) => !!v || 'Campo obligatorio',
+            (v) => /^[0-9]+$/.test(v) || 'Solo números',
+            (v) => v.length === 10 || 'Debe tener 10 dígitos',
+          ]"
           required
         ></v-text-field>
+
         <v-text-field
           v-model="empleado.email"
           label="Email del empleado"
           variant="outlined"
-          :rules="[(v) => !!v || 'El email es obligatorio']"
+          :rules="[
+            (v) => !!v || 'El email es obligatorio',
+            (v) => /.+@.+\..+/.test(v) || 'Email inválido',
+          ]"
           required
         ></v-text-field>
         <v-select
@@ -36,12 +44,12 @@
           :items="puestos"
           item-title="nombre"
           item-value="id"
-          label="Categoría"
+          label="Puesto"
           variant="outlined"
-          :rules="[(v) => !!v || 'Seleccione una categoría']"
+          :rules="[(v) => !!v || 'Seleccione un puesto']"
           required
         />
-        <ButtonComponent type="submit">
+        <ButtonComponent type="submit" class="crear">
           <template #pre-icon>
             <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
           </template>
@@ -69,16 +77,9 @@ const { create } = store
 const puestos = ['Limpieza', 'Cajero', 'Gerente']
 const form = ref()
 const crear = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) return
-  if (
-    !empleado.value.nombre ||
-    !empleado.value.apellido ||
-    !empleado.value.telefono ||
-    !empleado.value.email ||
-    !empleado.value.puesto
-  ) {
-    alert('Por favor, complete todos los campos.')
+  const result = await form.value?.validate()
+  if (!result.valid){
+    alert('Por favor, complete todos los campos correctamente.')
     return
   } else {
     const data = {
@@ -97,16 +98,7 @@ const crear = async () => {
 </script>
 
 <style scoped>
-a {
-  display: inline-block;
-  margin-top: 16px;
-  text-decoration: none;
-  color: #1976d2;
-  font-weight: 500;
+.crear {
   text-align: center;
-}
-
-a:hover {
-  text-decoration: underline;
 }
 </style>

@@ -19,16 +19,22 @@
         ></v-text-field>
         <v-text-field
           v-model="empleado.telefono"
-          label="Telefono del empleado"
+          label="Teléfono del empleado"
           variant="outlined"
-          :rules="[(v) => !!v || 'El telefono es obligatorio']"
+          :rules="[
+            (v) => !!v || 'Campo obligatorio',
+            (v) => /^[0-9]+$/.test(v) || 'Solo números',
+            (v) => v.length === 10 || 'Debe tener 10 dígitos',
+          ]"
           required
         ></v-text-field>
         <v-text-field
           v-model="empleado.email"
           label="Email del empleado"
           variant="outlined"
-          :rules="[(v) => !!v || 'El email es obligatorio']"
+          :rules="[(v) => !!v || 'El email es obligatorio',
+            (v) => /.+@.+\..+/.test(v) || 'Email inválido'
+          ]"
           required
         ></v-text-field>
         <v-select
@@ -77,18 +83,9 @@ onMounted(async () => {
 })
 
 const actualizar = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) return
-  if (
-    !empleado.value.nombre ||
-    !empleado.value.apellido ||
-    !empleado.value.telefono ||
-    !empleado.value.email ||
-    !empleado.value.puesto
-  ) {
-    alert('Por favor, complete los campos.')
-    return
-  }else {
+  const result = await form.value?.validate()
+  if (!result.valid) return
+  else {
     const data = {
       id: empleado.value.id,
       nombre: empleado.value.nombre,

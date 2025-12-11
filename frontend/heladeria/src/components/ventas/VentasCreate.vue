@@ -8,7 +8,11 @@
           label="Total de la venta"
           type="number"
           variant="outlined"
-          :rules="[(v) => !!v || 'El dato es obligatorio']"
+          :rules="[
+            (v) => !!v || 'El dato es obligatorio',
+            (v) => v > 0 || 'El total debe ser mayor a 0',
+            (v) => !isNaN(parseFloat(v)) || 'El total debe ser un número',
+          ]"
           required
         />
         <v-text-field
@@ -38,7 +42,7 @@
             />
           </template>
           <template #selection="{ item }">
-            {{ item.raw.nombre }} {{ item.raw.apellido }} ({{ item.raw.puesto }})
+            {{ item.raw.nombre }} {{ item.raw.apellido }} {{ item.raw.puesto }}
           </template>
         </v-select>
         <v-select
@@ -57,7 +61,7 @@
             />
           </template>
           <template #selection="{ item }">
-            {{ item.raw.nombre }} {{ item.raw.apellido }} (ID: {{ item.raw.id }})
+            {{ item.raw.nombre }} {{ item.raw.apellido }} ID: {{ item.raw.id }}
           </template>
         </v-select>
         <ButtonComponent type="submit" class="crear">
@@ -104,39 +108,30 @@ onMounted(async () => {
 })
 
 const crear = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) return
-  if (
-    !venta.value.total ||
-    !venta.value.fecha ||
-    !venta.value.empleado?.id ||
-    !venta.value.cliente?.id
-  ) {
+  const result = await form.value?.validate()
+  if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
-  }
-  if (venta.value.empleado.puesto === 'Limpieza') {
-    alert('Un empleado de limpieza no puede realizar ventas.')
-    return
-  }
-  const data = {
-    total: venta.value.total,
-    fecha: venta.value.fecha,
-    id_empleado: venta.value.empleado?.id,
-    id_cliente: venta.value.cliente?.id,
-  }
-  await create(data)
+  } else {
+    const data = {
+      total: venta.value.total,
+      fecha: venta.value.fecha,
+      id_empleado: venta.value.empleado?.id,
+      id_cliente: venta.value.cliente?.id,
+    }
+    await create(data)
 
-  venta.value = {
-    total: 0,
-    fecha: '',
-    empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
-    cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion: '' },
+    venta.value = {
+      total: 0,
+      fecha: '',
+      empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
+      cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion: '' },
+    }
+
+    alert('Venta creada con éxito.')
+
+    form.value.reset()
   }
-
-  alert('Venta creada con éxito.')
-
-  form.value.reset()
 }
 </script>
 

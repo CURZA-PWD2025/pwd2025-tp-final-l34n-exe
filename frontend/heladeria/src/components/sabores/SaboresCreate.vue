@@ -7,7 +7,12 @@
           v-model="sabor.nombre"
           label="Nombre del sabor"
           variant="outlined"
-          :rules="[(v) => !!v || 'El nombre es obligatorio']"
+          :rules="[
+            (v) => !!v || 'El nombre es obligatorio',
+            (v) => v.length <= 50 || 'Máximo 50 caracteres',
+            (v) => v.length >= 3 || 'Mínimo 3 caracteres',
+            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios',
+          ]"
           required
         ></v-text-field>
         <v-text-field
@@ -15,7 +20,11 @@
           label="Stock"
           type="number"
           variant="outlined"
-          :rules="[(v) => v >= 0 || 'Stock inválido']"
+          :rules="[
+            (v) => v >= 0 || 'Stock inválido',
+            (v) => Number.isInteger(v) || 'El stock debe ser un número entero',
+            (v) => !!v || 'El stock es obligatorio',
+          ]"
           required
         ></v-text-field>
         <v-select
@@ -26,11 +35,7 @@
           label="Categoría"
           variant="outlined"
           :rules="[
-            (v) => !!v || 'Seleccione una categoría',
-            (v) =>
-              !['Vasos', 'Potes', 'Cucuruchos', 'Paletas', 'Tortas', 'Batidos', 'Yogures Helados'].includes(
-                v?.nombre,
-              ) || 'Esta categoría no está permitida',
+            (v) => !!v || 'Seleccione una categoría'
           ]"
           return-object
         ></v-select>
@@ -39,7 +44,7 @@
           Disponible?
         </label>
         <div>
-          <ButtonComponent type="submit">
+          <ButtonComponent type="submit" class="crear">
             <template #pre-icon>
               <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
             </template>
@@ -76,51 +81,43 @@ const form = ref()
 
 onMounted(async () => {
   await categoriasStore.getAll()
-  categorias.value = categoriasStore.categorias
+  categorias.value = categoriasStore.categorias.filter(
+    (categoria) => categoria.tipo === "Sabor"
+  )
 })
 
 const crear = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) return
-
-  if (!sabor.value.categoria) {
+  const result = await form.value?.validate()
+  if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
+  } else {
+    const data = {
+      nombre: sabor.value.nombre,
+      stock: sabor.value.stock,
+      disponible: sabor.value.disponible ? 1 : 0,
+      id_categoria: sabor.value.categoria?.id,
+    }
+
+    await create(data)
+
+    sabor.value = {
+      nombre: '',
+      stock: 0,
+      disponible: 1,
+      categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
+    }
+
+    alert('Sabor creado con éxito.')
+
+    form.value.reset()
   }
-
-  if (
-    sabor.value.categoria?.nombre === 'Vasos' ||
-    sabor.value.categoria?.nombre === 'Potes' ||
-    sabor.value.categoria?.nombre === 'Tortas' ||
-    sabor.value.categoria?.nombre === 'Batidos' ||
-    sabor.value.categoria?.nombre === 'Yogures Helados' ||
-    sabor.value.categoria?.nombre === 'Paletas' ||
-    sabor.value.categoria?.nombre === 'Cucuruchos'
-  ) {
-    alert('No se puede asignar esta categoria al sabor.')
-    return
-  }
-
-  const data = {
-    nombre: sabor.value.nombre,
-    stock: sabor.value.stock,
-    disponible: sabor.value.disponible ? 1 : 0,
-    id_categoria: sabor.value.categoria.id,
-  }
-
-  await create(data)
-
-  sabor.value = {
-    nombre: '',
-    stock: 0,
-    disponible: 1,
-    categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-  }
-
-  alert('Sabor creado con éxito.')
-
-  form.value.reset()
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.crear {
+  text-align: center;
+}
+
+</style>

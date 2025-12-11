@@ -6,28 +6,41 @@
         v-model="producto.nombre"
         label="Nombre del producto"
         variant="outlined"
-        :rules="[(v) => !!v || 'El nombre es obligatorio']"
+        :rules="[
+          (v) => !!v || 'El nombre es obligatorio',
+          (v) => v.length <= 30 || 'Máximo 30 caracteres',
+          (v) => v.length >= 10 || 'Mínimo 10 caracteres',
+        ]"
         required
       ></v-text-field>
       <v-text-field
         v-model="producto.precio"
         label="Precio del producto"
         variant="outlined"
-        :rules="[(v) => !!v || 'El precio es obligatorio']"
+        :rules="[
+          (v) => !!v || 'El precio es obligatorio',
+          (v) => v > 0 || 'El precio debe ser mayor a 0',
+        ]"
         required
       ></v-text-field>
       <v-text-field
         v-model="producto.stock"
         label="Stock del producto"
         variant="outlined"
-        :rules="[(v) => !!v || 'El stock es obligatorio']"
+        :rules="[
+          (v) => !!v || 'El stock es obligatorio',
+          (v) => v > 0 || 'El stock no puede ser negativo o cero',
+        ]"
         required
       ></v-text-field>
       <v-text-field
         v-model="producto.max_sabores"
         label="Maximo de sabores del producto"
         variant="outlined"
-        :rules="[(v) => !!v || 'El maximo de sabores es obligatorio']"
+        :rules="[
+          (v) => !!v || 'El maximo de sabores es obligatorio',
+          (v) => (v >= 1 && v <= 4) || 'El maximo de sabores debe estar entre 1 y 4',
+        ]"
         required
       ></v-text-field>
       <v-select
@@ -38,11 +51,7 @@
         label="Categoría"
         variant="outlined"
         :rules="[
-          (v) => !!v || 'Seleccione una categoría',
-          (v) =>
-            !['Vainilla', 'Chocolates', 'Menta', 'Frutales', 'Dulce de Leche', 'Agua', 'Cremas'].includes(
-              v?.nombre,
-            ) || 'Esta categoría no está permitida',
+          (v) => !!v || 'Seleccione una categoría'
         ]"
         return-object
       />
@@ -56,7 +65,7 @@
         :rules="[(v) => !!v || 'Seleccione un proveedor']"
         return-object
       />
-      <ButtonComponent type="submit">
+      <ButtonComponent type="submit" class="crear">
         <template #pre-icon>
           <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
         </template>
@@ -89,79 +98,55 @@ const { create } = productosStore
 const categorias = ref(<Categoria[]>[])
 const proveedores = ref(<Proveedor[]>[])
 const form = ref()
+
+
 onMounted(async () => {
   await categoriasStore.getAll()
   categorias.value = categoriasStore.categorias
+
+  categorias.value = categoriasStore.categorias.filter(
+    (categoria) => categoria.tipo === "Producto"
+  )
 
   await proveedoresStore.getAll()
   proveedores.value = proveedoresStore.proveedores
 })
 
 const crear = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) return
-  if (
-    !producto.value.nombre ||
-    !producto.value.precio ||
-    !producto.value.stock ||
-    producto.value.max_sabores < 1 ||
-    producto.value.max_sabores > 4 ||
-    !producto.value.categoria?.id ||
-    !producto.value.proveedor?.id
-  ) {
+  const result = await form.value?.validate()
+  if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
+  } else {
+    const data = {
+      nombre: producto.value.nombre,
+      precio: producto.value.precio,
+      stock: producto.value.stock,
+      max_sabores: producto.value.max_sabores,
+      id_categoria: producto.value.categoria?.id,
+      id_proveedor: producto.value.proveedor?.id,
+    }
+
+    await create(data)
+
+    producto.value = {
+      nombre: '',
+      precio: 0,
+      stock: 0,
+      max_sabores: 0,
+      categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
+      proveedor: { id: 0, nombre: '', email: '', telefono: '' },
+    }
+
+    alert('Producto creado con éxito.')
+
+    form.value.reset()
   }
-  if (
-    producto.value.categoria?.nombre === 'Vainilla' ||
-    producto.value.categoria?.nombre === 'Chocolates' ||
-    producto.value.categoria?.nombre === 'Menta' ||
-    producto.value.categoria?.nombre === 'Frutales' ||
-    producto.value.categoria?.nombre === 'Agua' ||
-    producto.value.categoria?.nombre === 'Dulce de Leche' ||
-    producto.value.categoria?.nombre === 'Cremas'
-  ) {
-    alert('No se puede asignar esta categoria al producto.')
-    return
-  }
-
-  const data = {
-    nombre: producto.value.nombre,
-    precio: producto.value.precio,
-    stock: producto.value.stock,
-    max_sabores: producto.value.max_sabores,
-    id_categoria: producto.value.categoria?.id,
-    id_proveedor: producto.value.proveedor?.id,
-  }
-
-  await create(data)
-
-  producto.value = {
-    nombre: '',
-    precio: 0,
-    stock: 0,
-    max_sabores: 0,
-    categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-    proveedor: { id: 0, nombre: '', email: '', telefono: '' },
-  }
-
-  alert('Producto creado con éxito.')
-
-  form.value.reset()
 }
 </script>
 
 <style scoped>
-a {
-  display: inline-block;
-  margin-top: 16px;
-  text-decoration: none;
-  color: #1976d2;
-  font-weight: 500;
+.crear {
   text-align: center;
-}
-
-a:hover {
-  text-decoration: underline;
 }
 </style>

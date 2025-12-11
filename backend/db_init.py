@@ -131,18 +131,17 @@ TABLES['items_venta_sabores'] = (
     "  PRIMARY KEY (`id`),"
     "  UNIQUE KEY `ux_item_sabor` (`id_item`, `id_sabor`),"
     "  FOREIGN KEY (`id_item`) REFERENCES `items_ventas`(`id`) ON DELETE CASCADE,"
-    "  FOREIGN KEY (`id_sabor`) REFERENCES `sabores`(`id`) ON DELETE CASCADE"
+    "  FOREIGN KEY (`id_sabor`) REFERENCES `sabores`(`id`)"
     ")"
 )
 
-
 SEEDS['proveedores'] = (
     "INSERT INTO `proveedores` (nombre, telefono, email) VALUES "
-    "('ICE', '123123123', 'ice@gmail.com'),"
-    "('Grido', '123456789', 'grido@gmail.com'),"
-    "('La Montevideana', '987654321', 'lamontevideana@gmail.com'),"
-    "('Freddo', '555666777', 'freddo@gmail.com'),"
-    "('Frigor', '444555666', 'frigor@gmail.com');"
+    "('ICE', '2920552210', 'ice@gmail.com'),"
+    "('Grido', '2920552211', 'grido@outlook.com'),"
+    "('La Montevideana', '2920552212', 'lamontevideana@gmail.com'),"
+    "('Freddo', '2920552213', 'freddo@outlook.com'),"
+    "('Frigor', '2920444555', 'frigor@gmail.com');"
 )
 
 SEEDS['categoria'] = (
@@ -218,18 +217,18 @@ SEEDS['sabores'] = (
 
 SEEDS['empleados'] = (
     "INSERT INTO `empleados` (nombre, apellido, telefono, email, puesto) VALUES "
-    "('Luis', 'Rodriguez', '444555666', 'luis.rodriguez@gmail.com', 'Gerente'),"
-    "('Ana', 'Martinez', '111222333', 'ana.martinez@gmail.com', 'Cajero'),"
-    "('Sofia', 'Fernandez', '777888999', 'sofia.fernandez@gmail.com', 'Cajero'),"
-    "('Miguel', 'Lopez', '222333444', 'miguel.lopez@gmail.com', 'Cajero'),"
-    "('Diego', 'Gonzalez', '000111222', 'diego.gonzalez@gmail.com', 'Limpieza');"
+    "('Luis', 'Rodriguez', '2920547896', 'luisrodriguez@outlook.com', 'Gerente'),"
+    "('Ana', 'Martinez', '2920663322', 'anamartinez@gmail.com', 'Cajero'),"
+    "('Sofia', 'Fernandez', '2920986321', 'sofiafernandez@gmail.com', 'Cajero'),"
+    "('Miguel', 'Lopez', '2920222333', 'miguellopez@yahoo.com', 'Cajero'),"
+    "('Diego', 'Gonzalez', '2920111222', 'diegogonzalez@protonmail.com', 'Limpieza');"
 )
 
 SEEDS['clientes'] = (
     "INSERT INTO `clientes` (nombre, apellido, telefono, direccion) VALUES "
-    "('Juan', 'Perez', '123456789', 'Calle 123'),"
-    "('Maria', 'Gomez', '987654321', 'Avenida Siempre Viva 456'),"
-    "('Carlos', 'Lopez', '555666777', 'Boulevard Central 789');"
+    "('Juan', 'Perez', '2920123456', 'Calle 123'),"
+    "('Maria', 'Gomez', '2920987654', 'Avenida Siempre Viva 456'),"
+    "('Carlos', 'Lopez', '2920555666', 'Boulevard Central 789');"
 )
 
 SEEDS['ventas'] = (

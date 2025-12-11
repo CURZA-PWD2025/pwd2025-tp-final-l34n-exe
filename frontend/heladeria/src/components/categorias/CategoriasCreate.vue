@@ -8,7 +8,11 @@
           v-model="categoria.nombre"
           label="Nombre de la categoría"
           variant="outlined"
-          :rules="[(v) => !!v || 'El nombre es obligatorio']"
+          :rules="[(v) => !!v || 'El nombre es obligatorio',
+            (v) => v.length <= 30 || 'Máximo 30 caracteres',
+            (v) => v.length >= 3 || 'Mínimo 3 caracteres',
+            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios'
+          ]"
           required
         />
         <v-select
@@ -23,10 +27,14 @@
           v-model="categoria.descripcion"
           label="Descripción"
           variant="outlined"
-          :rules="[(v) => !!v || 'La descripción es obligatoria']"
+          :rules="[(v) => !!v || 'La descripción es obligatoria',
+            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios',
+            (v) => v.length >= 10 || 'Mínimo 10 caracteres',
+            (v) => v.length <= 100 || 'Máximo 100 caracteres'
+          ]"
           required
         />
-        <ButtonComponent type="submit">
+        <ButtonComponent type="submit" class="crear">
           <template #pre-icon>
             <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
           </template>
@@ -57,13 +65,9 @@ const form = ref()
 const tipos = ['Producto', 'Sabor']
 
 const crear = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) return
-
-  if (!categoria.value.nombre || !categoria.value.tipo || !categoria.value.descripcion) {
-    alert('Complete todos los campos.')
-    return
-  } else {
+  const result = await form.value?.validate()
+  if (!result.valid) return
+  else {
     const data = {
       nombre: categoria.value.nombre,
       tipo: categoria.value.tipo,
@@ -82,16 +86,7 @@ const crear = async () => {
 </script>
 
 <style scoped>
-a {
-  display: inline-block;
-  margin-top: 16px;
-  text-decoration: none;
-  color: #1976d2;
-  font-weight: 500;
+.crear {
   text-align: center;
-}
-
-a:hover {
-  text-decoration: underline;
 }
 </style>
