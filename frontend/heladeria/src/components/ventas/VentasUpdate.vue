@@ -20,7 +20,8 @@
           label="Fecha y Hora"
           type="datetime-local"
           variant="outlined"
-          :rules="[(v) => !!v || 'El dato es obligatorio',
+          :rules="[
+            (v) => !!v || 'El dato es obligatorio',
             (v) => !isNaN(new Date(v).getTime()) || 'Debe ser una fecha y hora válida',
           ]"
           required
@@ -83,7 +84,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, toRefs, onMounted } from 'vue'
+import { ref, toRefs, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import useVentasStore from '@/stores/ventas'
 import useClientesStore from '@/stores/clientes'
@@ -100,7 +101,7 @@ const { getOne, update } = ventasStore
 const empleados = ref(<Empleado[]>[])
 const clientes = ref(<Cliente[]>[])
 const route = useRoute()
-const form=ref()
+const form = ref()
 
 onMounted(async () => {
   const valid = await form.value?.validate()
@@ -116,7 +117,7 @@ onMounted(async () => {
 
 const actualizar = async () => {
   const result = await form.value?.validate()
-  if (!result.valid){
+  if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
   }
@@ -130,21 +131,16 @@ const actualizar = async () => {
 
   await update(data)
 
-  venta.value = {
-    total: 0,
-    fecha: '',
-    empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
-    cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion: '' },
-  }
-
-  alert('Venta actualizada con éxito.')
-
-  form.value.reset()
+  alert('Venta ACTUALIZADO con éxito.')
 }
+
+onBeforeUnmount(() => {
+  ventasStore.limpiarVenta()
+})
 </script>
 
 <style scoped>
-.act{
+.act {
   text-align: center;
 }
 </style>

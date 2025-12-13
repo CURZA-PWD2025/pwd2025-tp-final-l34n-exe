@@ -90,8 +90,9 @@ const crear = async () => {
       puesto: empleado.value.puesto,
     }
     await create(data)
-    empleado.value = { nombre: '', apellido: '', telefono: '', email: '', puesto: '' }
+
     alert('Empleado creado con éxito.')
+
     form.value.reset()
   }
 }

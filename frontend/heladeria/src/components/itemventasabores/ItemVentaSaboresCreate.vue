@@ -32,6 +32,10 @@
           (v) => !!v || 'Debe elegir un sabor',
           (v) => v?.stock > 0 || 'No hay stock disponible',
           (v) => !!v?.disponible || 'El sabor no está disponible',
+          (v) =>
+            saboresAsignados < (itemventasabor.itemventa?.producto?.max_sabores ?? 0) ||
+            'Se ha alcanzado el máximo de sabores para este item',
+          (v) => !saboresRepetidos || 'El sabor ya ha sido asignado a este item',
         ]"
         required
       >
@@ -46,7 +50,7 @@
           {{ item.raw.nombre }}
         </template>
       </v-select>
-
+      <p>Sabores: {{ saboresAsignados }} / {{ itemventasabor.itemventa?.producto?.max_sabores }}</p>
       <ButtonComponent type="submit" class="crear">
         <template #pre-icon>
           <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
@@ -64,23 +68,23 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, toRefs } from 'vue'
+import { onMounted, ref, toRefs, computed } from 'vue'
 import useItemVentaSaboresStore from '@/stores/itemventasabores'
 import useItemVentasStore from '@/stores/itemventas'
 import useSaboresStore from '@/stores/sabores'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
-const form = ref()
 import type { Sabor } from '@/interfaces/Sabor'
 import type { ItemVenta } from '@/interfaces/ItemVenta'
+
 const itemventasaborestore = useItemVentaSaboresStore()
 const itemventastore = useItemVentasStore()
 const saborestore = useSaboresStore()
 const { itemventasabor } = toRefs(itemventasaborestore)
-
 const { create } = itemventasaborestore
 const sabores = ref(<Sabor[]>[])
 const itemventas = ref(<ItemVenta[]>[])
+const form = ref()
 
 onMounted(async () => {
   await saborestore.getAll()
@@ -88,6 +92,23 @@ onMounted(async () => {
 
   await itemventastore.getAll()
   itemventas.value = itemventastore.itemventas
+})
+
+//*Para no asignar más sabores de los permitidos al item de venta */
+const saboresAsignados = computed(() => {
+  return itemventasaborestore.itemventasabores.filter(
+    (sabor) => sabor.itemventa?.id === itemventasabor.value.itemventa?.id,
+  ).length
+})
+//* Para no repetir sabores en un mismo item de venta */
+const saboresRepetidos = computed(() => {
+  return (
+    itemventasaborestore.itemventasabores.filter(
+      (sabor) =>
+        sabor.itemventa?.id === itemventasabor.value.itemventa?.id &&
+        sabor.sabor?.id === itemventasabor.value.sabor?.id,
+    ).length > 0
+  )
 })
 
 const crear = async () => {
@@ -101,37 +122,6 @@ const crear = async () => {
       id_sabor: itemventasabor.value.sabor?.id,
     }
     await create(data as never)
-
-    itemventasabor.value = {
-      id: 0,
-      itemventa: {
-        id: 0,
-        cantidad: 0,
-        producto: {
-          id: 0,
-          nombre: '',
-          precio: 0,
-          stock: 0,
-          max_sabores: 0,
-          proveedor: { id: 0, nombre: '', telefono: '', email: '' },
-          categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-        },
-        venta: {
-          id: 0,
-          fecha: '',
-          total: 0,
-          cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion: '' },
-          empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
-        },
-      },
-      sabor: {
-        id: 0,
-        nombre: '',
-        stock: 0,
-        disponible: true,
-        categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-      },
-    }
 
     alert('Item de Venta Sabor creado con éxito.')
 

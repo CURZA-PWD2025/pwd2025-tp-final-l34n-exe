@@ -1,11 +1,11 @@
-import type { Venta } from "@/interfaces/Venta";
-import type { Empleado } from "@/interfaces/Empleado";
-import type { Cliente } from "@/interfaces/Cliente";
-import { defineStore } from "pinia";
-import ApiService from '@/services/ApiService';
-import { ref } from 'vue';
+import type { Venta } from '@/interfaces/Venta'
+import type { Empleado } from '@/interfaces/Empleado'
+import type { Cliente } from '@/interfaces/Cliente'
+import { defineStore } from 'pinia'
+import ApiService from '@/services/ApiService'
+import { ref } from 'vue'
 
-const useVentasStore = defineStore('ventas',() => {
+const useVentasStore = defineStore('ventas', () => {
   const ventas = ref<Array<Venta>>([])
   const venta = ref<Venta>({
     id: 0,
@@ -16,7 +16,7 @@ const useVentasStore = defineStore('ventas',() => {
       nombre: '',
       apellido: '',
       telefono: '',
-      direccion: ''
+      direccion: '',
     } as Cliente,
     empleado: {
       id: 0,
@@ -24,43 +24,58 @@ const useVentasStore = defineStore('ventas',() => {
       apellido: '',
       telefono: '',
       email: '',
-      puesto: ''
-    } as Empleado
+      puesto: '',
+    } as Empleado,
   })
   const url = 'ventas'
-  async function getAll(){
+  async function getAll() {
     const data = await ApiService.getAll(url)
-    if(data){
+    if (data) {
       ventas.value = data
     }
   }
-  async function getOne(id: number){
+  async function getOne(id: number) {
     const data = await ApiService.getOne(url, id)
-    if(data){
+    if (data) {
       venta.value = data
     }
   }
-  async function create(nuevaVenta: Venta){
+  async function create(nuevaVenta: Venta) {
     const data = await ApiService.create(url, nuevaVenta)
-    if(data){
+    if (data) {
       venta.value = data
     }
   }
-  async function update(actVenta: Venta){
-    if(actVenta.id){
+  async function update(actVenta: Venta) {
+    if (actVenta.id) {
       const data = await ApiService.update(url, actVenta.id, actVenta)
-      if(data){
+      if (data) {
         venta.value = data
+      }
     }
   }
-}
-  async function destroy(id: number){
+  async function destroy(id: number) {
     const data = await ApiService.destroy(url, id)
-    if(data){
+    if (data) {
       venta.value = data
     }
   }
-  return {ventas, venta, getAll, getOne, create, update, destroy}
+  function limpiarVenta(){
+    venta.value = {
+      id: 0,
+      fecha: '',
+      total: 0,
+      cliente:{
+        id: 0,
+        nombre: '',
+        apellido: '',
+        telefono: '',
+        direccion: ''
+      }
+    }
+
+  }
+  return { ventas, venta, getAll, getOne, create, update, destroy, limpiarVenta }
 })
 
-export default useVentasStore;
+export default useVentasStore

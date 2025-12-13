@@ -68,14 +68,18 @@ import { ref, toRefs } from 'vue'
 import useClientesStore from '@/stores/clientes'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
+
 const store = useClientesStore()
 const { cliente } = toRefs(store)
 const { create } = store
 const form = ref()
+
 const crear = async () => {
   const result = await form.value?.validate()
-  if (!result.valid) return
-  else {
+  if (!result.valid) {
+    alert('Por favor, complete todos los campos correctamente.')
+    return
+  } else {
     const data = {
       nombre: cliente.value.nombre,
       apellido: cliente.value.apellido,
@@ -83,8 +87,9 @@ const crear = async () => {
       direccion: cliente.value.direccion,
     }
     await create(data)
-    cliente.value = { nombre: '', telefono: '', apellido: '', direccion: '' }
+
     alert('Cliente creado con éxito.')
+
     form.value.reset()
   }
 }

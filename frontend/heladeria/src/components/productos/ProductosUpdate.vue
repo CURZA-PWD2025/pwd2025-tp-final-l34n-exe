@@ -8,8 +8,8 @@
         variant="outlined"
         :rules="[
           (v) => !!v || 'El nombre es obligatorio',
-          (v) => v.length <= 30 || 'Máximo 30 caracteres',
-          (v) => v.length >= 10 || 'Mínimo 10 caracteres',
+          (v) => v.length <= 50 || 'Máximo 50 caracteres',
+          (v) => v.length >= 5 || 'Mínimo 5 caracteres',
         ]"
         required
       ></v-text-field>
@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, onMounted } from 'vue'
+import { ref, toRefs, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import useProductosStore from '@/stores/productos'
 import useProveedoresStore from '@/stores/proveedores'
@@ -91,6 +91,7 @@ import type { Proveedor } from '@/interfaces/Proveedor'
 import type { Categoria } from '@/interfaces/Categoria'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
+
 const productosStore = useProductosStore()
 const proveedoresStore = useProveedoresStore()
 const categoriasStore = useCategoriasStore()
@@ -134,20 +135,12 @@ const actualizar = async () => {
 
     await update(data)
 
-    producto.value = {
-      nombre: '',
-      precio: 0,
-      stock: 0,
-      max_sabores: 0,
-      categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-      proveedor: { id: 0, nombre: '', email: '', telefono: '' },
-    }
-
-    alert('Producto actualizado con éxito.')
-
-    form.value.reset()
+    alert('Producto ACTUALIZADO con éxito.')
   }
 }
+onBeforeUnmount(() => {
+  productosStore.limpiarProducto()
+})
 </script>
 
 <style scoped>

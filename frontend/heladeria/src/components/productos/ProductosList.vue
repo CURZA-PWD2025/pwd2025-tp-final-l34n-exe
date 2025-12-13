@@ -28,7 +28,7 @@
         <tr v-for="producto in productos" :key="producto.id">
           <td>{{ producto.id }}</td>
           <td>{{ producto.nombre }}</td>
-          <td>{{ producto.precio }}</td>
+          <td>{{ producto.precio }}$</td>
           <td>{{ producto.stock }}</td>
           <td>{{ producto.max_sabores }}</td>
           <td>{{ producto.proveedor?.nombre }}</td>

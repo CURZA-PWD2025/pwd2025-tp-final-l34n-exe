@@ -32,8 +32,9 @@
           v-model="empleado.email"
           label="Email del empleado"
           variant="outlined"
-          :rules="[(v) => !!v || 'El email es obligatorio',
-            (v) => /.+@.+\..+/.test(v) || 'Email inválido'
+          :rules="[
+            (v) => !!v || 'El email es obligatorio',
+            (v) => /.+@.+\..+/.test(v) || 'Email inválido',
           ]"
           required
         ></v-text-field>
@@ -56,14 +57,16 @@
       </v-form>
     </v-card>
     <ButtonComponent :to="{ name: 'empleados_list' }">
-      <template #pre-icon><Icon icon="ic:twotone-list" width="28" height="28"  style="color: black" /></template>
+      <template #pre-icon
+        ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
+      /></template>
       VOLVER A LA LISTA
     </ButtonComponent>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, onMounted } from 'vue'
+import { ref, toRefs, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import useEmpleadosStore from '@/stores/empleados'
 import ButtonComponent from '../ButtonComponent.vue'
@@ -84,8 +87,10 @@ onMounted(async () => {
 
 const actualizar = async () => {
   const result = await form.value?.validate()
-  if (!result.valid) return
-  else {
+  if (!result.valid) {
+    alert('Por favor, complete todos los campos correctamente.')
+    return
+  } else {
     const data = {
       id: empleado.value.id,
       nombre: empleado.value.nombre,
@@ -95,15 +100,17 @@ const actualizar = async () => {
       puesto: empleado.value.puesto,
     }
     await update(data)
-    empleado.value = { nombre: '', apellido: '', telefono: '', email: '', puesto: '' }
-    alert('Empleado creado con éxito.')
-    form.value.reset()
+
+    alert('Empleado ACTUALIZADO con éxito.')
   }
 }
+onBeforeUnmount(() => {
+  store.limpiarEmpleado()
+})
 </script>
 
 <style scoped>
-.act{
+.act {
   text-align: center;
 }
 </style>

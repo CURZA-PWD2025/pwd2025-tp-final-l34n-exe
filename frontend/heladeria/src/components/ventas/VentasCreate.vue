@@ -121,13 +121,6 @@ const crear = async () => {
     }
     await create(data)
 
-    venta.value = {
-      total: 0,
-      fecha: '',
-      empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
-      cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion: '' },
-    }
-
     alert('Venta creada con éxito.')
 
     form.value.reset()

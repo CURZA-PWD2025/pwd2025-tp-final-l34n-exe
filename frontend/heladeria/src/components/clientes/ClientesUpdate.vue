@@ -7,7 +7,8 @@
         v-model="cliente.nombre"
         label="Nombre del cliente"
         variant="outlined"
-        :rules="[(v) => !!v || 'El nombre es obligatorio',
+        :rules="[
+          (v) => !!v || 'El nombre es obligatorio',
           (v) => v.length >= 4 || 'Mínimo 4 caracteres',
           (v) => v.length <= 30 || 'Máximo 30 caracteres',
         ]"
@@ -17,9 +18,10 @@
         v-model="cliente.apellido"
         label="Apellido del cliente"
         variant="outlined"
-        :rules="[(v) => !!v || 'El apellido es obligatorio',
+        :rules="[
+          (v) => !!v || 'El apellido es obligatorio',
           (v) => v.length >= 4 || 'Mínimo 4 caracteres',
-          (v) => v.length <= 50 || 'Máximo 50 caracteres'
+          (v) => v.length <= 50 || 'Máximo 50 caracteres',
         ]"
         required
       ></v-text-field>
@@ -38,9 +40,10 @@
         v-model="cliente.direccion"
         label="Dirección del cliente"
         variant="outlined"
-        :rules="[(v) => !!v || 'La dirección es obligatorio',
+        :rules="[
+          (v) => !!v || 'La dirección es obligatorio',
           (v) => v.length >= 10 || 'Mínimo 10 caracteres',
-          (v) => v.length <= 100 || 'Máximo 100 caracteres'
+          (v) => v.length <= 100 || 'Máximo 100 caracteres',
         ]"
         required
       ></v-text-field>
@@ -61,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, onMounted } from 'vue'
+import { ref, toRefs, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import useClientesStore from '@/stores/clientes'
 import ButtonComponent from '../ButtonComponent.vue'
@@ -81,8 +84,10 @@ onMounted(async () => {
 
 const actualizar = async () => {
   const result = await form.value?.validate()
-  if (!result.valid) return
-  else {
+  if (!result.valid) {
+    alert('Por favor, corrija los errores en el formulario.')
+    return
+  } else {
     const data = {
       id: cliente.value.id,
       nombre: cliente.value.nombre,
@@ -91,10 +96,14 @@ const actualizar = async () => {
       direccion: cliente.value.direccion,
     }
     await update(data)
-    alert('Cliente actualizado con éxito.')
-    form.value.reset()
+
+    alert('Cliente ACTUALIZADO con éxito.')
   }
 }
+
+onBeforeUnmount(() => {
+  store.limpiarCliente()
+})
 </script>
 
 <style scoped>

@@ -7,8 +7,10 @@
         label="Cantidad"
         type="number"
         variant="outlined"
-        :rules="[(v) => !!v || 'La cantidad es obligatoria',
-          (v) => v > 0 || 'La cantidad debe ser mayor a 0'
+        :rules="[
+          (v) => !!v || 'La cantidad es obligatoria',
+          (v) => v > 0 || 'La cantidad debe ser mayor a 0',
+          (v) => Number.isInteger(Number(v)) || 'La cantidad debe ser un número entero',
         ]"
         required
       />
@@ -71,14 +73,13 @@ import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
 import type { Producto } from '@/interfaces/Producto'
 import type { Venta } from '@/interfaces/Venta'
+
 const itemventastore = useItemVentasStore()
 const productostore = useProductosStore()
 const ventastore = useVentasStore()
 const { itemventa } = toRefs(itemventastore)
-
 const form = ref()
 const { create } = itemventastore
-
 const productos = ref(<Producto[]>[])
 const ventas = ref(<Venta[]>[])
 
@@ -92,8 +93,10 @@ onMounted(async () => {
 
 const crear = async () => {
   const result = await form.value?.validate()
-  if (!result.valid) return
-   else {
+  if (!result.valid) {
+    alert('Por favor, complete todos los campos correctamente.')
+    return
+  } else {
     const data = {
       cantidad: itemventa.value.cantidad,
       id_producto: itemventa.value.producto?.id,
@@ -101,26 +104,7 @@ const crear = async () => {
     }
     await create(data)
 
-    itemventa.value = {
-      cantidad: 0,
-      producto: {
-        id: 0,
-        nombre: '',
-        precio: 0,
-        stock: 0,
-        max_sabores: 0,
-        proveedor: { id: 0, nombre: '', email: '', telefono: '' },
-        categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-      },
-      venta: {
-        fecha: '',
-        total: 0,
-        cliente: { id: 0, nombre: '', apellido: '', direccion: '', telefono: '' },
-        empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
-      },
-    }
-
-    alert('Item de venta creado con éxito.')
+    alert('Item de Venta creado con éxito.')
 
     form.value.reset()
   }

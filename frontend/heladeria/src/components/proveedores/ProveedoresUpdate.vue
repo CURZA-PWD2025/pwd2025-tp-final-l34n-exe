@@ -39,7 +39,7 @@
           <template #pre-icon>
             <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
           </template>
-          Crear Proveedor
+          Actualizar Proveedor
         </ButtonComponent>
       </v-form>
     </v-card>
@@ -52,11 +52,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { toRefs, onMounted, ref } from 'vue'
+import { toRefs, onMounted, ref, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import useProveedoresStore from '@/stores/proveedores'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
+
 const store = useProveedoresStore()
 const { proveedor } = toRefs(store)
 const { getOne, update } = store
@@ -82,12 +83,16 @@ const actualizar = async () => {
       telefono: proveedor.value.telefono,
       email: proveedor.value.email,
     }
+
     await update(data)
-    proveedor.value = { nombre: '', telefono: '', email: '' }
-    alert('Proveedor actualizado con éxito.')
-    form.value.reset()
+
+    alert('Proveedor ACTUALIZADO con éxito.')
   }
 }
+
+onBeforeUnmount(() => {
+  store.limpiarProveedor()
+})
 </script>
 
 <style scoped>

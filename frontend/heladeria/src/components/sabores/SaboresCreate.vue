@@ -101,13 +101,6 @@ const crear = async () => {
 
     await create(data)
 
-    sabor.value = {
-      nombre: '',
-      stock: 0,
-      disponible: 1,
-      categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-    }
-
     alert('Sabor creado con éxito.')
 
     form.value.reset()

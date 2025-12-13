@@ -8,10 +8,11 @@
           v-model="categoria.nombre"
           label="Nombre de la categoría"
           variant="outlined"
-          :rules="[(v) => !!v || 'El nombre es obligatorio',
+          :rules="[
+            (v) => !!v || 'El nombre es obligatorio',
             (v) => v.length <= 30 || 'Máximo 30 caracteres',
             (v) => v.length >= 3 || 'Mínimo 3 caracteres',
-            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios'
+            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios',
           ]"
           required
         />
@@ -27,10 +28,11 @@
           v-model="categoria.descripcion"
           label="Descripción"
           variant="outlined"
-          :rules="[(v) => !!v || 'La descripción es obligatoria',
+          :rules="[
+            (v) => !!v || 'La descripción es obligatoria',
             (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios',
             (v) => v.length >= 10 || 'Mínimo 10 caracteres',
-            (v) => v.length <= 100 || 'Máximo 100 caracteres'
+            (v) => v.length <= 100 || 'Máximo 100 caracteres',
           ]"
           required
         />
@@ -66,20 +68,19 @@ const tipos = ['Producto', 'Sabor']
 
 const crear = async () => {
   const result = await form.value?.validate()
-  if (!result.valid) return
-  else {
+  if (!result.valid) {
+    alert('Por favor, complete todos los campos correctamente.')
+    return
+  } else {
     const data = {
       nombre: categoria.value.nombre,
       tipo: categoria.value.tipo,
       descripcion: categoria.value.descripcion,
     }
     await create(data)
-    categoria.value = {
-      nombre: '',
-      tipo: '',
-      descripcion: '',
-    }
+
     alert('Categoría creada con éxito.')
+
     form.value.reset()
   }
 }

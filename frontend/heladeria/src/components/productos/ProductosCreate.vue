@@ -8,8 +8,8 @@
         variant="outlined"
         :rules="[
           (v) => !!v || 'El nombre es obligatorio',
-          (v) => v.length <= 30 || 'Máximo 30 caracteres',
-          (v) => v.length >= 10 || 'Mínimo 10 caracteres',
+          (v) => v.length <= 50 || 'Máximo 50 caracteres',
+          (v) => v.length >= 5 || 'Mínimo 5 caracteres',
         ]"
         required
       ></v-text-field>
@@ -128,15 +128,6 @@ const crear = async () => {
     }
 
     await create(data)
-
-    producto.value = {
-      nombre: '',
-      precio: 0,
-      stock: 0,
-      max_sabores: 0,
-      categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-      proveedor: { id: 0, nombre: '', email: '', telefono: '' },
-    }
 
     alert('Producto creado con éxito.')
 

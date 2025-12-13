@@ -168,24 +168,24 @@ SEEDS['categoria'] = (
 SEEDS['productos'] = (
     "INSERT INTO `productos` (nombre, precio, stock, max_sabores, id_proveedor, id_categoria) VALUES "
     # Helados
-    "('Pote 1/4 kg', 1500.00, 100, 2, 1, 4),"
-    "('Pote 1/2 kg', 2500.00, 80, 3, 2, 4),"
-    "('Pote 1 kg', 4200.00, 60, 4, 3, 4),"
-    "('Cucurucho simple', 900.00, 150, 1, 1, 3),"
-    "('Cucurucho doble', 1300.00, 120, 2, 2, 3),"
+    "('Pote 1/4 kg', 8000.00, 100, 2, 1, 4),"
+    "('Pote 1/2 kg', 17000.00, 80, 3, 2, 4),"
+    "('Pote 1 kg', 20000.00, 60, 4, 3, 4),"
+    "('Cucurucho simple', 2000.00, 150, 1, 1, 3),"
+    "('Cucurucho doble', 2200.00, 120, 2, 2, 3),"
     "('Vaso chico', 850.00, 140, 1, 1, 6),"
     "('Vaso grande', 1200.00, 120, 2, 2, 6),"
     # Paletas
-    "('Paleta de agua', 600.00, 90, 2, 5, 5),"
-    "('Paleta de crema', 750.00, 80, 2, 5, 5),"
-    "('Paleta rellena', 900.00, 70, 2, 5, 5),"
+    "('Paleta de agua', 1800.00, 90, 2, 5, 5),"
+    "('Paleta de crema', 1750.00, 80, 2, 5, 5),"
+    "('Paleta rellena', 1900.00, 70, 2, 5, 5),"
     # Tortas
-    "('Torta helada vainilla y frutilla', 2800.00, 30, 2, 3, 1),"
-    "('Torta helada chocolate y dulce de leche', 3000.00, 25, 2, 3, 1),"
-    "('Torta helada americana y chocolate', 3200.00, 20, 3, 3, 1),"
+    "('Torta helada vainilla y frutilla', 14900, 30, 2, 3, 1),"
+    "('Torta helada chocolate y dulce de leche', 14800.00, 25, 2, 3, 1),"
+    "('Torta helada americana y chocolate', 14700.00, 20, 3, 3, 1),"
     # Bebidas
-    "('Batido', 1800.00, 40, 1, 1, 7),"
-    "('Yogur helado', 1700.00, 50, 2, 4, 2);"
+    "('Batido', 5000.00, 40, 1, 1, 7),"
+    "('Yogur helado', 4000.00, 50, 2, 4, 2);"
 )
 
 

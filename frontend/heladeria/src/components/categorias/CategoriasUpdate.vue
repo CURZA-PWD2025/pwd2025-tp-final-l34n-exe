@@ -8,10 +8,11 @@
           v-model="categoria.nombre"
           label="Nombre de la categoría"
           variant="outlined"
-          :rules="[(v) => !!v || 'El nombre es obligatorio',
+          :rules="[
+            (v) => !!v || 'El nombre es obligatorio',
             (v) => v.length <= 30 || 'Máximo 30 caracteres',
             (v) => v.length >= 3 || 'Mínimo 3 caracteres',
-            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios'
+            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios',
           ]"
           required
         />
@@ -27,10 +28,11 @@
           v-model="categoria.descripcion"
           label="Descripción"
           variant="outlined"
-          :rules="[(v) => !!v || 'La descripción es obligatoria',
+          :rules="[
+            (v) => !!v || 'La descripción es obligatoria',
             (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios',
             (v) => v.length >= 10 || 'Mínimo 10 caracteres',
-            (v) => v.length <= 100 || 'Máximo 100 caracteres'
+            (v) => v.length <= 100 || 'Máximo 100 caracteres',
           ]"
           required
         />
@@ -52,16 +54,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, onMounted } from 'vue'
+import { ref, toRefs, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import useCategoriasStore from '@/stores/categorias'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
+
 const store = useCategoriasStore()
 const { categoria } = toRefs(store)
 const { getOne, update } = store
 const route = useRoute()
-
 const form = ref()
 const tipos = ['Producto', 'Sabor']
 
@@ -78,7 +80,7 @@ const actualizar = async () => {
   if (!categoria.value.nombre || !categoria.value.tipo || !categoria.value.descripcion) {
     alert('Por favor, complete los campos.')
     return
-  }else {
+  } else {
     const data = {
       id: categoria.value.id,
       nombre: categoria.value.nombre,
@@ -86,18 +88,18 @@ const actualizar = async () => {
       descripcion: categoria.value.descripcion,
     }
     await update(data)
-    categoria.value = {
-      nombre: '',
-      tipo: '',
-      descripcion: '',
-    }
-    alert('Categoría creada con éxito.')
-    form.value.reset()
-  }}
+
+    alert('Categoría ACTUALIZADA con éxito.')
+  }
+}
+
+onBeforeUnmount(() => {
+  store.limpiarCategoria()
+})
 </script>
 
 <style scoped>
-.act{
+.act {
   text-align: center;
 }
 </style>

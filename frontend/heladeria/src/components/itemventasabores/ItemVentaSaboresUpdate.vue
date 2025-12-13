@@ -9,6 +9,7 @@
         variant="outlined"
         return-object
         :rules="[(v) => !!v || 'Debe elegir un item']"
+        required
       >
         <template #item="{ props, item }">
           <v-list-item
@@ -31,6 +32,10 @@
           (v) => !!v || 'Debe elegir un sabor',
           (v) => v?.stock > 0 || 'No hay stock disponible',
           (v) => !!v?.disponible || 'El sabor no está disponible',
+          (v) =>
+            saboresAsignados < (itemventasabor.itemventa?.producto?.max_sabores ?? 0) ||
+            'Se ha alcanzado el máximo de sabores para este item',
+          (v) => !saboresRepetidos || 'El sabor ya ha sido asignado a este item',
         ]"
         required
       >
@@ -45,7 +50,7 @@
           {{ item.raw.nombre }}
         </template>
       </v-select>
-
+      <p>Sabores: {{ saboresAsignados }} / {{ itemventasabor.itemventa?.producto?.max_sabores }}</p>
       <ButtonComponent type="submit" class="act">
         <template #pre-icon>
           <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
@@ -61,8 +66,9 @@
     VOLVER A LA LISTA
   </ButtonComponent>
 </template>
+
 <script setup lang="ts">
-import { ref, toRefs, onMounted } from 'vue'
+import { ref, toRefs, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
@@ -71,6 +77,7 @@ import useItemVentasStore from '@/stores/itemventas'
 import useSaboresStore from '@/stores/sabores'
 import type { Sabor } from '@/interfaces/Sabor'
 import type { ItemVenta } from '@/interfaces/ItemVenta'
+
 const itemventasaborestore = useItemVentaSaboresStore()
 const itemventastore = useItemVentasStore()
 const saborestore = useSaboresStore()
@@ -92,6 +99,28 @@ onMounted(async () => {
   sabores.value = saborestore.sabores
 })
 
+//*Para no asignar más sabores de los permitidos al item de venta */
+const saboresAsignados = computed(() => {
+  return itemventasaborestore.itemventasabores.filter(
+    (sabor) =>
+      sabor.itemventa?.id === itemventasabor.value.itemventa?.id &&
+      sabor.id !== itemventasabor.value.id //* Evita que al actualizar no se considere el mismo sabor asignado *//
+  ).length
+})
+
+//* Para no repetir sabores en un mismo item de venta */
+const saboresRepetidos = computed(() => {
+  return (
+    itemventasaborestore.itemventasabores.filter(
+      (sabor) =>
+        sabor.itemventa?.id === itemventasabor.value.itemventa?.id &&
+        sabor.sabor?.id === itemventasabor.value.sabor?.id &&
+        sabor.id !== itemventasabor.value.id //* Evita que al actualizar no se considere el mismo sabor asignado *//
+    ).length > 0
+  )
+})
+
+
 const actualizar = async () => {
   const result = await form.value?.validate()
   if (!result.valid) {
@@ -105,42 +134,13 @@ const actualizar = async () => {
     }
     await update(data)
 
-    itemventasabor.value = {
-      id: 0,
-      itemventa: {
-        id: 0,
-        cantidad: 0,
-        producto: {
-          id: 0,
-          nombre: '',
-          precio: 0,
-          stock: 0,
-          max_sabores: 0,
-          proveedor: { id: 0, nombre: '', telefono: '', email: '' },
-          categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-        },
-        venta: {
-          id: 0,
-          fecha: '',
-          total: 0,
-          cliente: { id: 0, nombre: '', apellido: '', telefono: '', direccion: '' },
-          empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
-        },
-      },
-      sabor: {
-        id: 0,
-        nombre: '',
-        stock: 0,
-        disponible: true,
-        categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-      },
-    }
-
-    alert('Item de Venta Sabor actualizado con éxito.')
-
-    form.value.reset()
+    alert('Item de Venta Sabor ACTUALIZADO con éxito.')
   }
 }
+
+onBeforeUnmount(() => {
+  itemventasaborestore.limpiarItemVentaSabor()
+})
 </script>
 
 <style scoped>

@@ -67,20 +67,18 @@ const crear = async () => {
   if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
-  }
-  const data = {
+  }else{
+    const data = {
     nombre: proveedor.value.nombre,
     telefono: proveedor.value.telefono,
     email: proveedor.value.email,
   }
   await create(data)
-  proveedor.value = {
-    nombre: '',
-    telefono: '',
-    email: '',
-  }
+
   alert('Proveedor creado con éxito.')
+
   form.value.reset()
+  }
 }
 </script>
 

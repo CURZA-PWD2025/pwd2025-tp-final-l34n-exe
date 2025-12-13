@@ -68,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, onMounted } from 'vue'
+import { ref, toRefs, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
@@ -102,7 +102,10 @@ onMounted(async () => {
 
 const actualizar = async () => {
   const result = await form.value?.validate()
-  if (!result.valid) return
+  if (!result.valid){
+    alert('Por favor, complete todos los campos correctamente.')
+    return
+  }
   else {
     const data = {
       id: itemventa.value.id,
@@ -112,30 +115,13 @@ const actualizar = async () => {
     }
     await update(data)
 
-    itemventa.value = {
-      cantidad: 0,
-      producto: {
-        id: 0,
-        nombre: '',
-        precio: 0,
-        stock: 0,
-        max_sabores: 0,
-        proveedor: { id: 0, nombre: '', email: '', telefono: '' },
-        categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-      },
-      venta: {
-        fecha: '',
-        total: 0,
-        cliente: { id: 0, nombre: '', apellido: '', direccion: '', telefono: '' },
-        empleado: { id: 0, nombre: '', apellido: '', telefono: '', email: '', puesto: '' },
-      },
-    }
-
-    alert('Item de venta actualizado con éxito.')
-
-    form.value.reset()
+    alert('Item de Venta ACTUALIZADO con éxito.')
   }
 }
+
+onBeforeUnmount(() => {
+  itemventastore.limpiarItemVenta()
+})
 </script>
 
 <style scoped>

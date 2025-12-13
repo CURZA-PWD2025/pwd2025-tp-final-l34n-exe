@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, onMounted } from 'vue'
+import { ref, toRefs, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import useSaboresStore from '@/stores/sabores'
 import useCategoriasStore from '@/stores/categorias'
@@ -105,17 +105,12 @@ const actualizar = async () => {
 
   await update(data)
 
-  sabor.value = {
-    nombre: '',
-    stock: 0,
-    disponible: 1,
-    categoria: { id: 0, nombre: '', tipo: '', descripcion: '' },
-  }
-
-  alert('Sabor actualizado con éxito.')
-
-  form.value.reset()
+  alert('Sabor ACTUALIZADO con éxito.')
 }}
+
+onBeforeUnmount(() => {
+  saboresStore.limpiarSabor()
+})
 </script>
 
 <style scoped>
