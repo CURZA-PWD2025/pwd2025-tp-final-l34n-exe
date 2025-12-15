@@ -45,16 +45,7 @@ const useClientesStore = defineStore('clientes', () => {
       cliente.value = data
     }
   }
-  function limpiarCliente(){
-    cliente.value = {
-      id: 0,
-      nombre: '',
-      apellido: '',
-      telefono: '',
-      direccion: ''
-    }
-  }
-  return { clientes, cliente, getAll, getOne, create, update, destroy, limpiarCliente }
+  return { clientes, cliente, getAll, getOne, create, update, destroy }
 })
 
 export default useClientesStore

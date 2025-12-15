@@ -115,6 +115,29 @@ onMounted(async () => {
   empleados.value = empleadosStore.empleados
 })
 
+function limpiarVenta() {
+  venta.value = {
+    id: 0,
+    fecha: '',
+    total: 0,
+    cliente: {
+      id: 0,
+      nombre: '',
+      apellido: '',
+      telefono: '',
+      direccion: '',
+    } as Cliente,
+    empleado: {
+      id: 0,
+      nombre: '',
+      apellido: '',
+      telefono: '',
+      email: '',
+      puesto: '',
+    } as Empleado,
+  }
+}
+
 const actualizar = async () => {
   const result = await form.value?.validate()
   if (!result.valid) {
@@ -135,7 +158,7 @@ const actualizar = async () => {
 }
 
 onBeforeUnmount(() => {
-  ventasStore.limpiarVenta()
+  limpiarVenta()
 })
 </script>
 

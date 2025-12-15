@@ -79,46 +79,8 @@ const useItemVentasStore = defineStore('itemventas', () => {
       itemventa.value = data
     }
   }
-  function limpiarItemVenta() {
-    itemventa.value = {
-    id: 0,
-    venta: {
-      id: 0,
-      fecha: '',
-      total: 0,
-      cliente: {
-        id: 0,
-        nombre: '',
-        apellido: '',
-      },
-      empleado: {
-        id: 0,
-        nombre: '',
-        apellido: '',
-      },
-    } as Venta,
-    producto: {
-      id: 0,
-      nombre: '',
-      precio: 0,
-      stock: 0,
-      max_sabores: 0,
-      proveedor: {
-        id: 0,
-        nombre: '',
-        telefono: '',
-        email: '',
-      },
-      categoria: {
-        id: 0,
-        nombre: '',
-        tipo: '',
-        descripcion: '',
-      },
-    } as Producto,
-    cantidad: 0,
-  }}
-  return { itemventas, itemventa, getAll, getOne, create, update, destroy, limpiarItemVenta}
+
+  return { itemventas, itemventa, getAll, getOne, create, update, destroy }
 })
 
 export default useItemVentasStore

@@ -44,15 +44,8 @@ const useProveedoresStore = defineStore('proveedores', () => {
       proveedor.value = data
     }
   }
-  function limpiarProveedor(){
-    proveedor.value = {
-      id: 0,
-      nombre: '',
-      email: '',
-      telefono: ''
-    }
-  }
-  return { proveedores, proveedor, getAll, getOne, create, update, destroy, limpiarProveedor }
+
+  return { proveedores, proveedor, getAll, getOne, create, update, destroy }
 })
 
 export default useProveedoresStore

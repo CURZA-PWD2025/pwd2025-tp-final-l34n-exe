@@ -30,7 +30,6 @@
           variant="outlined"
           :rules="[
             (v) => !!v || 'La descripción es obligatoria',
-            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios',
             (v) => v.length >= 10 || 'Mínimo 10 caracteres',
             (v) => v.length <= 100 || 'Máximo 100 caracteres',
           ]"

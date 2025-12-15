@@ -44,15 +44,8 @@ const useCategoriasStore = defineStore('categorias', () => {
       categoria.value = data
     }
   }
-  function limpiarCategoria(){
-    categoria.value = {
-      id: 0,
-      nombre: '',
-      tipo: '',
-      descripcion: ''
-    }
-  }
-  return { categorias, categoria, getAll, getOne, create, update, destroy, limpiarCategoria }
+
+  return { categorias, categoria, getAll, getOne, create, update, destroy }
 })
 
 export default useCategoriasStore

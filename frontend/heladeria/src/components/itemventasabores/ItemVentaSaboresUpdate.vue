@@ -120,6 +120,61 @@ const saboresRepetidos = computed(() => {
   )
 })
 
+function limpiarItemVentaSabor() {
+    itemventasabor.value = {
+      id: 0,
+      itemventa: {
+        id: 0,
+        venta: {
+          id: 0,
+          fecha: '',
+          total: 0,
+          cliente: {
+            id: 0,
+            nombre: '',
+            apellido: '',
+          },
+          empleado: {
+            id: 0,
+            nombre: '',
+            apellido: '',
+          },
+        },
+        producto: {
+          id: 0,
+          nombre: '',
+          precio: 0,
+          stock: 0,
+          max_sabores: 0,
+          proveedor: {
+            id: 0,
+            nombre: '',
+            telefono: '',
+            email: '',
+          },
+          categoria: {
+            id: 0,
+            nombre: '',
+            tipo: '',
+            descripcion: '',
+          },
+        },
+        cantidad: 0,
+      } as ItemVenta,
+      sabor: {
+        id: 0,
+        nombre: '',
+        stock: 0,
+        disponible: true,
+        categoria: {
+          id: 0,
+          nombre: '',
+          tipo: '',
+          descripcion: '',
+        },
+      } as Sabor,
+    }
+  }
 
 const actualizar = async () => {
   const result = await form.value?.validate()
@@ -139,7 +194,7 @@ const actualizar = async () => {
 }
 
 onBeforeUnmount(() => {
-  itemventasaborestore.limpiarItemVentaSabor()
+  limpiarItemVentaSabor()
 })
 </script>
 

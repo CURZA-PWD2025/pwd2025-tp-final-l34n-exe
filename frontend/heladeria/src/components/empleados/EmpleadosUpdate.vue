@@ -85,6 +85,17 @@ onMounted(async () => {
   }
 })
 
+function limpiarEmpleado() {
+    empleado.value = {
+      id: 0,
+      nombre: '',
+      apellido: '',
+      telefono: '',
+      email: '',
+      puesto: '',
+    }
+  }
+
 const actualizar = async () => {
   const result = await form.value?.validate()
   if (!result.valid) {
@@ -105,7 +116,7 @@ const actualizar = async () => {
   }
 }
 onBeforeUnmount(() => {
-  store.limpiarEmpleado()
+  limpiarEmpleado()
 })
 </script>
 

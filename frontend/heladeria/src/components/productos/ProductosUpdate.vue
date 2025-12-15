@@ -117,6 +117,28 @@ onMounted(async () => {
   proveedores.value = proveedoresStore.proveedores
 })
 
+function limpiarProducto(){
+    producto.value = {
+      id: 0,
+      nombre: '',
+      precio: 0,
+      stock: 0,
+      max_sabores: 0,
+      proveedor: {
+        id: 0,
+        nombre: '',
+        telefono: '',
+        email: '',
+      } as Proveedor,
+      categoria: {
+        id: 0,
+        nombre: '',
+        tipo: '',
+        descripcion: '',
+      } as Categoria,
+    }
+}
+
 const actualizar = async () => {
   const result = await form.value?.validate()
   if (!result.valid) {
@@ -139,7 +161,7 @@ const actualizar = async () => {
   }
 }
 onBeforeUnmount(() => {
-  productosStore.limpiarProducto()
+  limpiarProducto()
 })
 </script>
 

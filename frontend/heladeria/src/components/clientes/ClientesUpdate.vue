@@ -82,6 +82,16 @@ onMounted(async () => {
   }
 })
 
+function limpiarCliente(){
+    cliente.value = {
+      id: 0,
+      nombre: '',
+      apellido: '',
+      telefono: '',
+      direccion: ''
+    }
+  }
+
 const actualizar = async () => {
   const result = await form.value?.validate()
   if (!result.valid) {
@@ -102,7 +112,7 @@ const actualizar = async () => {
 }
 
 onBeforeUnmount(() => {
-  store.limpiarCliente()
+  limpiarCliente()
 })
 </script>
 

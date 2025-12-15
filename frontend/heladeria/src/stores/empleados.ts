@@ -46,17 +46,8 @@ const useEmpleadosStore = defineStore('empleados', () => {
       empleado.value = data
     }
   }
-  function limpiarEmpleado() {
-    empleado.value = {
-      id: 0,
-      nombre: '',
-      apellido: '',
-      telefono: '',
-      email: '',
-      puesto: '',
-    }
-  }
-  return { empleados, empleado, getAll, getOne, create, update, destroy, limpiarEmpleado }
+
+  return { empleados, empleado, getAll, getOne, create, update, destroy }
 })
 
 export default useEmpleadosStore

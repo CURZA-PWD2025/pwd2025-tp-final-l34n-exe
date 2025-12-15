@@ -7,8 +7,9 @@
         label="Cantidad"
         type="number"
         variant="outlined"
-        :rules="[(v) => !!v || 'La cantidad es obligatoria',
-          (v) => v > 0 || 'La cantidad debe ser mayor a 0'
+        :rules="[
+          (v) => !!v || 'La cantidad es obligatoria',
+          (v) => v > 0 || 'La cantidad debe ser mayor a 0',
         ]"
         required
       />
@@ -40,14 +41,9 @@
         :rules="[(v) => !!v || 'Debe elegir una venta']"
       >
         <template #item="{ props, item }">
-          <v-list-item
-            v-bind="props"
-            :title="`Venta #${item.raw.id}`"
-          />
+          <v-list-item v-bind="props" :title="`Venta #${item.raw.id}`" />
         </template>
-        <template #selection="{ item }">
-          Venta #{{ item.raw.id }} - {{ item.raw.fecha }}
-        </template>
+        <template #selection="{ item }"> Venta #{{ item.raw.id }} - {{ item.raw.fecha }} </template>
       </v-select>
 
       <ButtonComponent type="submit" class="act">
@@ -100,13 +96,53 @@ onMounted(async () => {
   ventas.value = ventastore.ventas
 })
 
+function limpiarItemVenta() {
+  itemventa.value = {
+    id: 0,
+    venta: {
+      id: 0,
+      fecha: '',
+      total: 0,
+      cliente: {
+        id: 0,
+        nombre: '',
+        apellido: '',
+      },
+      empleado: {
+        id: 0,
+        nombre: '',
+        apellido: '',
+      },
+    } as Venta,
+    producto: {
+      id: 0,
+      nombre: '',
+      precio: 0,
+      stock: 0,
+      max_sabores: 0,
+      proveedor: {
+        id: 0,
+        nombre: '',
+        telefono: '',
+        email: '',
+      },
+      categoria: {
+        id: 0,
+        nombre: '',
+        tipo: '',
+        descripcion: '',
+      },
+    } as Producto,
+    cantidad: 0,
+  }
+}
+
 const actualizar = async () => {
   const result = await form.value?.validate()
-  if (!result.valid){
+  if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
-  }
-  else {
+  } else {
     const data = {
       id: itemventa.value.id,
       cantidad: itemventa.value.cantidad,
@@ -120,12 +156,12 @@ const actualizar = async () => {
 }
 
 onBeforeUnmount(() => {
-  itemventastore.limpiarItemVenta()
+  limpiarItemVenta()
 })
 </script>
 
 <style scoped>
-.act{
+.act {
   text-align: center;
 }
 </style>

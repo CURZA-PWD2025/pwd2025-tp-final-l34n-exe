@@ -51,22 +51,8 @@ const useSaboresStore = defineStore('sabores', () => {
       sabor.value = data
     }
   }
-  function limpiarSabor() {
-    sabor.value = {
-      id: 0,
-      nombre: '',
-      stock: 0,
-      disponible: 0,
-      categoria: {
-        id: 0,
-        nombre: '',
-        tipo: '',
-        descripcion: '',
-      } as Categoria,
-    }
-  }
 
-  return { sabores, sabor, getAll, getOne, create, update, destroy, limpiarSabor }
+  return { sabores, sabor, getAll, getOne, create, update, destroy }
 })
 
 export default useSaboresStore

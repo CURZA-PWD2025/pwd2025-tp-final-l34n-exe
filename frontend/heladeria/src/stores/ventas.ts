@@ -60,22 +60,8 @@ const useVentasStore = defineStore('ventas', () => {
       venta.value = data
     }
   }
-  function limpiarVenta(){
-    venta.value = {
-      id: 0,
-      fecha: '',
-      total: 0,
-      cliente:{
-        id: 0,
-        nombre: '',
-        apellido: '',
-        telefono: '',
-        direccion: ''
-      }
-    }
 
-  }
-  return { ventas, venta, getAll, getOne, create, update, destroy, limpiarVenta }
+  return { ventas, venta, getAll, getOne, create, update, destroy }
 })
 
 export default useVentasStore

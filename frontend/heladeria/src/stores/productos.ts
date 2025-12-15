@@ -59,28 +59,8 @@ const useProductosStore = defineStore('productos', () => {
       producto.value = data
     }
   }
-  function limpiarProducto(){
-    producto.value = {
-      id: 0,
-      nombre: '',
-      precio: 0,
-      stock: 0,
-      max_sabores: 0,
-      proveedor: {
-        id: 0,
-        nombre: '',
-        telefono: '',
-        email: '',
-      } as Proveedor,
-      categoria: {
-        id: 0,
-        nombre: '',
-        tipo: '',
-        descripcion: '',
-      } as Categoria,
-    }
-  }
-  return { productos, producto, getAll, getOne, create, update, destroy, limpiarProducto }
+
+  return { productos, producto, getAll, getOne, create, update, destroy }
 })
 
 export default useProductosStore

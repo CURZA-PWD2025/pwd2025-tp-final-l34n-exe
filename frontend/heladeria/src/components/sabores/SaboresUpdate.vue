@@ -34,9 +34,7 @@
           item-value="id"
           label="Categoría"
           variant="outlined"
-          :rules="[
-            (v) => !!v || 'Seleccione una categoría'
-          ]"
+          :rules="[(v) => !!v || 'Seleccione una categoría']"
           return-object
         ></v-select>
         <label class="chk">
@@ -83,33 +81,46 @@ onMounted(async () => {
   if (id) await getOne(id)
 
   await categoriasStore.getAll()
-  categorias.value = categoriasStore.categorias.filter(
-    (categoria) => categoria.tipo === "Sabor"
-  )
+  categorias.value = categoriasStore.categorias.filter((categoria) => categoria.tipo === 'Sabor')
 })
+
+function limpiarSabor() {
+    sabor.value = {
+      id: 0,
+      nombre: '',
+      stock: 0,
+      disponible: 0,
+      categoria: {
+        id: 0,
+        nombre: '',
+        tipo: '',
+        descripcion: '',
+      } as Categoria,
+    }
+  }
 
 const actualizar = async () => {
   const result = await form.value?.validate()
-  if (!result.valid){
+  if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
-  }else{
+  } else {
+    const data = {
+      id: sabor.value.id,
+      nombre: sabor.value.nombre,
+      stock: sabor.value.stock,
+      disponible: sabor.value.disponible ? 1 : 0,
+      id_categoria: sabor.value.categoria?.id,
+    }
 
-  const data = {
-    id: sabor.value.id,
-    nombre: sabor.value.nombre,
-    stock: sabor.value.stock,
-    disponible: sabor.value.disponible ? 1 : 0,
-    id_categoria: sabor.value.categoria?.id,
+    await update(data)
+
+    alert('Sabor ACTUALIZADO con éxito.')
   }
-
-  await update(data)
-
-  alert('Sabor ACTUALIZADO con éxito.')
-}}
+}
 
 onBeforeUnmount(() => {
-  saboresStore.limpiarSabor()
+  limpiarSabor()
 })
 </script>
 

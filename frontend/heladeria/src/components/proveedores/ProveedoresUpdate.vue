@@ -71,6 +71,15 @@ onMounted(async () => {
   }
 })
 
+function limpiarProveedor(){
+    proveedor.value = {
+      id: 0,
+      nombre: '',
+      email: '',
+      telefono: ''
+    }
+  }
+
 const actualizar = async () => {
   const result = await form.value?.validate()
   if (!result.valid) {
@@ -91,7 +100,7 @@ const actualizar = async () => {
 }
 
 onBeforeUnmount(() => {
-  store.limpiarProveedor()
+  limpiarProveedor()
 })
 </script>
 
