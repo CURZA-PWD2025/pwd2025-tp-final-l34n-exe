@@ -62,22 +62,36 @@ const { proveedor } = toRefs(store)
 const { create } = store
 const form = ref()
 
+function limpiarProveedor() {
+  proveedor.value = {
+    id: 0,
+    nombre: '',
+    telefono: '',
+    email: '',
+  }
+}
+
 const crear = async () => {
   const result = await form.value?.validate()
   if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
-  }else{
-    const data = {
-    nombre: proveedor.value.nombre,
-    telefono: proveedor.value.telefono,
-    email: proveedor.value.email,
   }
-  await create(data)
 
-  alert('Proveedor creado con éxito.')
+  try {
+    const data = {
+      nombre: proveedor.value.nombre,
+      telefono: proveedor.value.telefono,
+      email: proveedor.value.email,
+    }
+    await create(data)
+    alert('Proveedor creado con éxito.')
 
-  form.value.reset()
+    form.value.reset()
+    limpiarProveedor()
+  } catch (error) {
+    console.error(error)
+    alert('ERROR al crear el proveedor.')
   }
 }
 </script>

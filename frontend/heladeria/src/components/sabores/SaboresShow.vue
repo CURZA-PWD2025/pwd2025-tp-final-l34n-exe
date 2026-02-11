@@ -32,7 +32,9 @@
       </v-card-text>
     </v-card>
     <ButtonComponent :to="{ name: 'sabores_list' }">
-      <template #pre-icon><Icon icon="ic:twotone-list" width="28" height="28"  style="color: black" /></template>
+      <template #pre-icon
+        ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
+      /></template>
       VOLVER A LA LISTA
     </ButtonComponent>
   </div>
@@ -42,17 +44,24 @@
 import { toRefs, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import useSaboresStore from '@/stores/sabores'
+import useItemVentasSaboresStore from '@/stores/itemventasabores'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
 
 const store = useSaboresStore()
 const { sabor } = toRefs(store)
+const itemVentasSaboresStore = useItemVentasSaboresStore()
+const { itemventasabores } = toRefs(itemVentasSaboresStore)
 const { getOne, destroy } = store
 const route = useRoute()
 const router = useRouter()
 
 const deleteSabor = async (id: number) => {
   if (confirm('¿Está seguro que desea eliminar este Sabor?')) {
+    if (itemventasabores.value.some((ivs) => ivs.sabor?.id === id)) {
+      alert('No se puede eliminar un sabor que tiene ventas asociadas.')
+      return
+    }
     await destroy(id)
     router.push({ name: 'sabores_list' })
   }
@@ -67,8 +76,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.acciones{
+.acciones {
   display: flex;
 }
-
 </style>

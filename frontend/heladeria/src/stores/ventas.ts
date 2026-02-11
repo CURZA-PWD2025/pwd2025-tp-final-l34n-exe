@@ -1,6 +1,4 @@
 import type { Venta } from '@/interfaces/Venta'
-import type { Empleado } from '@/interfaces/Empleado'
-import type { Cliente } from '@/interfaces/Cliente'
 import { defineStore } from 'pinia'
 import ApiService from '@/services/ApiService'
 import { ref } from 'vue'
@@ -11,21 +9,8 @@ const useVentasStore = defineStore('ventas', () => {
     id: 0,
     fecha: '',
     total: 0,
-    cliente: {
-      id: 0,
-      nombre: '',
-      apellido: '',
-      telefono: '',
-      direccion: '',
-    } as Cliente,
-    empleado: {
-      id: 0,
-      nombre: '',
-      apellido: '',
-      telefono: '',
-      email: '',
-      puesto: '',
-    } as Empleado,
+    cliente: { id: 0 },
+    empleado: { id: 0 },
   })
   const url = 'ventas'
   async function getAll() {
@@ -49,6 +34,7 @@ const useVentasStore = defineStore('ventas', () => {
   async function update(actVenta: Venta) {
     if (actVenta.id) {
       const data = await ApiService.update(url, actVenta.id, actVenta)
+      await getOne(actVenta.id)
       if (data) {
         venta.value = data
       }

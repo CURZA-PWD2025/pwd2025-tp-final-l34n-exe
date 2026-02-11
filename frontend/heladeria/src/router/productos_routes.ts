@@ -7,25 +7,25 @@ const productos_routes = [
       {
         path: '',
         name: 'productos_list',
-        component: () => import('../components/productos/ProductosList.vue')
+        component: () => import('../components/productos/ProductosList.vue'),
       },
       {
         path: ':id/show',
         name: 'productos_show',
-        component: () => import('../components/productos/ProductosShow.vue')
+        component: () => import('../components/productos/ProductosShow.vue'),
       },
       {
         path: 'create',
         name: 'productos_create',
-        component: () => import('../components/productos/ProductosCreate.vue')
+        component: () => import('../components/productos/ProductosCreate.vue'),
       },
       {
         path: ':id/edit',
         name: 'productos_edit',
         component: () => import('../components/productos/ProductosUpdate.vue'),
-      }
-    ]
-  }
+      },
+    ],
+  },
 ]
 
 export default productos_routes

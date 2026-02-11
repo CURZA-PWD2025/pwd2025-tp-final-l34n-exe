@@ -7,7 +7,8 @@
         <p><strong>NOMBRE:</strong> {{ cliente.nombre }}</p>
         <p><strong>APELLIDO:</strong> {{ cliente.apellido }}</p>
         <p><strong>TELEFONO:</strong> {{ cliente.telefono }}</p>
-        <p><strong>EMAIL:</strong> {{ cliente.direccion }}</p>
+        <p><strong>EMAIL:</strong> {{ cliente.email }}</p>
+        <p><strong>DIRECCION:</strong> {{ cliente.direccion }}</p>
         <div class="acciones">
           <ButtonComponent
             :to="{ name: 'clientes_edit', params: { id: cliente.id } }"
@@ -32,7 +33,9 @@
       </v-card-text>
     </v-card>
     <ButtonComponent class="volver" :to="{ name: 'clientes_list' }">
-      <template #pre-icon><Icon icon="ic:twotone-list" width="28" height="28"  style="color: black" /></template>
+      <template #pre-icon
+        ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
+      /></template>
       VOLVER A LA LISTA
     </ButtonComponent>
   </div>
@@ -42,16 +45,22 @@
 import { toRefs, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import useClientesStore from '@/stores/clientes'
+import useVentasStore from '@/stores/ventas'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
 const store = useClientesStore()
 const { cliente } = toRefs(store)
+const { ventas } = toRefs(useVentasStore())
 const { getOne, destroy } = store
 const route = useRoute()
 const router = useRouter()
 
 const deleteCliente = async (id: number) => {
   if (confirm('¿Está seguro que desea eliminar este cliente?')) {
+    if (ventas.value.some((v) => v.cliente?.id === id)) {
+      alert('No se puede eliminar un cliente que tiene ventas asociadas.')
+      return
+    }
     await destroy(id)
     router.push({ name: 'clientes_list' })
   }
@@ -66,7 +75,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.acciones{
+.acciones {
   display: flex;
 }
 </style>

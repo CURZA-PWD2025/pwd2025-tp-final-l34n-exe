@@ -41,7 +41,6 @@
   align-items: center;
   padding: 0.8rem;
   background: rgb(0, 174, 255);
-
 }
 
 .content {
@@ -67,5 +66,4 @@
   display: flex;
   flex-direction: column;
 }
-
 </style>

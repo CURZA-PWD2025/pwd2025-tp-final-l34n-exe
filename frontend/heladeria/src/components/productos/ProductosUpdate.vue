@@ -43,6 +43,10 @@
         ]"
         required
       ></v-text-field>
+      <label class="chk">
+        <input type="checkbox" v-model="producto.disponible" />
+        Disponible?
+      </label>
       <v-select
         v-model="producto.categoria"
         :items="categorias"
@@ -50,9 +54,7 @@
         item-value="id"
         label="Categoría"
         variant="outlined"
-        :rules="[
-          (v) => !!v || 'Seleccione una categoría'
-        ]"
+        :rules="[(v) => !!v || 'Seleccione una categoría']"
         return-object
       />
       <v-select
@@ -109,34 +111,22 @@ onMounted(async () => {
   await categoriasStore.getAll()
   categorias.value = categoriasStore.categorias
 
-  categorias.value = categoriasStore.categorias.filter(
-    (categoria) => categoria.tipo === "Producto"
-  )
+  categorias.value = categoriasStore.categorias.filter((categoria) => categoria.tipo === 'Producto')
 
   await proveedoresStore.getAll()
   proveedores.value = proveedoresStore.proveedores
 })
 
-function limpiarProducto(){
-    producto.value = {
+function limpiarProducto() {
+  producto.value = {
+    id: 0,
+    proveedor: {
       id: 0,
-      nombre: '',
-      precio: 0,
-      stock: 0,
-      max_sabores: 0,
-      proveedor: {
-        id: 0,
-        nombre: '',
-        telefono: '',
-        email: '',
-      } as Proveedor,
-      categoria: {
-        id: 0,
-        nombre: '',
-        tipo: '',
-        descripcion: '',
-      } as Categoria,
-    }
+    } as Proveedor,
+    categoria: {
+      id: 0,
+    } as Categoria,
+  }
 }
 
 const actualizar = async () => {
@@ -144,22 +134,31 @@ const actualizar = async () => {
   if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
-  } else {
+  }
+  try {
     const data = {
       id: producto.value.id,
       nombre: producto.value.nombre,
       precio: producto.value.precio,
       stock: producto.value.stock,
       max_sabores: producto.value.max_sabores,
+      disponible: producto.value.disponible,
       id_categoria: producto.value.categoria?.id,
       id_proveedor: producto.value.proveedor?.id,
     }
 
     await update(data)
+    await productosStore.getAll()
 
     alert('Producto ACTUALIZADO con éxito.')
+    form.value.reset()
+    limpiarProducto()
+  } catch (error) {
+    console.error(error)
+    alert('ERROR al actualizar el producto.')
   }
 }
+
 onBeforeUnmount(() => {
   limpiarProducto()
 })

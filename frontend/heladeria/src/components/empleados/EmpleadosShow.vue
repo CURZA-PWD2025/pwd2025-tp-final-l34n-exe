@@ -6,8 +6,8 @@
         <p><strong>ID:</strong> {{ empleado.id }}</p>
         <p><strong>NOMBRE:</strong> {{ empleado.nombre }}</p>
         <p><strong>APELLIDO:</strong> {{ empleado.apellido }}</p>
-        <p><strong>TELEFONO:</strong> {{ empleado.telefono}} </p>
-        <p><strong>EMAIL:</strong> {{ empleado.email}}</p>
+        <p><strong>TELEFONO:</strong> {{ empleado.telefono }}</p>
+        <p><strong>EMAIL:</strong> {{ empleado.email }}</p>
         <p><strong>PUESTO:</strong> {{ empleado.puesto }}</p>
         <div class="acciones">
           <ButtonComponent
@@ -33,7 +33,9 @@
       </v-card-text>
     </v-card>
     <ButtonComponent :to="{ name: 'empleados_list' }">
-      <template #pre-icon><Icon icon="ic:twotone-list" width="28" height="28"  style="color: black" /></template>
+      <template #pre-icon
+        ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
+      /></template>
       VOLVER A LA LISTA
     </ButtonComponent>
   </div>
@@ -43,17 +45,24 @@
 import { toRefs, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import useEmpleadosStore from '@/stores/empleados'
+import useVentasStore from '@/stores/ventas'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
 
 const store = useEmpleadosStore()
 const { empleado } = toRefs(store)
+const ventasStore = useVentasStore()
+const { ventas } = toRefs(ventasStore)
 const { getOne, destroy } = store
 const route = useRoute()
 const router = useRouter()
 
 const deleteEmpleado = async (id: number) => {
   if (confirm('¿Está seguro que desea eliminar este empleado?')) {
+    if (ventas.value.some((v) => v.empleado?.id === id)) {
+      alert('No se puede eliminar un empleado que tiene ventas asociadas.')
+      return
+    }
     await destroy(id)
     router.push({ name: 'empleados_list' })
   }
@@ -68,11 +77,11 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.acciones{
+.acciones {
   display: flex;
 }
 
-.volver{
+.volver {
   color: #1976d2;
   text-decoration: none;
 }

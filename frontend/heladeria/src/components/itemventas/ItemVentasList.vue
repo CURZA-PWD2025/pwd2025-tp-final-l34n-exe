@@ -16,21 +16,26 @@
         <tr>
           <th>ID</th>
           <th>ID VENTA</th>
-          <th>TOTAL VENTA</th>
+          <th>SUBTOTAL</th>
           <th>PRODUCTO</th>
           <th>CANTIDAD</th>
           <th>ACCIONES</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="itemventa in itemventas" :key="itemventa.id">
+        <tr
+          v-for="itemventa in itemventas"
+          :key="itemventa.id"
+          :class="{ cerrada: itemventa.venta?.estado === 'cerrada' }"
+        >
           <td>{{ itemventa.id }}</td>
           <td>{{ itemventa.venta?.id }}</td>
-          <td>{{ itemventa.venta?.total }}$</td>
+          <td>${{ Number(itemventa.subtotal).toFixed(2) }}</td>
           <td>{{ itemventa.producto?.nombre }}</td>
           <td>{{ itemventa.cantidad }}</td>
           <td class="acciones">
             <ButtonComponent
+              :disabled="itemventa.venta?.estado === 'cerrada'"
               :to="{ name: 'itemventas_edit', params: { id: itemventa.id } }"
               style="color: #1976d2"
             >
@@ -49,7 +54,11 @@
               ></template>
               MOSTRAR
             </ButtonComponent>
-            <ButtonComponent @click="deleteItemVenta(itemventa.id as number)" style="color: red">
+            <ButtonComponent
+              :disabled="itemventa.venta?.estado === 'cerrada'"
+              @click="deleteItemVenta(itemventa.id as number)"
+              style="color: red"
+            >
               <template #pre-icon
                 ><Icon icon="typcn:delete-outline" width="28" height="28" style="color: red"></Icon
               ></template>
@@ -59,7 +68,9 @@
         </tr>
       </tbody>
     </v-table>
-    <ButtonComponent :to="{ name: 'itemventasabores_list' }" style="color: #1976d2">MOSTRAR SABOR/ES DE CADA ITEM</ButtonComponent>
+    <ButtonComponent :to="{ name: 'itemventasabores_list' }" style="color: #1976d2"
+      >MOSTRAR SABOR/ES DE CADA ITEM</ButtonComponent
+    >
   </div>
 </template>
 
@@ -74,6 +85,13 @@ const { itemventas } = toRefs(itemVentasStore)
 const { getAll, destroy } = itemVentasStore
 
 const deleteItemVenta = async (id: number) => {
+  const item = itemventas.value.find((i) => i.id === id)
+
+  if (item?.venta?.estado === 'cerrada') {
+    alert('No se pueden eliminar ítems de una venta cerrada.')
+    return
+  }
+
   if (confirm('¿Está seguro que desea eliminar este item?')) {
     await destroy(id)
     await getAll()
@@ -98,5 +116,10 @@ h2 {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+.cerrada {
+  opacity: 0.5;
+  background: #f5f5f5;
 }
 </style>

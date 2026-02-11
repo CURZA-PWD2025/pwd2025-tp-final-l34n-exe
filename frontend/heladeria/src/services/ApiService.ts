@@ -55,6 +55,17 @@ class ApiService {
       return error
     }
   }
+
+  static async putAction(url: string, id: number, action: string, data: object = {}) {
+    try {
+      const response = await axios.put(`${url}/${id}/${action}`, data)
+      if (response) {
+        return response.data
+      }
+    } catch (error) {
+      return error
+    }
+  }
 }
 
 export default ApiService

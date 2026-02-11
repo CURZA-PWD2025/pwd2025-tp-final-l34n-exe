@@ -1,7 +1,8 @@
 <template>
   <div>
-    <v-card class="mx-auto pa-6" max-width="500" elevation="16">
-      <v-card-title class="text-h6 text-center">INSERTE DATOS</v-card-title>
+    <v-card class="mx-auto pa-6" max-width="500" elevation="16" color="aliceblue">
+      <v-card-title class="text-h6 text-center">CREAR SABOR</v-card-title>
+
       <v-form @submit.prevent="crear" ref="form">
         <v-text-field
           v-model="sabor.nombre"
@@ -11,22 +12,24 @@
             (v) => !!v || 'El nombre es obligatorio',
             (v) => v.length <= 50 || 'Máximo 50 caracteres',
             (v) => v.length >= 3 || 'Mínimo 3 caracteres',
-            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios',
+            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s]+$/.test(v) || 'Solo letras y espacios',
           ]"
           required
-        ></v-text-field>
+        />
+
         <v-text-field
           v-model.number="sabor.stock"
           label="Stock"
           type="number"
           variant="outlined"
           :rules="[
-            (v) => v >= 0 || 'Stock inválido',
+            (v) => (v !== null && v !== undefined) || 'El stock es obligatorio',
             (v) => Number.isInteger(v) || 'El stock debe ser un número entero',
-            (v) => !!v || 'El stock es obligatorio',
+            (v) => v >= 0 || 'Stock inválido',
           ]"
           required
-        ></v-text-field>
+        />
+
         <v-select
           v-model="sabor.categoria"
           :items="categorias"
@@ -34,29 +37,31 @@
           item-value="id"
           label="Categoría"
           variant="outlined"
-          :rules="[
-            (v) => !!v || 'Seleccione una categoría'
-          ]"
+          :rules="[(v) => !!v || 'Seleccione una categoría']"
           return-object
-        ></v-select>
+          required
+        />
+
         <label class="chk">
-          <input type="checkbox" v-model="sabor.disponible" />
-          Disponible?
+          <input type="checkbox" v-model="sabor.disponible" class="chkbox" />
+          ¿Disponible?
         </label>
-        <div>
+
+        <div class="text-center mt-4">
           <ButtonComponent type="submit" class="crear">
             <template #pre-icon>
               <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
             </template>
-            Crear Sabor
+            CREAR SABOR
           </ButtonComponent>
         </div>
       </v-form>
     </v-card>
-    <ButtonComponent class="volver" :to="{ name: 'sabores_list' }">
-      <template #pre-icon
-        ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
-      /></template>
+
+    <ButtonComponent class="volver mt-4" :to="{ name: 'sabores_list' }">
+      <template #pre-icon>
+        <Icon icon="ic:twotone-list" width="28" height="28" style="color: black" />
+      </template>
       VOLVER A LA LISTA
     </ButtonComponent>
   </div>
@@ -81,17 +86,32 @@ const form = ref()
 
 onMounted(async () => {
   await categoriasStore.getAll()
-  categorias.value = categoriasStore.categorias.filter(
-    (categoria) => categoria.tipo === "Sabor"
-  )
+  categorias.value = categoriasStore.categorias.filter((categoria) => categoria.tipo === 'Sabor')
+
+  //* Inicializa categoría vacía si no existe *//
+  if (!sabor.value.categoria) {
+    sabor.value.categoria = { id: 0 } as Categoria
+  }
 })
+
+function limpiarSabor() {
+  sabor.value = {
+    id: 0,
+    nombre: '',
+    stock: 0,
+    disponible: false,
+    categoria: { id: 0 } as Categoria,
+  }
+}
 
 const crear = async () => {
   const result = await form.value?.validate()
   if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
-  } else {
+  }
+
+  try {
     const data = {
       nombre: sabor.value.nombre,
       stock: sabor.value.stock,
@@ -100,10 +120,13 @@ const crear = async () => {
     }
 
     await create(data)
-
     alert('Sabor creado con éxito.')
 
     form.value.reset()
+    limpiarSabor()
+  } catch (error) {
+    console.error(error)
+    alert('Error al crear el sabor. Por favor, intente nuevamente.')
   }
 }
 </script>
@@ -112,5 +135,4 @@ const crear = async () => {
 .crear {
   text-align: center;
 }
-
 </style>

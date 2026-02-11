@@ -67,20 +67,28 @@
 
 <script setup lang="ts">
 import useEmpleadosStore from '@/stores/empleados'
+import useVentasStore from '@/stores/ventas'
 import { toRefs, onMounted } from 'vue'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
 const { empleados } = toRefs(useEmpleadosStore())
+const ventasStore = useVentasStore()
+const { ventas } = toRefs(ventasStore)
 const { getAll, destroy } = useEmpleadosStore()
 
 const deleteEmpleado = async (id: number) => {
   if (confirm('¿Está seguro que desea eliminar este empleado?')) {
+    if (ventas.value.some((v) => v.empleado?.id === id)) {
+      alert('No se puede eliminar un empleado que tiene ventas asociadas.')
+      return
+    }
     await destroy(id)
     await getAll()
   }
 }
 
 onMounted(async () => {
+  await useVentasStore().getAll()
   await getAll()
 })
 </script>

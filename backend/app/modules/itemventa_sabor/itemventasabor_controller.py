@@ -1,6 +1,7 @@
 from .itemventasabor_model import ItemVentaSaborModel
 from app.modules.item_venta.itemventa_model import ItemVentaModel as ItemVenta
 from app.modules.sabor.sabor_model import SaborModel as Sabor
+from app.modules.producto.producto_model import ProductoModel as Producto
 
 class ItemVentaSaborController:
     @staticmethod
@@ -26,6 +27,14 @@ class ItemVentaSaborController:
 
         if not sabor_data:
             return {"mensaje": "El sabor no existe"}
+
+        # Traigo el producto para verificar la cantidad de sabores permitidos
+        producto = item_venta_data["producto"]
+        # Traigo los sabores actuales para verificar la cantidad de sabores permitidos
+        sabores_actuales = [s for s in ItemVentaSaborModel.get_all() if s["itemventa"]["id"] == data["id_item"]]
+        # Verifico si se ha alcanzado el número máximo de sabores permitidos
+        if len(sabores_actuales) >= producto["max_sabores"]:
+            return {"mensaje": "Se ha alcanzado el número máximo de sabores permitidos para este producto"}
 
         item_venta = ItemVenta.deserializar(item_venta_data)
         sabor = Sabor.deserializar(sabor_data)

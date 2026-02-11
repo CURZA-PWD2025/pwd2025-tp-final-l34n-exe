@@ -39,7 +39,9 @@
       </v-card-text>
     </v-card>
     <ButtonComponent class="volver" :to="{ name: 'proveedores_list' }">
-      <template #pre-icon><Icon icon="ic:twotone-list" width="28" height="28"  style="color: black" /></template>
+      <template #pre-icon
+        ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
+      /></template>
       VOLVER A LA LISTA
     </ButtonComponent>
   </div>
@@ -49,17 +51,23 @@
 import { toRefs, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import useProveedoresStore from '@/stores/proveedores'
+import useItemVentasStore from '@/stores/itemventas'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
 
 const store = useProveedoresStore()
 const { proveedor } = toRefs(store)
+const { itemventas } = toRefs(useItemVentasStore())
 const { getOne, destroy } = store
 const route = useRoute()
 const router = useRouter()
 
 const deleteProveedor = async (id: number) => {
   if (confirm('¿Está seguro que desea eliminar este proveedor?')) {
+    if (itemventas.value.some((iv) => iv.producto?.proveedor?.id === id)) {
+      alert('No se puede eliminar un proveedor que tiene ventas asociadas.')
+      return
+    }
     await destroy(id)
     router.push({ name: 'proveedores_list' })
   }
@@ -73,7 +81,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.acciones{
+.acciones {
   display: flex;
 }
 </style>

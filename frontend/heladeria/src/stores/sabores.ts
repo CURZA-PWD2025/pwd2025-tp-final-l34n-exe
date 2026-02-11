@@ -2,7 +2,6 @@ import type { Sabor } from '@/interfaces/Sabor'
 import { defineStore } from 'pinia'
 import ApiService from '@/services/ApiService'
 import { ref } from 'vue'
-import type { Categoria } from '@/interfaces/Categoria'
 
 const useSaboresStore = defineStore('sabores', () => {
   const sabores = ref<Array<Sabor>>([])
@@ -11,12 +10,7 @@ const useSaboresStore = defineStore('sabores', () => {
     nombre: '',
     stock: 0,
     disponible: 0,
-    categoria: {
-      id: 0,
-      nombre: '',
-      tipo: '',
-      descripcion: '',
-    } as Categoria,
+    categoria: { id: 0 },
   })
   const url = 'sabores'
   async function getAll() {

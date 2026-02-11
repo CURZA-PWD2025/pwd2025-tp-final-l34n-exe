@@ -62,14 +62,20 @@
 
 <script setup lang="ts">
 import useProveedoresStore from '@/stores/proveedores'
+import useItemVentasStore from '@/stores/itemventas'
 import { toRefs, onMounted } from 'vue'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
 const { proveedores } = toRefs(useProveedoresStore())
+const { itemventas } = toRefs(useItemVentasStore())
 const { getAll, destroy } = useProveedoresStore()
 
 const deleteProveedor = async (id: number) => {
   if (confirm('¿Está seguro que desea eliminar este proveedor?')) {
+    if (itemventas.value.some((iv) => iv.producto?.proveedor?.id === id)) {
+      alert('No se puede eliminar un proveedor que tiene ventas asociadas.')
+      return
+    }
     await destroy(id)
     await getAll()
   }
@@ -77,6 +83,7 @@ const deleteProveedor = async (id: number) => {
 
 onMounted(async () => {
   await getAll()
+  await useItemVentasStore().getAll()
 })
 </script>
 

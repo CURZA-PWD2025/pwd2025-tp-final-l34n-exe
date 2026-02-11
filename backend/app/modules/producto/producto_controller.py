@@ -33,6 +33,7 @@ class ProductoController:
             precio=data["precio"],
             stock=data["stock"],
             max_sabores=data["max_sabores"],
+            disponible=data["disponible"],
             proveedor=proveedor,
             categoria=categoria
         )
@@ -61,6 +62,7 @@ class ProductoController:
             precio=data["precio"],
             stock=data["stock"],
             max_sabores=data["max_sabores"],
+            disponible=data["disponible"],
             proveedor=proveedor,
             categoria=categoria
         )

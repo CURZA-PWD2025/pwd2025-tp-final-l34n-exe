@@ -3,12 +3,13 @@ from ..proveedor.proveedor_model import ProveedorModel as Proveedor
 from ..categoria.categoria_model import CategoriaModel as Categoria
 
 class ProductoModel:
-    def __init__(self, id:int=0, nombre:str="", precio:float=0.0, stock:int=0, max_sabores:int=1, proveedor:Proveedor=None, categoria:Categoria=None):
+    def __init__(self, id:int=0, nombre:str="", precio:float=0.0, stock:int=0, max_sabores:int=1, disponible:bool=True, proveedor:Proveedor=None, categoria:Categoria=None):
         self.id = id
         self.nombre = nombre
         self.precio = precio
         self.stock = stock
         self.max_sabores = max_sabores
+        self.disponible = disponible
         self.proveedor = proveedor
         self.categoria = categoria
 
@@ -19,6 +20,7 @@ class ProductoModel:
             "precio": self.precio,
             "stock": self.stock,
             "max_sabores": self.max_sabores,
+            "disponible": self.disponible,
             "proveedor": self.proveedor.serializar() if self.proveedor else None,
             "categoria": self.categoria.serializar() if self.categoria else None
         }
@@ -31,6 +33,7 @@ class ProductoModel:
             precio=data["precio"],
             stock=data["stock"],
             max_sabores=data["max_sabores"],
+            disponible=data["disponible"],
             proveedor=Proveedor.deserializar(data["proveedor"]) if data.get("proveedor") else None,
             categoria=Categoria.deserializar(data["categoria"]) if data.get("categoria") else None
         )
@@ -80,7 +83,7 @@ class ProductoModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True)  as cursor:
             try:
-                cursor.execute("INSERT INTO productos (nombre, precio, stock, max_sabores, id_proveedor, id_categoria) VALUES (%s, %s, %s, %s, %s, %s)", (self.nombre, self.precio, self.stock, self.max_sabores, self.proveedor.id, self.categoria.id))
+                cursor.execute("INSERT INTO productos (nombre, precio, stock, max_sabores, disponible, id_proveedor, id_categoria) VALUES (%s, %s, %s, %s, %s, %s, %s)", (self.nombre, self.precio, self.stock, self.max_sabores, self.disponible, self.proveedor.id, self.categoria.id))
                 self.id = cursor.lastrowid
                 cnx.commit()
                 return cursor.rowcount > 0
@@ -96,8 +99,8 @@ class ProductoModel:
         with cnx.cursor(dictionary=True) as cursor:
             try:
                 cursor.execute(
-                    "UPDATE productos SET nombre=%s, precio=%s, stock=%s, max_sabores=%s, id_proveedor=%s, id_categoria=%s WHERE id=%s",
-                    (self.nombre, self.precio, self.stock, self.max_sabores, self.proveedor.id, self.categoria.id, self.id)
+                    "UPDATE productos SET nombre=%s, precio=%s, stock=%s, max_sabores=%s, disponible=%s, id_proveedor=%s, id_categoria=%s WHERE id=%s",
+                    (self.nombre, self.precio, self.stock, self.max_sabores, self.disponible, self.proveedor.id, self.categoria.id, self.id)
                 )
                 cnx.commit()
                 return cursor.rowcount > 0

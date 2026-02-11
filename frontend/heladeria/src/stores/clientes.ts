@@ -10,6 +10,7 @@ const useClientesStore = defineStore('clientes', () => {
     nombre: '',
     apellido: '',
     telefono: '',
+    email: '',
     direccion: '',
   })
   const url = 'clientes'

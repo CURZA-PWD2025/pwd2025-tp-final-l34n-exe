@@ -51,6 +51,7 @@
     </ButtonComponent>
   </div>
 </template>
+
 <script setup lang="ts">
 import { toRefs, onMounted, ref, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
@@ -71,31 +72,33 @@ onMounted(async () => {
   }
 })
 
-function limpiarProveedor(){
-    proveedor.value = {
-      id: 0,
-      nombre: '',
-      email: '',
-      telefono: ''
-    }
+function limpiarProveedor() {
+  proveedor.value = {
+    id: 0,
+    nombre: '',
+    telefono: '',
+    email: '',
   }
+}
 
 const actualizar = async () => {
   const result = await form.value?.validate()
   if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
-  } else {
+  }
+  try {
     const data = {
       id: proveedor.value.id,
       nombre: proveedor.value.nombre,
       telefono: proveedor.value.telefono,
       email: proveedor.value.email,
     }
-
     await update(data)
-
     alert('Proveedor ACTUALIZADO con éxito.')
+  } catch (error) {
+    console.error(error)
+    alert('ERROR al actualizar el proveedor.')
   }
 }
 

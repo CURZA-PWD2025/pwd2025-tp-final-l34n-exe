@@ -33,6 +33,7 @@ class VentaController:
         venta = VentaModel(
             fecha=data["fecha"],
             total=data["total"],
+            estado=data["estado"],
             cliente=cliente,
             empleado=empleado
         )
@@ -42,31 +43,24 @@ class VentaController:
 
     @staticmethod
     def update(data: dict) -> dict:
-        cliente_id = data["id_cliente"]
-        empleado_id = data["id_empleado"]
-
-        cliente_data = ClienteModel.get_by_id(cliente_id)
-        empleado_data = EmpleadoModel.get_by_id(empleado_id)
-
-        if not cliente_data:
-            return {"mensaje": "El cliente no existe"}
-
-        if not empleado_data:
-            return {"mensaje": "El empleado no existe"}
-
-        cliente = ClienteModel.deserializar(cliente_data)
-        empleado = EmpleadoModel.deserializar(empleado_data)
+        cliente = ClienteModel.deserializar(
+            ClienteModel.get_by_id(data["id_cliente"])
+        )
+        empleado = EmpleadoModel.deserializar(
+            EmpleadoModel.get_by_id(data["id_empleado"])
+        )
 
         venta = VentaModel(
             id=data["id"],
             fecha=data["fecha"],
             total=data["total"],
+            estado=data["estado"],
             cliente=cliente,
             empleado=empleado
         )
-        result = venta.update()
-        return {"Actualizado": result}
 
+        ok = venta.update()
+        return {"actualizado": ok}
 
     @staticmethod
     def delete(id: int) -> dict:

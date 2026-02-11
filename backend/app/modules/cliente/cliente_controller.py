@@ -18,6 +18,7 @@ class ClienteController:
             nombre=data["nombre"],
             apellido=data["apellido"],
             telefono=data["telefono"],
+            email=data["email"],
             direccion=data["direccion"]
         )
         result = cliente.create()
@@ -30,6 +31,7 @@ class ClienteController:
             nombre=data["nombre"],
             apellido=data["apellido"],
             telefono=data["telefono"],
+            email=data["email"],
             direccion=data["direccion"]
         )
         result = cliente.update()

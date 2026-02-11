@@ -1,137 +1,122 @@
 import mysql.connector
-from mysql.connector import Error, errorcode
+from mysql.connector import Error
 import os
 from dotenv import load_dotenv
 
-
 load_dotenv()
+
 DB_NAME = os.getenv("DB_NAME")
 
 DB_CONFIG = {
-    'host': os.getenv("DB_HOST"),
-    'user': os.getenv("DB_USER"),
-    'password': os.getenv("DB_PASSWORD"),
-    'port': os.getenv("DB_PORT"),
-    'raise_on_warnings': True,
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "port": int(os.getenv("DB_PORT")),
+    "raise_on_warnings": False,
 }
 
 TABLES = {}
 SEEDS = {}
 
-# Proveedores de productos #
-TABLES['proveedores'] = (
-    "CREATE TABLE `proveedores` ("
-    "  `id` INT NOT NULL AUTO_INCREMENT,"
-    "  `nombre` VARCHAR(100) NOT NULL,"
-    "  `telefono` VARCHAR(15),"
-    "  `email` VARCHAR(100),"
-    "  PRIMARY KEY (`id`)"
+TABLES["proveedores"] = (
+    "CREATE TABLE IF NOT EXISTS proveedores ("
+    "id INT AUTO_INCREMENT PRIMARY KEY,"
+    "nombre VARCHAR(100) NOT NULL,"
+    "telefono VARCHAR(15),"
+    "email VARCHAR(100)"
     ")"
 )
 
-# Categorias para sabores y productos #
-TABLES['categoria'] = (
-    "CREATE TABLE `categoria` ("
-    "  `id` INT NOT NULL AUTO_INCREMENT,"
-    "  `nombre` VARCHAR(100) NOT NULL,"
-    "  `tipo` ENUM('Sabor', 'Producto') NOT NULL,"
-    "  `descripcion` VARCHAR(255) DEFAULT NULL,"
-    "  PRIMARY KEY (`id`)"
+TABLES["categoria"] = (
+    "CREATE TABLE IF NOT EXISTS categoria ("
+    "id INT AUTO_INCREMENT PRIMARY KEY,"
+    "nombre VARCHAR(100) NOT NULL,"
+    "tipo ENUM('Sabor','Producto') NOT NULL,"
+    "descripcion VARCHAR(255)"
     ")"
 )
 
-# Productos (Helados, Paletas, Tortas, Batidos, Bebidas) #
-TABLES['productos'] = (
-    "CREATE TABLE `productos` ("
-    "  `id` INT NOT NULL AUTO_INCREMENT,"
-    "  `nombre` VARCHAR(100) NOT NULL,"
-    "  `precio` DECIMAL(10,2) NOT NULL,"
-    "  `stock` INT NOT NULL CHECK (stock >= 0),"
-    "  `max_sabores` INT NOT NULL DEFAULT 1,"
-    "  `id_proveedor` INT NOT NULL,"
-    "  `id_categoria` INT NOT NULL,"
-    "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores`(`id`),"
-    "  FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`)"
+TABLES["productos"] = (
+    "CREATE TABLE IF NOT EXISTS productos ("
+    "id INT AUTO_INCREMENT PRIMARY KEY,"
+    "nombre VARCHAR(100) NOT NULL,"
+    "precio DECIMAL(10,2) NOT NULL,"
+    "stock INT NOT NULL DEFAULT 0 CHECK (stock >= 0),"
+    "max_sabores INT NOT NULL DEFAULT 1,"
+    "disponible TINYINT NOT NULL DEFAULT 1,"
+    "id_proveedor INT NOT NULL,"
+    "id_categoria INT NOT NULL,"
+    "FOREIGN KEY (id_proveedor) REFERENCES proveedores(id),"
+    "FOREIGN KEY (id_categoria) REFERENCES categoria(id)"
     ")"
 )
 
-# Sabores de helado #
-TABLES['sabores'] = (
-    "CREATE TABLE `sabores` ("
-    "  `id` INT NOT NULL AUTO_INCREMENT,"
-    "  `nombre` VARCHAR(100) NOT NULL,"
-    "  `stock` INT NOT NULL CHECK (stock >= 0),"
-    "  `disponible` TINYINT NOT NULL DEFAULT 1,"
-    "  `id_categoria` INT NOT NULL,"
-    "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`)"
+TABLES["sabores"] = (
+    "CREATE TABLE IF NOT EXISTS sabores ("
+    "id INT AUTO_INCREMENT PRIMARY KEY,"
+    "nombre VARCHAR(100) NOT NULL,"
+    "stock INT NOT NULL DEFAULT 0 CHECK (stock >= 0),"
+    "disponible TINYINT NOT NULL DEFAULT 1,"
+    "id_categoria INT NOT NULL,"
+    "FOREIGN KEY (id_categoria) REFERENCES categoria(id)"
     ")"
 )
 
-
-# Empleados #
-TABLES['empleados'] = (
-    "CREATE TABLE `empleados` ("
-    "  `id` INT NOT NULL AUTO_INCREMENT,"
-    "  `nombre` VARCHAR(100) NOT NULL,"
-    "  `apellido` VARCHAR(100) NOT NULL,"
-    "  `telefono` VARCHAR(15),"
-    "  `email` VARCHAR(100),"
-    "  `puesto` ENUM('Cajero', 'Limpieza', 'Gerente') NOT NULL,"
-    "  PRIMARY KEY (`id`)"
+TABLES["empleados"] = (
+    "CREATE TABLE IF NOT EXISTS empleados ("
+    "id INT AUTO_INCREMENT PRIMARY KEY,"
+    "nombre VARCHAR(100) NOT NULL,"
+    "apellido VARCHAR(100) NOT NULL,"
+    "telefono VARCHAR(15),"
+    "email VARCHAR(100),"
+    "puesto ENUM('Cajero','Limpieza','Gerente') NOT NULL"
     ")"
 )
 
-# Clientes #
-TABLES['clientes'] = (
-    "CREATE TABLE `clientes` ("
-    "  `id` INT NOT NULL AUTO_INCREMENT,"
-    "  `nombre` VARCHAR(100) NOT NULL,"
-    "  `apellido` VARCHAR(100) NOT NULL,"
-    "  `telefono` VARCHAR(15) NOT NULL,"
-    "  `direccion` VARCHAR(255) NOT NULL,"
-    "  PRIMARY KEY (`id`)"
+TABLES["clientes"] = (
+    "CREATE TABLE IF NOT EXISTS clientes ("
+    "id INT AUTO_INCREMENT PRIMARY KEY,"
+    "nombre VARCHAR(100) NOT NULL,"
+    "apellido VARCHAR(100) NOT NULL,"
+    "telefono VARCHAR(15) NOT NULL,"
+    "email VARCHAR(100),"
+    "direccion VARCHAR(255) NOT NULL"
     ")"
 )
 
-# Ventas realizadas #
-TABLES['ventas'] = (
-    "CREATE TABLE `ventas` ("
-    "  `id` INT NOT NULL AUTO_INCREMENT,"
-    "  `fecha` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-    "  `total` DECIMAL(10,2) NOT NULL,"
-    "  `id_cliente` INT NOT NULL,"
-    "  `id_empleado` INT NOT NULL,"
-    "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`id_cliente`) REFERENCES `clientes`(`id`), "
-    "  FOREIGN KEY (`id_empleado`) REFERENCES `empleados`(`id`) "
+TABLES["ventas"] = (
+    "CREATE TABLE IF NOT EXISTS ventas ("
+    "id INT AUTO_INCREMENT PRIMARY KEY,"
+    "fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+    "total DECIMAL(10,2) NOT NULL DEFAULT 0,"
+    "estado ENUM('abierta','cerrada') DEFAULT 'abierta',"
+    "id_cliente INT NOT NULL,"
+    "id_empleado INT NOT NULL,"
+    "FOREIGN KEY (id_cliente) REFERENCES clientes(id),"
+    "FOREIGN KEY (id_empleado) REFERENCES empleados(id)"
     ")"
 )
 
-# Items dentro de una venta #
-TABLES['items_ventas'] = (
-    "CREATE TABLE `items_ventas` ("
-    "  `id` INT NOT NULL AUTO_INCREMENT,"
-    "  `id_venta` INT NOT NULL,"
-    "  `id_producto` INT NOT NULL,"
-    "  `cantidad` INT NOT NULL CHECK (cantidad > 0),"
-    "  PRIMARY KEY (`id`),"
-    "  FOREIGN KEY (`id_venta`) REFERENCES `ventas`(`id`) ON DELETE CASCADE,"
-    "  FOREIGN KEY (`id_producto`) REFERENCES `productos`(`id`)"
+TABLES["items_ventas"] = (
+    "CREATE TABLE IF NOT EXISTS items_ventas ("
+    "id INT AUTO_INCREMENT PRIMARY KEY,"
+    "id_venta INT NOT NULL,"
+    "id_producto INT NOT NULL,"
+    "cantidad INT NOT NULL,"
+    "subtotal DECIMAL(10,2) NOT NULL DEFAULT 0,"
+    "FOREIGN KEY (id_venta) REFERENCES ventas(id) ON DELETE CASCADE,"
+    "FOREIGN KEY (id_producto) REFERENCES productos(id)"
     ")"
 )
 
-# Sabores elegidos por cada item (N:M entre items_venta y sabores) #
-TABLES['items_venta_sabores'] = (
-    "CREATE TABLE `items_venta_sabores` ("
-    "  `id` INT NOT NULL AUTO_INCREMENT,"
-    "  `id_item` INT NOT NULL,"
-    "  `id_sabor` INT NOT NULL,"
-    "  PRIMARY KEY (`id`),"
-    "  UNIQUE KEY `ux_item_sabor` (`id_item`, `id_sabor`),"
-    "  FOREIGN KEY (`id_item`) REFERENCES `items_ventas`(`id`) ON DELETE CASCADE,"
-    "  FOREIGN KEY (`id_sabor`) REFERENCES `sabores`(`id`)"
+TABLES["items_venta_sabores"] = (
+    "CREATE TABLE IF NOT EXISTS items_venta_sabores ("
+    "id INT AUTO_INCREMENT PRIMARY KEY,"
+    "id_item INT NOT NULL,"
+    "id_sabor INT NOT NULL,"
+    "UNIQUE KEY ux_item_sabor (id_item, id_sabor),"
+    "FOREIGN KEY (id_item) REFERENCES items_ventas(id) ON DELETE CASCADE,"
+    "FOREIGN KEY (id_sabor) REFERENCES sabores(id)"
     ")"
 )
 
@@ -166,28 +151,29 @@ SEEDS['categoria'] = (
 
 
 SEEDS['productos'] = (
-    "INSERT INTO `productos` (nombre, precio, stock, max_sabores, id_proveedor, id_categoria) VALUES "
-    # Helados
-    "('Pote 1/4 kg', 8000.00, 100, 2, 1, 4),"
-    "('Pote 1/2 kg', 17000.00, 80, 3, 2, 4),"
-    "('Pote 1 kg', 20000.00, 60, 4, 3, 4),"
-    "('Cucurucho simple', 2000.00, 150, 1, 1, 3),"
-    "('Cucurucho doble', 2200.00, 120, 2, 2, 3),"
-    "('Vaso chico', 850.00, 140, 1, 1, 6),"
-    "('Vaso grande', 1200.00, 120, 2, 2, 6),"
+    "INSERT INTO `productos` (nombre, precio, stock, max_sabores, disponible, id_proveedor, id_categoria) VALUES "
+    # Potes
+    "('Pote 1/4 kg', 9500.00, 100, 2, 1, 1, 4),"
+    "('Pote 1/2 kg', 17000.00, 80, 3, 1, 2, 4),"
+    "('Pote 1 kg', 27000.00, 60, 4, 1, 3, 4),"
+    # Cucuruchos
+    "('Cucurucho simple', 800.00, 150, 1, 1, 1, 3),"
+    "('Cucurucho doble', 1400.00, 120, 2, 1, 2, 3),"
+    # Vasos
+    "('Vaso chico', 700.00, 140, 1, 1, 1, 6),"
+    "('Vaso grande', 1200.00, 120, 2, 1, 2, 6),"
     # Paletas
-    "('Paleta de agua', 1800.00, 90, 2, 5, 5),"
-    "('Paleta de crema', 1750.00, 80, 2, 5, 5),"
-    "('Paleta rellena', 1900.00, 70, 2, 5, 5),"
+    "('Paleta de agua', 1000.00, 90, 2, 1, 5, 5),"
+    "('Paleta de crema', 1050.00, 80, 2, 1, 5, 5),"
+    "('Paleta rellena', 1200.00, 70, 2, 1, 5, 5),"
     # Tortas
-    "('Torta helada vainilla y frutilla', 14900, 30, 2, 3, 1),"
-    "('Torta helada chocolate y dulce de leche', 14800.00, 25, 2, 3, 1),"
-    "('Torta helada americana y chocolate', 14700.00, 20, 3, 3, 1),"
-    # Bebidas
-    "('Batido', 5000.00, 40, 1, 1, 7),"
-    "('Yogur helado', 4000.00, 50, 2, 4, 2);"
+    "('Torta helada vainilla y frutilla', 28000.00, 30, 2, 1, 3, 1),"
+    "('Torta helada chocolate y dulce de leche', 29000.00, 25, 2, 1, 3, 1),"
+    "('Torta helada americana y chocolate', 31000.00, 20, 3, 1, 3, 1),"
+    # Batidos y Yogures
+    "('Batido', 9000.00, 40, 1, 1, 1, 7),"
+    "('Yogur helado', 7000.00, 50, 2, 1, 4, 2);"
 )
-
 
 SEEDS['sabores'] = (
     "INSERT INTO `sabores` (nombre, stock, disponible, id_categoria) VALUES "
@@ -225,32 +211,40 @@ SEEDS['empleados'] = (
 )
 
 SEEDS['clientes'] = (
-    "INSERT INTO `clientes` (nombre, apellido, telefono, direccion) VALUES "
-    "('Juan', 'Perez', '2920123456', 'Calle 123'),"
-    "('Maria', 'Gomez', '2920987654', 'Avenida Siempre Viva 456'),"
-    "('Carlos', 'Lopez', '2920555666', 'Boulevard Central 789');"
+    "INSERT INTO `clientes` (nombre, apellido, telefono, email, direccion) VALUES "
+    "('Juan', 'Perez', '2920123456', 'juanperez@gmail.com', 'Calle 123'),"
+    "('Maria', 'Gomez', '2920987654', 'mariagomez@gmail.com', 'Avenida Siempre Viva 456'),"
+    "('Carlos', 'Lopez', '2920555666', 'carloslopez@gmail.com', 'Boulevard Central 789');"
 )
 
 SEEDS['ventas'] = (
-    "INSERT INTO `ventas` (fecha, total, id_cliente, id_empleado) VALUES "
-    "('2025-10-01 11:00:00', 4600.00, 1, 1),"  # Juan compra varios helados y lo atiende Ana
-    "('2025-10-02 16:30:00', 3400.00, 2, 3),"  # María compra cucuruchos y batido, la atiende Sofía
-    "('2025-10-03 19:45:00', 5600.00, 3, 2),"  # Carlos compra potes y bebidas, lo atiende Luis
-    "('2025-10-04 15:10:00', 2800.00, 1, 4);"  # Juan compra mas productos, lo atiende Miguel
+    "INSERT INTO `ventas` (fecha, total, estado, id_cliente, id_empleado) VALUES "
+    "('2025-10-01 11:00:00', 4600.00, 'cerrada', 1, 1),"  # Juan compra varios helados y lo atiende Ana
+    "('2025-10-02 16:30:00', 3400.00, 'cerrada', 2, 3),"  # María compra cucuruchos y batido, la atiende Sofía
+    "('2025-10-03 19:45:00', 5600.00, 'cerrada', 3, 2),"  # Carlos compra potes y bebidas, lo atiende Luis
+    "('2025-10-04 15:10:00', 2800.00, 'cerrada', 1, 4);"  # Juan compra mas productos, lo atiende Miguel
 )
 
 
-SEEDS['items_ventas'] = (
-    "INSERT INTO `items_ventas` (id_venta, id_producto, cantidad) VALUES "
-    "(1, 2, 1),"   # 1 pote 1/2 kg
-    "(1, 5, 2),"   # 2 cucuruchos dobles
-    "(2, 6, 1),"   # 1 vaso chico
-    "(2, 13, 1),"  # 1 batido
-    "(3, 3, 1),"   # 1 pote 1 kg
-    "(3, 15, 2),"  # 2 yogures
-    "(4, 8, 2);"   # 2 paletas de agua
-)
+SEEDS["items_ventas"] = (
+    "INSERT INTO items_ventas (id_venta, id_producto, cantidad, subtotal) "
 
+    "SELECT 1, 2, 1, p.precio * 1 FROM productos p WHERE p.id = 2 "
+    "UNION ALL "
+    "SELECT 1, 5, 2, p.precio * 2 FROM productos p WHERE p.id = 5 "
+    "UNION ALL "
+    "SELECT 2, 6, 1, p.precio * 1 FROM productos p WHERE p.id = 6 "
+    "UNION ALL "
+    "SELECT 2, 13, 1, p.precio * 1 FROM productos p WHERE p.id = 13 "
+    "UNION ALL "
+    "SELECT 3, 3, 1, p.precio * 1 FROM productos p WHERE p.id = 3 "
+    "UNION ALL "
+    "SELECT 3, 15, 2, p.precio * 2 FROM productos p WHERE p.id = 15 "
+    "UNION ALL "
+    "SELECT 4, 8, 2, p.precio * 2 FROM productos p WHERE p.id = 8 "
+    "UNION ALL "
+    "SELECT 4, 9, 3, p.precio * 3 FROM productos p WHERE p.id = 9"
+)
 
 SEEDS['items_venta_sabores'] = (
     "INSERT INTO `items_venta_sabores` (id_item, id_sabor) VALUES "
@@ -270,34 +264,39 @@ SEEDS['items_venta_sabores'] = (
 )
 
 def create_database(cursor):
-    try:
-        cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{DB_NAME}` DEFAULT CHARACTER SET 'utf8'")
-        print(f"Database {DB_NAME} created successfully.")
-    except Error as err:
-        if err.errno == errorcode.ER_DB_CREATE_EXISTS:
-            print(f"Database {DB_NAME} already exists.")
-        else:
-            print(err)
+    cursor.execute(
+        f"CREATE DATABASE IF NOT EXISTS `{DB_NAME}` "
+        "DEFAULT CHARACTER SET utf8mb4"
+    )
 
-def create_tables(tables, cursor):
-    for name, ddl in tables.items():
-        try:
-            print(f"Creating table {name}: ", end="")
-            cursor.execute(ddl)
-            print("OK")
-        except Error as err:
-            print(f"Error: {err.msg}")
+def create_tables(cursor):
+    for name, ddl in TABLES.items():
+        print(f"Creating table {name}...", end=" ")
+        cursor.execute(ddl)
+        print("OK")
 
-def seed_tables(seeds, cursor):
-    for name, sql in seeds.items():
-        try:
-            print(f"Seeding table {name}: ", end="")
-            cursor.execute(f"DELETE FROM {name}")
-            cursor.execute(sql)
-            print("OK")
-        except Error as err:
-            print(f"Error: {err.msg}")
+def seed_tables(cursor):
+    cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
 
+    for table in [
+        "items_venta_sabores",
+        "items_ventas",
+        "ventas",
+        "productos",
+        "sabores",
+        "clientes",
+        "empleados",
+        "categoria",
+        "proveedores",
+    ]:
+        cursor.execute(f"TRUNCATE TABLE {table}")
+
+    for name, sql in SEEDS.items():
+        print(f"Seeding {name}...", end=" ")
+        cursor.execute(sql)
+        print("OK")
+
+    cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
 
 try:
     cxn = mysql.connector.connect(**DB_CONFIG)
@@ -306,23 +305,21 @@ try:
     cursor.close()
     cxn.close()
 
-    CONF_DB = DB_CONFIG.copy()
-    CONF_DB['database'] = DB_NAME
-    cxn = mysql.connector.connect(**CONF_DB)
+    DB_CONFIG["database"] = DB_NAME
+    cxn = mysql.connector.connect(**DB_CONFIG)
     cursor = cxn.cursor()
 
-    create_tables(TABLES, cursor)
-    seed_tables(SEEDS, cursor)
+    create_tables(cursor)
+    seed_tables(cursor)
 
     cxn.commit()
     print("\nBase de datos inicializada correctamente.")
+
 except Error as e:
-    print(f"Error: {e}")
+    print("Error:", e)
+
 finally:
     if cursor:
         cursor.close()
     if cxn:
         cxn.close()
-
-
-

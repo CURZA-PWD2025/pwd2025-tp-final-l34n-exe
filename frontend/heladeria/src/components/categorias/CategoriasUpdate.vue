@@ -1,17 +1,17 @@
 <template>
   <div>
-    <v-card class="mx-auto pa-6" max-width="500" elevation="16">
-      <v-card-title class="text-h6 text-center">INSERTE DATOS</v-card-title>
+    <v-card class="mx-auto pa-6" max-width="500" elevation="16" color="aliceblue">
+      <v-card-title class="text-h6 text-center">ACTUALIZAR CATEGORÍA</v-card-title>
 
       <v-form @submit.prevent="actualizar" ref="form">
         <v-text-field
-          v-model="categoria.nombre"
+          v-model.trim="categoria.nombre"
           label="Nombre de la categoría"
           variant="outlined"
           :rules="[
             (v) => !!v || 'El nombre es obligatorio',
-            (v) => v.length <= 30 || 'Máximo 30 caracteres',
             (v) => v.length >= 3 || 'Mínimo 3 caracteres',
+            (v) => v.length <= 30 || 'Máximo 30 caracteres',
             (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios',
           ]"
           required
@@ -22,13 +22,10 @@
           label="Tipo de categoría"
           variant="outlined"
           :rules="[(v) => !!v || 'El tipo es obligatorio']"
-          :disabled="desabilitar()"
           required
-        >
-        </v-select>
-
+        />
         <v-text-field
-          v-model="categoria.descripcion"
+          v-model.trim="categoria.descripcion"
           label="Descripción"
           variant="outlined"
           :rules="[
@@ -38,18 +35,19 @@
           ]"
           required
         />
-        <ButtonComponent type="submit" class="act">
+        <ButtonComponent type="submit" class="act mt-4">
           <template #pre-icon>
-            <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
+            <Icon icon="mdi-light:check" width="26" height="26" style="color: #05f036" />
           </template>
           Actualizar Categoría
         </ButtonComponent>
       </v-form>
     </v-card>
-    <ButtonComponent class="volver" :to="{ name: 'categorias_list' }">
-      <template #pre-icon
-        ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
-      /></template>
+
+    <ButtonComponent class="volver mt-4" :to="{ name: 'categorias_list' }">
+      <template #pre-icon>
+        <Icon icon="ic:twotone-list" width="28" height="28" style="color: black" />
+      </template>
       VOLVER A LA LISTA
     </ButtonComponent>
   </div>
@@ -58,18 +56,13 @@
 <script setup lang="ts">
 import { ref, toRefs, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
-import { Icon } from '@iconify/vue'
 import useCategoriasStore from '@/stores/categorias'
 import ButtonComponent from '../ButtonComponent.vue'
-import useProductosStore from '@/stores/productos'
-import useSaboresStore from '@/stores/sabores'
+import { Icon } from '@iconify/vue'
+import type { Categoria } from '@/interfaces/Categoria'
 
 const store = useCategoriasStore()
 const { categoria } = toRefs(store)
-const productostore = useProductosStore()
-const { productos } = toRefs(productostore)
-const saboresstore = useSaboresStore()
-const { sabores } = toRefs(saboresstore)
 const { getOne, update } = store
 const route = useRoute()
 const form = ref()
@@ -80,23 +73,7 @@ onMounted(async () => {
   if (id) {
     await getOne(id)
   }
-  productostore.getAll()
-  saboresstore.getAll()
-
 })
-
-const desabilitar = () => {
-  if (categoria.value.tipo === 'Producto') {
-    const asociados = productos.value.filter((p) => p.categoria?.id === categoria.value.id)
-
-    return asociados.length > 0
-  } else if (categoria.value.tipo === 'Sabor') {
-    const asociados = sabores.value.filter((s) => s.categoria?.id === categoria.value.id)
-
-    return asociados.length > 0
-  }
-  return false
-}
 
 function limpiarCategoria() {
   categoria.value = {
@@ -104,15 +81,17 @@ function limpiarCategoria() {
     nombre: '',
     tipo: '',
     descripcion: '',
-  }
+  } as Categoria
 }
 
 const actualizar = async () => {
-  const valid = await form.value?.validate()
-  if (!valid) {
-    alert('Por favor, complete los campos.')
+  const result = await form.value?.validate()
+  if (!result.valid) {
+    alert('Por favor, corrija los errores del formulario.')
     return
-  } else {
+  }
+
+  try {
     const data = {
       id: categoria.value.id,
       nombre: categoria.value.nombre,
@@ -120,8 +99,10 @@ const actualizar = async () => {
       descripcion: categoria.value.descripcion,
     }
     await update(data)
-
     alert('Categoría ACTUALIZADA con éxito.')
+  } catch (error) {
+    console.error(error)
+    alert('Error al actualizar la categoría.')
   }
 }
 

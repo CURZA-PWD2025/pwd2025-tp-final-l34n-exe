@@ -1,6 +1,4 @@
 import type { Producto } from '@/interfaces/Producto'
-import type { Proveedor } from '@/interfaces/Proveedor'
-import type { Categoria } from '@/interfaces/Categoria'
 import { defineStore } from 'pinia'
 import ApiService from '@/services/ApiService'
 import { ref } from 'vue'
@@ -13,18 +11,13 @@ const useProductosStore = defineStore('productos', () => {
     precio: 0,
     stock: 0,
     max_sabores: 0,
+    disponible: 0,
     proveedor: {
       id: 0,
-      nombre: '',
-      telefono: '',
-      email: '',
-    } as Proveedor,
+    },
     categoria: {
       id: 0,
-      nombre: '',
-      tipo: '',
-      descripcion: '',
-    } as Categoria,
+    },
   })
   const url = 'productos'
   async function getAll() {

@@ -19,6 +19,7 @@
           <th>PRECIO</th>
           <th>STOCK</th>
           <th>MAX_SABORES</th>
+          <th>DISPONIBLE</th>
           <th>PROVEEDOR</th>
           <th>CATEGORIA</th>
           <th>ACCIONES</th>
@@ -31,6 +32,7 @@
           <td>{{ producto.precio }}$</td>
           <td>{{ producto.stock }}</td>
           <td>{{ producto.max_sabores }}</td>
+          <td>{{ producto.disponible ? 'Sí' : 'No' }}</td>
           <td>{{ producto.proveedor?.nombre }}</td>
           <td>{{ producto.categoria?.nombre }}</td>
           <td class="acciones">
@@ -68,14 +70,22 @@
 
 <script setup lang="ts">
 import useProductosStore from '@/stores/productos'
+import useItemVentasStore from '@/stores/itemventas'
 import { toRefs, onMounted } from 'vue'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
 const { productos } = toRefs(useProductosStore())
+const { itemventas } = toRefs(useItemVentasStore())
 const { getAll, destroy } = useProductosStore()
 
 const deleteProducto = async (id: number) => {
   if (confirm('¿Está seguro que desea eliminar este producto?')) {
+    if (
+      itemventas.value.some((item) => item.producto?.id === id && item.venta?.estado === 'cerrada')
+    ) {
+      alert('No se pueden eliminar productos que están en ventas cerradas.')
+      return
+    }
     await destroy(id)
     await getAll()
   }
@@ -83,6 +93,7 @@ const deleteProducto = async (id: number) => {
 
 onMounted(async () => {
   await getAll()
+  await useItemVentasStore().getAll()
 })
 </script>
 

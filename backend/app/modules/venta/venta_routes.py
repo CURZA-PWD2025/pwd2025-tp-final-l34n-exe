@@ -60,3 +60,4 @@ def delete(id: int):
             return jsonify({"mensaje": "No se pudo eliminar la venta"}), 500
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
+

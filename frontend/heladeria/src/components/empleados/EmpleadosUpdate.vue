@@ -1,24 +1,37 @@
 <template>
   <div>
-    <v-card class="mx-auto pa-6" max-width="500" variant="outlined">
-      <v-card-title class="text-h6 text-center">Actualizar Empleado</v-card-title>
+    <v-card class="mx-auto pa-6" max-width="500" color="aliceblue" elevation="16">
+      <v-card-title class="text-h6 text-center">ACTUALIZAR EMPLEADO</v-card-title>
+
       <v-form @submit.prevent="actualizar" ref="form">
         <v-text-field
-          v-model="empleado.nombre"
+          v-model.trim="empleado.nombre"
           label="Nombre del empleado"
           variant="outlined"
-          :rules="[(v) => !!v || 'El nombre es obligatorio']"
+          :rules="[
+            (v) => !!v || 'El nombre es obligatorio',
+            (v) => v.length >= 3 || 'Mínimo 3 caracteres',
+            (v) => v.length <= 30 || 'Máximo 30 caracteres',
+            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s]+$/.test(v) || 'Solo letras y espacios',
+          ]"
           required
-        ></v-text-field>
+        />
+
         <v-text-field
-          v-model="empleado.apellido"
+          v-model.trim="empleado.apellido"
           label="Apellido del empleado"
           variant="outlined"
-          :rules="[(v) => !!v || 'El apellido es obligatorio']"
+          :rules="[
+            (v) => !!v || 'El apellido es obligatorio',
+            (v) => v.length >= 3 || 'Mínimo 3 caracteres',
+            (v) => v.length <= 50 || 'Máximo 50 caracteres',
+            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s]+$/.test(v) || 'Solo letras y espacios',
+          ]"
           required
-        ></v-text-field>
+        />
+
         <v-text-field
-          v-model="empleado.telefono"
+          v-model.trim="empleado.telefono"
           label="Teléfono del empleado"
           variant="outlined"
           :rules="[
@@ -27,28 +40,30 @@
             (v) => v.length === 10 || 'Debe tener 10 dígitos',
           ]"
           required
-        ></v-text-field>
+        />
+
         <v-text-field
-          v-model="empleado.email"
+          v-model.trim="empleado.email"
           label="Email del empleado"
           variant="outlined"
           :rules="[
             (v) => !!v || 'El email es obligatorio',
-            (v) => /.+@.+\..+/.test(v) || 'Email inválido',
+            (v) => /.+@.+\..+/.test(v) || 'Debe ser un email válido',
+            (v) => v.length <= 100 || 'Máximo 100 caracteres',
           ]"
           required
-        ></v-text-field>
+        />
+
         <v-select
           v-model="empleado.puesto"
           :items="puestos"
-          item-title="nombre"
-          item-value="id"
-          label="Categoría"
+          label="Puesto"
           variant="outlined"
-          :rules="[(v) => !!v || 'Seleccione una categoría']"
+          :rules="[(v) => !!v || 'Seleccione un puesto']"
           required
         />
-        <ButtonComponent type="submit" class="act">
+
+        <ButtonComponent type="submit" class="act mt-4">
           <template #pre-icon>
             <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
           </template>
@@ -56,10 +71,11 @@
         </ButtonComponent>
       </v-form>
     </v-card>
-    <ButtonComponent :to="{ name: 'empleados_list' }">
-      <template #pre-icon
-        ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
-      /></template>
+
+    <ButtonComponent class="volver mt-4" :to="{ name: 'empleados_list' }">
+      <template #pre-icon>
+        <Icon icon="ic:twotone-list" width="28" height="28" style="color: black" />
+      </template>
       VOLVER A LA LISTA
     </ButtonComponent>
   </div>
@@ -71,12 +87,15 @@ import { useRoute } from 'vue-router'
 import useEmpleadosStore from '@/stores/empleados'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
+import type { Empleado } from '@/interfaces/Empleado'
+
 const store = useEmpleadosStore()
 const { empleado } = toRefs(store)
 const { getOne, update } = store
 const route = useRoute()
-const puestos = ['Limpieza', 'Cajero', 'Gerente']
 const form = ref()
+
+const puestos = ['Limpieza', 'Cajero', 'Gerente']
 
 onMounted(async () => {
   const id = Number(route.params.id)
@@ -86,22 +105,24 @@ onMounted(async () => {
 })
 
 function limpiarEmpleado() {
-    empleado.value = {
-      id: 0,
-      nombre: '',
-      apellido: '',
-      telefono: '',
-      email: '',
-      puesto: '',
-    }
-  }
+  empleado.value = {
+    id: 0,
+    nombre: '',
+    apellido: '',
+    telefono: '',
+    email: '',
+    puesto: '',
+  } as Empleado
+}
 
 const actualizar = async () => {
   const result = await form.value?.validate()
   if (!result.valid) {
-    alert('Por favor, complete todos los campos correctamente.')
+    alert('Por favor, corrija los errores del formulario.')
     return
-  } else {
+  }
+
+  try {
     const data = {
       id: empleado.value.id,
       nombre: empleado.value.nombre,
@@ -110,11 +131,15 @@ const actualizar = async () => {
       email: empleado.value.email,
       puesto: empleado.value.puesto,
     }
-    await update(data)
 
-    alert('Empleado ACTUALIZADO con éxito.')
+    await update(data)
+    alert('Empleado actualizado con éxito.')
+  } catch (error) {
+    console.error(error)
+    alert('Hubo un error al actualizar el empleado.')
   }
 }
+
 onBeforeUnmount(() => {
   limpiarEmpleado()
 })

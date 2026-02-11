@@ -1,5 +1,3 @@
-import type { ItemVenta } from '@/interfaces/ItemVenta'
-import type { Sabor } from '@/interfaces/Sabor'
 import { defineStore } from 'pinia'
 import ApiService from '@/services/ApiService'
 import { ref } from 'vue'
@@ -9,56 +7,8 @@ const useItemVentasSaboresStore = defineStore('itemventasabores', () => {
   const itemventasabores = ref<Array<ItemVentaSabor>>([])
   const itemventasabor = ref<ItemVentaSabor>({
     id: 0,
-    itemventa: {
-      id: 0,
-      venta: {
-        id: 0,
-        fecha: '',
-        total: 0,
-        cliente: {
-          id: 0,
-          nombre: '',
-          apellido: '',
-        },
-        empleado: {
-          id: 0,
-          nombre: '',
-          apellido: '',
-        },
-      },
-      producto: {
-        id: 0,
-        nombre: '',
-        precio: 0,
-        stock: 0,
-        max_sabores: 0,
-        proveedor: {
-          id: 0,
-          nombre: '',
-          telefono: '',
-          email: '',
-        },
-        categoria: {
-          id: 0,
-          nombre: '',
-          tipo: '',
-          descripcion: '',
-        },
-      },
-      cantidad: 0,
-    } as ItemVenta,
-    sabor: {
-      id: 0,
-      nombre: '',
-      stock: 0,
-      disponible: true,
-      categoria: {
-        id: 0,
-        nombre: '',
-        tipo: '',
-        descripcion: '',
-      },
-    } as Sabor,
+    itemventa: { id: 0 },
+    sabor: { id: 0 },
   })
 
   const url = 'itemventasabores'

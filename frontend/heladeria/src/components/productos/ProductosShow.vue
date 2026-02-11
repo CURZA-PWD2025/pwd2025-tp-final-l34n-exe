@@ -8,6 +8,7 @@
         <p><strong>PRECIO:</strong> {{ producto.precio }}</p>
         <p><strong>STOCK:</strong> {{ producto.stock }}</p>
         <p><strong>MAXIMO DE SABORES:</strong> {{ producto.max_sabores }}</p>
+        <p><strong>DISPONIBLE:</strong> {{ producto.disponible ? 'Sí' : 'No' }}</p>
         <p><strong>PROVEEDOR:</strong> {{ producto.proveedor?.nombre }}</p>
         <p><strong>CATEGORIA:</strong> {{ producto.categoria?.nombre }}</p>
         <div class="acciones">
@@ -34,26 +35,35 @@
       </v-card-text>
     </v-card>
     <ButtonComponent class="volver" :to="{ name: 'productos_list' }">
-      <template #pre-icon><Icon icon="ic:twotone-list" width="28" height="28"  style="color: black" /></template>
+      <template #pre-icon
+        ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
+      /></template>
       VOLVER A LA LISTA
-  </ButtonComponent>
+    </ButtonComponent>
   </div>
-
 </template>
 
 <script setup lang="ts">
 import { toRefs, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import useProductosStore from '@/stores/productos'
+import useItemVentasStore from '@/stores/itemventas'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
 const store = useProductosStore()
 const { producto } = toRefs(store)
+const { itemventas } = toRefs(useItemVentasStore())
 const { getOne, destroy } = store
 const route = useRoute()
 const router = useRouter()
 const deleteProducto = async (id: number) => {
   if (confirm('¿Está seguro que desea eliminar este producto?')) {
+    if (
+      itemventas.value.some((item) => item.producto?.id === id && item.venta?.estado === 'cerrada')
+    ) {
+      alert('No se pueden eliminar productos que están en ventas cerradas.')
+      return
+    }
     await destroy(id)
     router.push({ name: 'productos_list' })
   }
@@ -68,7 +78,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.acciones{
+.acciones {
   display: flex;
 }
 </style>

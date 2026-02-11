@@ -1,11 +1,12 @@
 from ...database.conect_db import ConectDB
 
 class ClienteModel:
-    def __init__(self, id:int=0, nombre:str="", apellido:str="", telefono:str="", direccion:str=""):
+    def __init__(self, id:int=0, nombre:str="", apellido:str="", telefono:str="", email:str="", direccion:str=""):
         self.id = id
         self.nombre = nombre
         self.apellido = apellido
         self.telefono = telefono
+        self.email = email
         self.direccion = direccion
 
 
@@ -15,6 +16,7 @@ class ClienteModel:
             "nombre": self.nombre,
             "apellido": self.apellido,
             "telefono": self.telefono,
+            "email": self.email,
             "direccion": self.direccion
         }
 
@@ -25,6 +27,7 @@ class ClienteModel:
             nombre=data["nombre"],
             apellido=data["apellido"],
             telefono=data["telefono"],
+            email=data["email"],
             direccion=data["direccion"]
         )
 
@@ -64,7 +67,7 @@ class ClienteModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True)  as cursor:
             try:
-                cursor.execute("INSERT INTO clientes (nombre, apellido, telefono, direccion) VALUES (%s, %s, %s, %s)", (self.nombre, self.apellido, self.telefono, self.direccion))
+                cursor.execute("INSERT INTO clientes (nombre, apellido, telefono, email, direccion) VALUES (%s, %s, %s, %s, %s)", (self.nombre, self.apellido, self.telefono, self.email, self.direccion))
                 self.id = cursor.lastrowid
                 cnx.commit()
                 return cursor.rowcount > 0
@@ -79,7 +82,7 @@ class ClienteModel:
         cnx = ConectDB.get_connect()
         with cnx.cursor(dictionary=True) as cursor:
             try:
-                cursor.execute("UPDATE clientes SET nombre=%s, apellido=%s, telefono=%s, direccion=%s WHERE id=%s", (self.nombre, self.apellido, self.telefono, self.direccion, self.id))
+                cursor.execute("UPDATE clientes SET nombre=%s, apellido=%s, telefono=%s, email=%s, direccion=%s WHERE id=%s", (self.nombre, self.apellido, self.telefono, self.email, self.direccion, self.id))
                 cnx.commit()
                 return cursor.rowcount > 0
             except Exception as exc:

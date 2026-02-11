@@ -8,10 +8,35 @@
       <template #nav>
         <nav>
           <ul class="menu">
-            <li><RouterLink :to="{ name: 'categorias_list' }"><Icon icon="ep:list" width="28" height="28" />Categorías</RouterLink></li>
-            <li><RouterLink :to="{ name: 'sabores_list' }"><Icon icon="noto:soft-ice-cream" width="28" height="28" />Sabores</RouterLink></li>
-            <li><RouterLink :to="{ name: 'productos_list' }"><Icon icon="logos:producthunt" width="28" height="28" />Productos</RouterLink></li>
-            <li><RouterLink :to="{ name: 'proveedores_list' }"><Icon icon="streamline-freehand:business-product-supplier-2" width="28" height="28" style="color: aliceblue;" />Proveedores</RouterLink></li>
+            <li>
+              <RouterLink :to="{ name: 'categorias_list' }"
+                ><Icon
+                  icon="streamline-ultimate-color:task-list-to-do"
+                  width="28"
+                  height="28"
+                />Categorías</RouterLink
+              >
+            </li>
+            <li>
+              <RouterLink :to="{ name: 'sabores_list' }"
+                ><Icon icon="noto:soft-ice-cream" width="28" height="28" />Sabores</RouterLink
+              >
+            </li>
+            <li>
+              <RouterLink :to="{ name: 'productos_list' }"
+                ><Icon
+                  icon="streamline-sharp-color:archive-box"
+                  width="28"
+                  height="28"
+                  style="color: white"
+                />Productos</RouterLink
+              >
+            </li>
+            <li>
+              <RouterLink :to="{ name: 'proveedores_list' }"
+                ><Icon icon="noto:delivery-truck" width="28" height="28" />Proveedores</RouterLink
+              >
+            </li>
           </ul>
         </nav>
       </template>
@@ -25,13 +50,15 @@
           <ul class="menu-vertical">
             <li>
               <RouterLink :to="{ name: 'clientes_list' }">
-                <Icon icon="gravity-ui:person-fill" width="28" /> Clientes
+                <Icon icon="streamline-ultimate-color:information-desk-customer" width="32" />
+                Clientes
               </RouterLink>
             </li>
 
             <li>
               <RouterLink :to="{ name: 'empleados_list' }">
-                <Icon icon="streamline-cyber:person" width="28" /> Empleados
+                <Icon icon="openmoji:man-office-worker-medium-light-skin-tone" width="32" />
+                Empleados
               </RouterLink>
             </li>
 
@@ -73,27 +100,40 @@ import LogoComponent from './components/LogoComponent.vue'
   gap: 8px;
   padding: 10px 14px;
   text-decoration: none;
-  font-weight: bold;
-  color: #060707;
-  transition: 0.2s;
-  font-size: large;
+  font-weight: 600;
+  color: #222;
+  border-radius: 6px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.menu li a:hover {
+  background: #0ce679;
+  color: #000;
 }
 
 .menu-vertical li a:hover {
   background: #00aaff;
   color: white;
-  border-color: #0088cc;
 }
 
-.menu li a:hover{
-  background: #0ce679;
-  color: #000;
-  border-color: #0ce677 ;
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-nav .menu {
+.menu {
   display: flex;
   gap: 12px;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .menu-vertical {
@@ -101,5 +141,4 @@ nav .menu {
   flex-direction: column;
   gap: 12px;
 }
-
 </style>

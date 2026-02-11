@@ -1,49 +1,16 @@
 import type { ItemVenta } from '@/interfaces/ItemVenta'
-import type { Producto } from '@/interfaces/Producto'
 import { defineStore } from 'pinia'
 import ApiService from '@/services/ApiService'
 import { ref } from 'vue'
-import type { Venta } from '@/interfaces/Venta'
 
 const useItemVentasStore = defineStore('itemventas', () => {
   const itemventas = ref<Array<ItemVenta>>([])
   const itemventa = ref<ItemVenta>({
     id: 0,
-    venta: {
-      id: 0,
-      fecha: '',
-      total: 0,
-      cliente: {
-        id: 0,
-        nombre: '',
-        apellido: '',
-      },
-      empleado: {
-        id: 0,
-        nombre: '',
-        apellido: '',
-      },
-    } as Venta,
-    producto: {
-      id: 0,
-      nombre: '',
-      precio: 0,
-      stock: 0,
-      max_sabores: 0,
-      proveedor: {
-        id: 0,
-        nombre: '',
-        telefono: '',
-        email: '',
-      },
-      categoria: {
-        id: 0,
-        nombre: '',
-        tipo: '',
-        descripcion: '',
-      },
-    } as Producto,
     cantidad: 0,
+    subtotal: 0,
+    venta: { id: 0 },
+    producto: { id: 0 },
   })
 
   const url = 'itemventas'

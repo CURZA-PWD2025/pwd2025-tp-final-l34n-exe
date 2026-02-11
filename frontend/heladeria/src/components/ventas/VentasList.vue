@@ -17,20 +17,35 @@
           <th>ID</th>
           <th>FECHA</th>
           <th>TOTAL</th>
+          <th>ESTADO</th>
           <th>CLIENTE</th>
           <th>EMPLEADO</th>
           <th>ACCIONES</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="venta in ventas" :key="venta.id">
+        <tr
+          v-for="venta in ventas"
+          :key="venta.id"
+          :class="{ cerrada: venta.estado === 'cerrada' }"
+        >
           <td>{{ venta.id }}</td>
           <td>{{ venta.fecha }}</td>
-          <td>{{ venta.total }}$</td>
+          <td>${{ Number(venta.total).toFixed(2) }}</td>
+          <td>
+            <v-chip
+              :color="venta.estado === 'cerrada' ? 'red' : 'green'"
+              text-color="white"
+              size="small"
+            >
+              {{ venta.estado }}
+            </v-chip>
+          </td>
           <td>{{ venta.cliente?.nombre }} {{ venta.cliente?.apellido }}</td>
           <td>{{ venta.empleado?.nombre }} {{ venta.empleado?.apellido }}</td>
           <td class="acciones">
             <ButtonComponent
+              :disabled="venta.estado === 'cerrada'"
               :to="{ name: 'ventas_edit', params: { id: venta.id } }"
               style="color: #1976d2"
             >
@@ -49,10 +64,14 @@
               ></template>
               MOSTRAR
             </ButtonComponent>
-            <ButtonComponent @click="deleteVenta(venta.id as number)" style="color: red">
-              <template #pre-icon
-                ><Icon icon="typcn:delete-outline" width="28" height="28" style="color: red"></Icon
-              ></template>
+            <ButtonComponent
+              :disabled="venta.estado === 'cerrada'"
+              @click="deleteVenta(venta.id as number, venta.estado)"
+              style="color: red"
+            >
+              <template #pre-icon>
+                <Icon icon="typcn:delete-outline" width="28" height="28" style="color: red" />
+              </template>
               Eliminar
             </ButtonComponent>
           </td>
@@ -76,7 +95,12 @@ const ventasStore = useVentasStore()
 const { ventas } = toRefs(ventasStore)
 const { getAll, destroy } = ventasStore
 
-const deleteVenta = async (id: number) => {
+const deleteVenta = async (id: number, estado?: string) => {
+  if (estado === 'cerrada') {
+    alert('No se puede eliminar una venta cerrada')
+    return
+  }
+
   if (confirm('¿Está seguro que desea eliminar esta venta?')) {
     await destroy(id)
     await getAll()
@@ -101,5 +125,10 @@ h2 {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+.cerrada {
+  opacity: 0.5;
+  background: #f5f5f5;
 }
 </style>

@@ -58,7 +58,7 @@ class EmpleadoModel:
                     return row
                 return None
             except Exception as exc:
-                return {"mensaje": f"Error al obtener el cliente: {exc}"}
+                return {"mensaje": f"Error al obtener el empleado: {exc}"}
             finally:
                 cnx.close()
 

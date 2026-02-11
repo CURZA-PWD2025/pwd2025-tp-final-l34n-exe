@@ -4,12 +4,7 @@
 
     <ButtonComponent :to="{ name: 'itemventasabores_create' }">
       <template #pre-icon>
-        <Icon
-          icon="oui:ml-create-single-metric-job"
-          width="28"
-          height="28"
-          style="color: green"
-        />
+        <Icon icon="oui:ml-create-single-metric-job" width="28" height="28" style="color: green" />
       </template>
       CREAR SABOR DEL ITEM
     </ButtonComponent>
@@ -25,13 +20,18 @@
       </thead>
 
       <tbody>
-        <tr v-for="itemventasabor in itemventasabores" :key="itemventasabor.id">
+        <tr
+          v-for="itemventasabor in itemventasabores"
+          :key="itemventasabor.id"
+          :class="{ cerrada: itemventasabor.itemventa?.venta?.estado === 'cerrada' }"
+        >
           <td>{{ itemventasabor.id }}</td>
           <td>{{ itemventasabor.itemventa?.id }}</td>
           <td>{{ itemventasabor.sabor?.nombre }}</td>
 
           <td class="acciones">
             <ButtonComponent
+              :disabled="itemventasabor.itemventa?.venta?.estado === 'cerrada'"
               :to="{ name: 'itemventasabores_edit', params: { id: itemventasabor.id } }"
               style="color: #1976d2"
             >
@@ -56,16 +56,12 @@
             </ButtonComponent>
 
             <ButtonComponent
+              :disabled="itemventasabor.itemventa?.venta?.estado === 'cerrada'"
               @click="deleteItemVentaSabor(itemventasabor.id as number)"
               style="color: red"
             >
               <template #pre-icon>
-                <Icon
-                  icon="typcn:delete-outline"
-                  width="28"
-                  height="28"
-                  style="color: red"
-                />
+                <Icon icon="typcn:delete-outline" width="28" height="28" style="color: red" />
               </template>
               ELIMINAR
             </ButtonComponent>
@@ -87,7 +83,13 @@ const { itemventasabores } = toRefs(itemVentaSaboresStore)
 const { getAll, destroy } = itemVentaSaboresStore
 
 const deleteItemVentaSabor = async (id: number) => {
-  if (confirm('¿Está seguro que desea eliminar este producto?')) {
+  const item = itemventasabores.value.find((i) => i.id === id)
+
+  if (item?.itemventa?.venta?.estado === 'cerrada') {
+    alert('No se pueden eliminar sabores de una venta cerrada.')
+    return
+  }
+  if (confirm('¿Está seguro que desea eliminar este sabor?')) {
     await destroy(id)
     await getAll()
   }
@@ -111,5 +113,10 @@ h2 {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+.cerrada {
+  opacity: 0.5;
+  background: #f5f5f5;
 }
 </style>

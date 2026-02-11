@@ -1,24 +1,37 @@
 <template>
   <div>
     <v-card class="mx-auto pa-6" max-width="500" color="aliceblue" elevation="16">
-      <v-card-title class="text-h6 text-center">INSERTE DATOS</v-card-title>
+      <v-card-title class="text-h6 text-center">CREAR EMPLEADO</v-card-title>
+
       <v-form @submit.prevent="crear" ref="form">
         <v-text-field
-          v-model="empleado.nombre"
+          v-model.trim="empleado.nombre"
           label="Nombre del empleado"
           variant="outlined"
-          :rules="[(v) => !!v || 'El nombre es obligatorio']"
+          :rules="[
+            (v) => !!v || 'El nombre es obligatorio',
+            (v) => v.length >= 3 || 'Mínimo 3 caracteres',
+            (v) => v.length <= 30 || 'Máximo 30 caracteres',
+            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s]+$/.test(v) || 'Solo letras y espacios',
+          ]"
           required
-        ></v-text-field>
+        />
+
         <v-text-field
-          v-model="empleado.apellido"
+          v-model.trim="empleado.apellido"
           label="Apellido del empleado"
           variant="outlined"
-          :rules="[(v) => !!v || 'El apellido es obligatorio']"
+          :rules="[
+            (v) => !!v || 'El apellido es obligatorio',
+            (v) => v.length >= 3 || 'Mínimo 3 caracteres',
+            (v) => v.length <= 50 || 'Máximo 50 caracteres',
+            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s]+$/.test(v) || 'Solo letras y espacios',
+          ]"
           required
-        ></v-text-field>
+        />
+
         <v-text-field
-          v-model="empleado.telefono"
+          v-model.trim="empleado.telefono"
           label="Teléfono del empleado"
           variant="outlined"
           :rules="[
@@ -27,29 +40,30 @@
             (v) => v.length === 10 || 'Debe tener 10 dígitos',
           ]"
           required
-        ></v-text-field>
+        />
 
         <v-text-field
-          v-model="empleado.email"
+          v-model.trim="empleado.email"
           label="Email del empleado"
           variant="outlined"
           :rules="[
             (v) => !!v || 'El email es obligatorio',
-            (v) => /.+@.+\..+/.test(v) || 'Email inválido',
+            (v) => /.+@.+\..+/.test(v) || 'Debe ser un email válido',
+            (v) => v.length <= 100 || 'Máximo 100 caracteres',
           ]"
           required
-        ></v-text-field>
+        />
+
         <v-select
           v-model="empleado.puesto"
           :items="puestos"
-          item-title="nombre"
-          item-value="id"
           label="Puesto"
           variant="outlined"
           :rules="[(v) => !!v || 'Seleccione un puesto']"
           required
         />
-        <ButtonComponent type="submit" class="crear">
+
+        <ButtonComponent type="submit" class="crear mt-4">
           <template #pre-icon>
             <Icon icon="mdi-light:check" width="28" height="28" style="color: #05f036" />
           </template>
@@ -57,10 +71,11 @@
         </ButtonComponent>
       </v-form>
     </v-card>
-    <ButtonComponent :to="{ name: 'empleados_list' }">
-      <template #pre-icon
-        ><Icon icon="ic:twotone-list" width="28" height="28" style="color: black"
-      /></template>
+
+    <ButtonComponent class="volver mt-4" :to="{ name: 'empleados_list' }">
+      <template #pre-icon>
+        <Icon icon="ic:twotone-list" width="28" height="28" style="color: black" />
+      </template>
       VOLVER A LA LISTA
     </ButtonComponent>
   </div>
@@ -71,17 +86,34 @@ import { ref, toRefs } from 'vue'
 import useEmpleadosStore from '@/stores/empleados'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
+import type { Empleado } from '@/interfaces/Empleado'
+
 const store = useEmpleadosStore()
 const { empleado } = toRefs(store)
 const { create } = store
-const puestos = ['Limpieza', 'Cajero', 'Gerente']
 const form = ref()
+
+const puestos = ['Limpieza', 'Cajero', 'Gerente']
+
+function limpiarEmpleado() {
+  empleado.value = {
+    id: 0,
+    nombre: '',
+    apellido: '',
+    telefono: '',
+    email: '',
+    puesto: '',
+  } as Empleado
+}
+
 const crear = async () => {
   const result = await form.value?.validate()
-  if (!result.valid){
+  if (!result.valid) {
     alert('Por favor, complete todos los campos correctamente.')
     return
-  } else {
+  }
+
+  try {
     const data = {
       nombre: empleado.value.nombre,
       apellido: empleado.value.apellido,
@@ -89,11 +121,15 @@ const crear = async () => {
       email: empleado.value.email,
       puesto: empleado.value.puesto,
     }
-    await create(data)
 
+    await create(data)
     alert('Empleado creado con éxito.')
 
     form.value.reset()
+    limpiarEmpleado()
+  } catch (error) {
+    console.error(error)
+    alert('Hubo un error al crear el empleado.')
   }
 }
 </script>

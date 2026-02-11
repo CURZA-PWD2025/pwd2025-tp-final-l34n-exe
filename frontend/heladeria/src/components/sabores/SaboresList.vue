@@ -64,14 +64,22 @@
 
 <script setup lang="ts">
 import useSaboresStore from '@/stores/sabores'
+import useItemVentasSaboresStore from '@/stores/itemventasabores'
 import { toRefs, onMounted } from 'vue'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
-const { sabores } = toRefs(useSaboresStore())
+const saborStore = useSaboresStore()
+const { sabores } = toRefs(saborStore)
+const itemVentasSaboresStore = useItemVentasSaboresStore()
+const { itemventasabores } = toRefs(itemVentasSaboresStore)
 const { getAll, destroy } = useSaboresStore()
 
 const deleteSabor = async (id: number) => {
   if (confirm('¿Está seguro que desea eliminar este sabor?')) {
+    if (itemventasabores.value.some((ivs) => ivs.sabor?.id === id)) {
+      alert('No se puede eliminar un sabor que tiene ventas asociadas.')
+      return
+    }
     await destroy(id)
     await getAll()
   }
@@ -79,6 +87,7 @@ const deleteSabor = async (id: number) => {
 
 onMounted(async () => {
   await getAll()
+  await itemVentasSaboresStore.getAll()
 })
 </script>
 

@@ -14,6 +14,7 @@
         </p>
         <div class="acciones">
           <ButtonComponent
+            v-if="itemventasabor.itemventa?.venta?.estado !== 'cerrada'"
             :to="{ name: 'itemventasabores_edit', params: { id: itemventasabor.id } }"
             style="color: #1976d2"
           >
@@ -27,6 +28,7 @@
             EDITAR
           </ButtonComponent>
           <ButtonComponent
+            v-if="itemventasabor.itemventa?.venta?.estado !== 'cerrada'"
             @click="deleteItemVentaSabor(itemventasabor.id as number)"
             style="color: red"
           >
@@ -56,12 +58,17 @@ import { Icon } from '@iconify/vue'
 
 const store = useItemVentaSaboresStore()
 const { itemventasabor } = toRefs(store)
+
 const { getOne, destroy } = store
 const route = useRoute()
 const router = useRouter()
 
 const deleteItemVentaSabor = async (id: number) => {
-  if (confirm('¿Está seguro que desea eliminar esta venta?')) {
+  if (confirm('¿Está seguro que desea eliminar este sabor?')) {
+    if (itemventasabor.value?.itemventa?.venta?.estado === 'cerrada') {
+      alert('No se pueden eliminar sabores de una venta cerrada.')
+      return
+    }
     await destroy(id)
     router.push({ name: 'itemventasabores_list' })
   }

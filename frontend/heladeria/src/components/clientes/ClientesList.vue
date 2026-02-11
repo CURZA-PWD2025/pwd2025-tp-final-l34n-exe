@@ -18,6 +18,7 @@
           <th>NOMBRE</th>
           <th>APELLIDO</th>
           <th>TELEFONO</th>
+          <th>EMAIL</th>
           <th>DIRECCION</th>
           <th>ACCIONES</th>
         </tr>
@@ -28,6 +29,7 @@
           <td>{{ cliente.nombre }}</td>
           <td>{{ cliente.apellido }}</td>
           <td>{{ cliente.telefono }}</td>
+          <td>{{ cliente.email }}</td>
           <td>{{ cliente.direccion }}</td>
           <td class="acciones">
             <ButtonComponent
@@ -64,20 +66,27 @@
 
 <script setup lang="ts">
 import useClientesStore from '@/stores/clientes'
+import useVentasStore from '@/stores/ventas'
 import { toRefs, onMounted } from 'vue'
 import ButtonComponent from '../ButtonComponent.vue'
 import { Icon } from '@iconify/vue'
 const { clientes } = toRefs(useClientesStore())
+const { ventas } = toRefs(useVentasStore())
 const { getAll, destroy } = useClientesStore()
 
 const deleteCliente = async (id: number) => {
   if (confirm('¿Está seguro que desea eliminar este cliente?')) {
+    if (ventas.value.some((v) => v.cliente?.id === id)) {
+      alert('No se puede eliminar un cliente que tiene ventas asociadas.')
+      return
+    }
     await destroy(id)
     await getAll()
   }
 }
 
 onMounted(async () => {
+  await useVentasStore().getAll()
   await getAll()
 })
 </script>

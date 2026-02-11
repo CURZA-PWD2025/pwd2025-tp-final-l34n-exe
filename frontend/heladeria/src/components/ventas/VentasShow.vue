@@ -12,6 +12,7 @@
         </p>
         <div class="acciones">
           <ButtonComponent
+            v-if="venta.estado !== 'cerrada'"
             :to="{ name: 'ventas_edit', params: { id: venta.id } }"
             style="color: #1976d2"
           >
@@ -24,7 +25,11 @@
             /></template>
             EDITAR
           </ButtonComponent>
-          <ButtonComponent @click="deleteVenta(venta.id as number)" style="color: red">
+          <ButtonComponent
+            v-if="venta.estado !== 'cerrada'"
+            @click="deleteVenta(venta.id as number)"
+            style="color: red"
+          >
             <template #pre-icon
               ><Icon icon="typcn:delete-outline" width="28" height="28" style="color: red"></Icon
             ></template>
@@ -35,7 +40,7 @@
     </v-card>
     <ButtonComponent class="volver" :to="{ name: 'ventas_list' }">
       <template #pre-icon>
-        <Icon icon="ic:twotone-list" width="28" height="28"  style="color: black" />
+        <Icon icon="ic:twotone-list" width="28" height="28" style="color: black" />
       </template>
       VOLVER A LA LISTA
     </ButtonComponent>
@@ -70,8 +75,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.acciones{
+.acciones {
   display: flex;
 }
-
 </style>
