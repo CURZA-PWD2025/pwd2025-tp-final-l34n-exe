@@ -28,9 +28,10 @@
         label="Stock del producto"
         variant="outlined"
         :rules="[
-          (v) => !!v || 'El stock es obligatorio',
-          (v) => v > 0 || 'El stock no puede ser negativo o cero',
+          (v) => (v !== null && v !== undefined) || 'El stock es obligatorio',
+          (v) => v >= 0 || 'El stock no puede ser negativo',
         ]"
+        @input="actualizarDisponibilidad"
         required
       ></v-text-field>
       <v-text-field
@@ -57,6 +58,7 @@
         :rules="[(v) => !!v || 'Seleccione una categoría']"
         return-object
       />
+
       <v-select
         v-model="producto.proveedor"
         :items="proveedores"
@@ -97,18 +99,22 @@ const proveedoresStore = useProveedoresStore()
 const categoriasStore = useCategoriasStore()
 const { producto } = toRefs(productosStore)
 const { create } = productosStore
-const categorias = ref(<Categoria[]>[])
-const proveedores = ref(<Proveedor[]>[])
+const categorias = ref<Categoria[]>([])
+const proveedores = ref<Proveedor[]>([])
 const form = ref()
 
 onMounted(async () => {
-  await categoriasStore.getAll()
-  categorias.value = categoriasStore.categorias
+  try {
+    await categoriasStore.getAll()
+    categorias.value = categoriasStore.categorias.filter(
+      (categoria) => categoria.tipo === 'Producto',
+    )
 
-  categorias.value = categoriasStore.categorias.filter((categoria) => categoria.tipo === 'Producto')
-
-  await proveedoresStore.getAll()
-  proveedores.value = proveedoresStore.proveedores
+    await proveedoresStore.getAll()
+    proveedores.value = proveedoresStore.proveedores
+  } catch (error) {
+    console.error('Error al cargar datos:', error)
+  }
 })
 
 function limpiarProducto() {
@@ -120,6 +126,18 @@ function limpiarProducto() {
     categoria: {
       id: 0,
     } as Categoria,
+    stock: 0,
+    max_sabores: 0,
+    disponible: true,
+    nombre: '',
+    precio: 0,
+  }
+}
+
+function actualizarDisponibilidad() {
+  //* Si el stock es 0, el producto no está disponible *//
+  if (producto.value.stock === 0) {
+    producto.value.disponible = false
   }
 }
 
@@ -129,6 +147,7 @@ const crear = async () => {
     alert('Por favor, complete todos los campos correctamente.')
     return
   }
+  actualizarDisponibilidad() //* Asegura que la disponibilidad se actualice antes de crear *//
   try {
     const data = {
       nombre: producto.value.nombre,
@@ -148,7 +167,7 @@ const crear = async () => {
     form.value.reset()
     limpiarProducto()
   } catch (error) {
-    console.log(error)
+    console.error(error)
     alert('Error al crear el producto. Por favor, intente nuevamente.')
   }
 }

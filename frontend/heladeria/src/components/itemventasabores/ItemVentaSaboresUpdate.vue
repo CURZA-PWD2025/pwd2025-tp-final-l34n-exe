@@ -30,13 +30,14 @@
 
       <v-select
         v-model="itemventasabor.sabor"
-        :items="saboresDisponibles"
+        :items="sabores"
         label="Sabor"
         variant="outlined"
         return-object
         :disabled="!itemventasabor.itemventa?.producto || ventaCerrada"
         :rules="[
           (v) => !!v || 'Debe elegir un sabor',
+          (v) => !saborNoDisponible(v) || 'El sabor no está disponible',
           (v) => saborDisponible(v) || 'El sabor ya está asignado o no hay stock suficiente',
         ]"
         required
@@ -45,9 +46,19 @@
           <v-list-item
             v-bind="props"
             :title="item.raw.nombre"
-            :subtitle="`Stock: ${item.raw.stock}`"
+            :subtitle="getSubtitle(item.raw)"
             :disabled="!saborDisponible(item.raw)"
-          />
+          >
+            <template #append>
+              <v-chip
+                :color="saborDisponible(item.raw) ? 'success' : 'error'"
+                size="small"
+                variant="tonal"
+              >
+                {{ saborDisponible(item.raw) ? 'Disponible' : 'No disponible' }}
+              </v-chip>
+            </template>
+          </v-list-item>
         </template>
 
         <template #selection="{ item }">
@@ -157,12 +168,31 @@ function saborDisponible(sabor: Sabor): boolean {
   return !yaAsignado && stockOk
 }
 
-//* Lista de sabores disponibles para asignar, filtrando por stock y ya asignados *//
-const saboresDisponibles = computed(() => {
-  const idItem = itemventasabor.value.itemventa?.id
-  if (!idItem) return sabores.value
-  return sabores.value.filter(saborDisponible)
-})
+//* Función para obtener el subtítulo del sabor según su disponibilidad *//
+function getSubtitle(sabor: Sabor): string {
+  if (!saborDisponible(sabor)) {
+    if (saborNoDisponible(sabor)) {
+      return 'Sabor no disponible'
+    }
+    const idItem = itemventasabor.value.itemventa?.id
+    const yaAsignado = itemventasaborestore.itemventasabores.some(
+      (s) =>
+        s.itemventa?.id === idItem &&
+        s.sabor?.id === sabor.id &&
+        sabor.id !== itemventasabor.value.sabor?.id,
+    )
+    if (yaAsignado) {
+      return 'Ya asignado a este item'
+    }
+    return `Stock insuficiente (necesita: ${cantidadItem.value}, disponible: ${sabor.stock})`
+  }
+  return `Stock: ${sabor.stock}`
+}
+
+//* Si un sabor no esta disponible osea disponible = 0 este no se puede elegir *//
+function saborNoDisponible(sabor: Sabor): boolean {
+  return sabor?.disponible === 0
+}
 
 //* Verifica si se puede actualizar el sabor seleccionado *//
 const puedeActualizarSabor = computed(() => {
@@ -172,6 +202,7 @@ const puedeActualizarSabor = computed(() => {
   if (!itemventasabor.value.sabor) return false
   if (!saborDisponible(itemventasabor.value.sabor)) return false
   if (saboresAsignados.value > maxSabores.value) return false
+  if (saborNoDisponible(itemventasabor.value.sabor)) return false
   return true
 })
 

@@ -30,7 +30,13 @@
         >
           <td>{{ itemventa.id }}</td>
           <td>{{ itemventa.venta?.id }}</td>
-          <td>${{ Number(itemventa.subtotal).toFixed(2) }}</td>
+          <td>
+            ${{
+              itemventa.venta?.estado === 'cerrada'
+                ? Number(itemventa.subtotal || 0).toFixed(2)
+                : ((itemventa.cantidad || 0) * (itemventa.producto?.precio || 0)).toFixed(2)
+            }}
+          </td>
           <td>{{ itemventa.producto?.nombre }}</td>
           <td>{{ itemventa.cantidad }}</td>
           <td class="acciones">

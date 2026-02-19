@@ -37,9 +37,19 @@
             <v-list-item
               v-bind="props"
               :title="item.raw.nombre"
-              :subtitle="`Precio: $${item.raw.precio} | Stock: ${item.raw.stock}`"
+              :subtitle="getProductSubtitle(item.raw)"
               :disabled="item.raw.stock === 0"
-            />
+            >
+              <template #append>
+                <v-chip
+                  :color="item.raw.stock > 0 ? 'success' : 'error'"
+                  size="small"
+                  variant="tonal"
+                >
+                  {{ item.raw.stock > 0 ? `Stock: ${item.raw.stock}` : 'Sin stock' }}
+                </v-chip>
+              </template>
+            </v-list-item>
           </template>
           <template #selection="{ item }">
             {{ item.raw.nombre }}
@@ -129,12 +139,20 @@ onMounted(async () => {
   ventas.value = ventastore.ventas
 })
 
+//* Función para obtener el subtítulo del producto según su stock *//
+function getProductSubtitle(producto: Producto): string {
+  if (producto.stock === 0) {
+    return `Precio: $${producto.precio} | Sin stock disponible`
+  }
+  return `Precio: $${producto.precio} | Stock: ${producto.stock}`
+}
+
 //* Verificar si la venta está cerrada *//
 function verificarVentaCerrada(ventaSeleccionada: Venta | undefined) {
   if (!ventaSeleccionada) return
 
   if (ventaSeleccionada.estado === 'cerrada') {
-    alert('⚠️ Esta venta está cerrada. No se pueden agregar más ítems.')
+    alert('Esta venta está cerrada. No se pueden agregar más ítems.')
     itemventa.value.venta = { id: 0 } as Venta
   }
 }

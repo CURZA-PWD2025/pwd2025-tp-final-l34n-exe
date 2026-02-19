@@ -37,9 +37,19 @@
             <v-list-item
               v-bind="props"
               :title="item.raw.nombre"
-              :subtitle="`Precio: $${item.raw.precio}`"
+              :subtitle="getProductSubtitle(item.raw)"
               :disabled="item.raw.stock === 0"
-            />
+            >
+              <template #append>
+                <v-chip
+                  :color="item.raw.stock > 0 ? 'success' : 'error'"
+                  size="small"
+                  variant="tonal"
+                >
+                  {{ item.raw.stock > 0 ? `Stock: ${item.raw.stock}` : 'Sin stock' }}
+                </v-chip>
+              </template>
+            </v-list-item>
           </template>
           <template #selection="{ item }">
             {{ item.raw.nombre }}
@@ -135,6 +145,14 @@ watch(
     itemventa.value.subtotal = cantidad * precio
   },
 )
+
+//* Función para obtener el subtítulo del producto según su stock *//
+function getProductSubtitle(producto: Producto): string {
+  if (producto.stock === 0) {
+    return `Precio: $${producto.precio} | Sin stock disponible`
+  }
+  return `Precio: $${producto.precio} | Stock: ${producto.stock}`
+}
 
 function limpiarItemVenta() {
   itemventa.value = {

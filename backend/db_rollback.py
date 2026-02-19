@@ -10,8 +10,8 @@ database_config = {
     'host': os.getenv("DB_HOST"),
     'user': os.getenv("DB_USER"),
     'password': os.getenv("DB_PASSWORD"),
-    'port': os.getenv("DB_PORT"),
-    'raise_on_warnings': True,
+    'port': int(os.getenv("DB_PORT", "3306")),
+    'raise_on_warnings': False,
     "database": database_name
 }
 
@@ -22,26 +22,33 @@ DROPPED_TB["items_ventas"] = "DROP TABLE IF EXISTS items_ventas;"
 DROPPED_TB["ventas"] = "DROP TABLE IF EXISTS ventas;"
 DROPPED_TB["productos"] = "DROP TABLE IF EXISTS productos;"
 DROPPED_TB["sabores"] = "DROP TABLE IF EXISTS sabores;"
-DROPPED_TB["proveedores"] = "DROP TABLE IF EXISTS proveedores;"
-DROPPED_TB["clientes"] = "DROP TABLE IF EXISTS clientes;"
 DROPPED_TB["empleados"] = "DROP TABLE IF EXISTS empleados;"
+DROPPED_TB["clientes"] = "DROP TABLE IF EXISTS clientes;"
 DROPPED_TB["categoria"] = "DROP TABLE IF EXISTS categoria;"
+DROPPED_TB["proveedores"] = "DROP TABLE IF EXISTS proveedores;"
 
 
 
 def rollback_db():
-    cxn = mysql.connector.connect(**database_config)
-    cursor = cxn.cursor()
-    for table in DROPPED_TB:
-        print(f"Dropped table: {table}", end=" ")
-        try:
-            cursor.execute(DROPPED_TB[table])
-            print('ok')
-            cxn.commit()
-        except Error as e:
-            print(f"{e}")
-
-    cursor.close()
-    cxn.close()
+    cxn = None
+    cursor = None
+    try:
+        cxn = mysql.connector.connect(**database_config)
+        cursor = cxn.cursor()
+        for table in DROPPED_TB:
+            print(f"Dropped table: {table}", end=" ")
+            try:
+                cursor.execute(DROPPED_TB[table])
+                print('ok')
+                cxn.commit()
+            except Error as e:
+                print(f"Error: {e}")
+    except Error as e:
+        print(f"Connection error: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if cxn:
+            cxn.close()
 
 rollback_db()

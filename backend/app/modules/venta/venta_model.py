@@ -95,7 +95,7 @@ class VentaModel:
 
             except Exception as exc:
                 cnx.rollback()
-                print(f"❌ Error al crear venta: {exc}")
+                print(f"Error al crear venta: {exc}")
                 return False
 
             finally:
@@ -217,14 +217,29 @@ class VentaModel:
                     f"El item '{item['nombre']}' requiere sabores y no tiene ninguno asignado"
                 )
 
-        # Actualizo el total de la venta
+        # Actualizo los subtotales de los items con precios actuales
+        cursor.execute(
+            """
+            UPDATE items_ventas
+            SET subtotal = cantidad * (
+                SELECT precio 
+                FROM productos 
+                WHERE id = items_ventas.id_producto
+            )
+            WHERE id_venta = %s
+            """,
+            (self.id,),
+        )
+        
+        # Actualizo el total de la venta usando precios actuales de productos
         cursor.execute(
             """
             UPDATE ventas
             SET total = (
-                SELECT COALESCE(SUM(subtotal), 0)
-                FROM items_ventas
-                WHERE id_venta = %s
+                SELECT COALESCE(SUM(iv.cantidad * p.precio), 0)
+                FROM items_ventas iv
+                JOIN productos p ON p.id = iv.id_producto
+                WHERE iv.id_venta = %s
             )
             WHERE id = %s
             """,

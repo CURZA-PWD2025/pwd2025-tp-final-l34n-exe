@@ -12,7 +12,7 @@
             (v) => !!v || 'El nombre es obligatorio',
             (v) => v.length >= 3 || 'Mínimo 3 caracteres',
             (v) => v.length <= 50 || 'Máximo 50 caracteres',
-            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\\s]+$/.test(v) || 'Solo letras y espacios',
+            (v) => /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(v) || 'Solo letras y espacios',
           ]"
           required
         />
@@ -27,6 +27,7 @@
             (v) => Number.isInteger(v) || 'El stock debe ser un número entero',
             (v) => v >= 0 || 'Stock inválido',
           ]"
+          @input="actualizarDisponibilidad"
           required
         />
 
@@ -96,6 +97,13 @@ onMounted(async () => {
   }
 })
 
+function actualizarDisponibilidad() {
+  //* Si el stock es 0, el producto no está disponible *//
+  if (sabor.value.stock === 0) {
+    sabor.value.disponible = false
+  }
+}
+
 function limpiarSabor() {
   sabor.value = {
     id: 0,
@@ -112,7 +120,7 @@ const actualizar = async () => {
     alert('Por favor, complete todos los campos correctamente.')
     return
   }
-
+  actualizarDisponibilidad()
   try {
     const data = {
       id: sabor.value.id,

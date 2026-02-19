@@ -28,9 +28,10 @@
         label="Stock del producto"
         variant="outlined"
         :rules="[
-          (v) => !!v || 'El stock es obligatorio',
-          (v) => v > 0 || 'El stock no puede ser negativo o cero',
+          (v) => (v !== null && v !== undefined) || 'El stock es obligatorio',
+          (v) => v >= 0 || 'El stock no puede ser negativo',
         ]"
+        @input="actualizarDisponibilidad"
         required
       ></v-text-field>
       <v-text-field
@@ -126,6 +127,18 @@ function limpiarProducto() {
     categoria: {
       id: 0,
     } as Categoria,
+    stock: 0,
+    max_sabores: 0,
+    disponible: true,
+    nombre: '',
+    precio: 0,
+  }
+}
+
+function actualizarDisponibilidad() {
+  //* Si el stock es 0, el producto no está disponible *//
+  if (producto.value.stock === 0) {
+    producto.value.disponible = false
   }
 }
 
@@ -135,6 +148,7 @@ const actualizar = async () => {
     alert('Por favor, complete todos los campos correctamente.')
     return
   }
+  actualizarDisponibilidad() // Asegura que la disponibilidad se actualice antes de actualizar
   try {
     const data = {
       id: producto.value.id,

@@ -145,6 +145,33 @@ const itemsConSabores = computed(() => {
   )
 })
 
+//* Verifica si hay sabores con stock 0 o no disponibles en los items de la venta *//
+const saboresDisponiblesValidos = computed(() => {
+  const itemsVenta = itemVentasStore.itemventas.filter((item) => item.venta?.id === venta.value.id)
+  if (itemsVenta.length === 0) return true
+
+  //* Para cada item, verificar sus sabores *//
+  for (const item of itemsVenta) {
+    const saboresDelItem = itemVentaSaboresStore.itemventasabores.filter(
+      (sabor) => sabor.itemventa?.id === item.id,
+    )
+
+    //* Verificar cada sabor del item *//
+    for (const saborItem of saboresDelItem) {
+      //* Verificar stock disponible *//
+      if (!saborItem.sabor || (saborItem.sabor.stock ?? 0) <= 0) {
+        return false
+      }
+      //* Verificar si el sabor está disponible (disponible !== 0) *//
+      if ((saborItem.sabor.disponible ?? 1) === 0) {
+        return false
+      }
+    }
+  }
+
+  return true
+})
+
 //* Formatear fecha para input datetime-local *//
 function formatFechaInput(fecha: string): string {
   if (!fecha) return ''
@@ -211,6 +238,12 @@ const guardarVenta = async () => {
     }
     if (!itemsConSabores.value) {
       alert('No se puede cerrar la venta: todos los ítems deben tener al menos un sabor asignado.')
+      return
+    }
+    if (!saboresDisponiblesValidos.value) {
+      alert(
+        'No se puede cerrar la venta: hay sabores con stock insuficiente o no disponibles. Por favor, elija otros sabores.',
+      )
       return
     }
   }

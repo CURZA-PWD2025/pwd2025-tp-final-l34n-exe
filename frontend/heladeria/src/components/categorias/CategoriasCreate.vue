@@ -24,7 +24,11 @@
           variant="outlined"
           :rules="[(v: string) => !!v || 'El tipo es obligatorio']"
           required
-        />
+        >
+          <template #selection="{ item }">
+            {{ item.value }}
+          </template>
+        </v-select>
 
         <v-text-field
           v-model.trim="categoria.descripcion"

@@ -11,7 +11,7 @@ DB_CONFIG = {
     "host": os.getenv("DB_HOST"),
     "user": os.getenv("DB_USER"),
     "password": os.getenv("DB_PASSWORD"),
-    "port": int(os.getenv("DB_PORT")),
+    "port": int(os.getenv("DB_PORT", "3306")),
     "raise_on_warnings": False,
 }
 
@@ -228,7 +228,6 @@ SEEDS['ventas'] = (
 
 SEEDS["items_ventas"] = (
     "INSERT INTO items_ventas (id_venta, id_producto, cantidad, subtotal) "
-
     "SELECT 1, 2, 1, p.precio * 1 FROM productos p WHERE p.id = 2 "
     "UNION ALL "
     "SELECT 1, 5, 2, p.precio * 2 FROM productos p WHERE p.id = 5 "
@@ -248,19 +247,24 @@ SEEDS["items_ventas"] = (
 
 SEEDS['items_venta_sabores'] = (
     "INSERT INTO `items_venta_sabores` (id_item, id_sabor) VALUES "
-    "(1, 1),"   # Vainilla
-    "(1, 2),"   # Chocolate
-    "(2, 3),"   # Dulce de Leche
-    "(2, 10),"  # Granizado
-    "(3, 4),"   # Menta Granizada
-    "(4, 5),"   # Frutilla
-    "(5, 2),"   # Chocolate
-    "(5, 3),"   # Dulce de Leche
-    "(5, 1),"   # Vainilla
-    "(6, 5),"   # Frutilla
-    "(6, 9),"   # Naranja
-    "(7, 6),"   # Limón
-    "(7, 9);"   # Naranja
+    "(1, 1),"   # Pote 1/2 kg - Vainilla
+    "(1, 2),"   # Pote 1/2 kg - Chocolate
+    "(1, 5),"   # Pote 1/2 kg - Dulce de Leche
+    "(2, 2),"   # Cucurucho doble - Chocolate
+    "(2, 3),"   # Cucurucho doble - Dulce de Leche
+    "(3, 4),"   # Vaso chico - Menta Granizada
+    "(4, 11),"  # Yogur helado - Crema Americana
+    "(4, 12),"  # Yogur helado - Crema Rusa
+    "(5, 1),"   # Pote 1 kg - Vainilla
+    "(5, 2),"   # Pote 1 kg - Chocolate
+    "(5, 3),"   # Pote 1 kg - Dulce de Leche
+    "(5, 5),"   # Pote 1 kg - Frutilla
+    "(6, 6),"   # Batido - Limón
+    "(6, 9),"   # Batido - Naranja
+    "(7, 10),"  # Paleta de agua - Granizado
+    "(8, 1),"   # Paleta de crema - Vainilla
+    "(8, 2),"   # Paleta de crema - Chocolate
+    "(8, 3)"    # Paleta de crema - Dulce de Leche
 )
 
 def create_database(cursor):
